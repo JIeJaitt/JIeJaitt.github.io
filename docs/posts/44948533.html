@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>博客发烧党｜关于如何更好的进行知识分享的思考——附带 Hexo+Icarus 主题配置文件 - 有趣的技术实践分享</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="有趣的技术实践分享"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="有趣的技术实践分享"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="本博客暂不显示摘要，请大家谅解"><meta property="og:type" content="blog"><meta property="og:title" content="博客发烧党｜关于如何更好的进行知识分享的思考——附带 Hexo+Icarus 主题配置文件"><meta property="og:url" content="https://jiejaitt.github.io/posts/44948533.html"><meta property="og:site_name" content="有趣的技术实践分享"><meta property="og:description" content="本博客暂不显示摘要，请大家谅解"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://jiejaitt.github.io/img/og_image.png"><meta property="article:published_time" content="2022-12-06T13:06:34.056Z"><meta property="article:modified_time" content="2023-05-03T06:14:49.657Z"><meta property="article:author" content="JIeJaitt"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://jiejaitt.github.io/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jiejaitt.github.io/posts/44948533.html"},"headline":"博客发烧党｜关于如何更好的进行知识分享的思考——附带 Hexo+Icarus 主题配置文件","image":["https://jiejaitt.github.io/img/og_image.png"],"datePublished":"2022-12-06T13:06:34.056Z","dateModified":"2023-05-03T06:14:49.657Z","author":{"@type":"Person","name":"JIeJaitt"},"publisher":{"@type":"Organization","name":"有趣的技术实践分享","logo":{"@type":"ImageObject","url":"https://jiejaitt.github.io/img/logo.svg"}},"description":"本博客暂不显示摘要，请大家谅解"}</script><link rel="canonical" href="https://jiejaitt.github.io/posts/44948533.html"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="有趣的技术实践分享" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/JIeJaitt"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-6-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-12-06T13:06:34.056Z" title="2022/12/6 21:06:34">2022-12-06</time>发表</span><span class="level-item"><time dateTime="2023-05-03T06:14:49.657Z" title="2023/5/3 14:14:49">2023-05-03</time>更新</span><span class="level-item">16 分钟读完 (大约2451个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">博客发烧党｜关于如何更好的进行知识分享的思考——附带 Hexo+Icarus 主题配置文件</h1><div class="content"><p>如果您看到这篇文章,表示您的 blog 已经安装成功.</p>
+<p>在 Hexo 中，你可以通过设置文章的 front-matter（文章头部的配置信息）来实现置顶文章。具体步骤如下：</p>
+<ol>
+<li>打开需要置顶的文章，找到 front-matter 部分；</li>
+<li>在 front-matter 中添加 sticky: true，表示该文章需要置顶；</li>
+<li>如果你想让多篇文章按照一定的顺序置顶，可以在 sticky 属性后面再添加一个数字，数字越小，文章的权重越高，例如 sticky: 1；</li>
+<li>保存文章，重新生成网站即可看到效果。<br>需要注意的是，如果你的主题没有对置顶文章做出特殊的处理，那么置顶文章会直接显示在文章列表的最上面。如果你想要更加精细的控制，可以在主题的模板文件中添加一些逻辑判断来实现。不需要插件，Hexo 默认就支持置顶文章功能。你只需要在文章的 front-matter 中添加 sticky: true 属性即可将该文章置顶。如果你想要多篇文章按照一定的顺序置顶，可以在 sticky 属性后面再添加一个数字，数字越小，文章的权重越高，例如 sticky: 1。</li>
+</ol>
+<p>markdown语法提供了很多页面标签，但对于一个网站来说还是太少了，所有你在markdown语法中找不到的标签都可以在<a target="_blank" rel="noopener" href="https://hexo.io/docs">Hexo</a>文档中找到，在Hexo中找不到的都可以在<a target="_blank" rel="noopener" href="https://ppoffice.github.io/hexo-theme-icarus/uncategorized/%E8%87%AA%E5%AE%9A%E4%B9%89hexo%E6%A0%87%E7%AD%BE%E6%8F%92%E4%BB%B6/#tab_size_default_1">Icarus</a>文档和<a target="_blank" rel="noopener" href="https://www.imaegoo.com/2020/icarus-with-bulma/">iMaeGoo</a>中找到，在Icarus中找不到的都可以在<a target="_blank" rel="noopener" href="https://bulma.io/documentation/">Bluma</a>文档中找到(Icarus使用的Bluma插件库)</p>
+<p>这是html的写法，我个人认为还存在markdown的写法，等日后研究hexo文档再做更新，暂时就这样吧。我不是很建议在文章中使用这些不方便移植的写法，这会导致主题在迁移的时候文章样式变得很难迁移。</p>
+<article class="message message-immersive is-warning">
+  <div class="message-body">
+    <i class="fas fa-question-circle mr-2"></i>文章内容有误？请点击 
+    <a href="你自己接收反馈的URL">此处</a>提交修改。
+  </div>
+</article>
+
+<article class="message message-immersive is-primary">
+  <div class="message-body">
+    <i class="fas fa-globe-americas mr-2"></i>本文同时提供以下语言的翻译：<a href="/hexo-theme-icarus/uncategorized/custom-hexo-tag-helpers/">English</a>。
+  </div>
+</article>
+
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;% tabs align:fullwidth size:small style:toggle-rounded %&#125;</span><br><span class="line"><span class="comment">&lt;!-- tab id:tab1 &quot;icon:fa-brands fa-github&quot; title:tab1 active --&gt;</span></span><br><span class="line">tab1</span><br><span class="line"><span class="comment">&lt;!-- endtab --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- tab id:tab2 &quot;icon:fa-brands fa-node-js&quot; title:tab2 --&gt;</span></span><br><span class="line">tab2</span><br><span class="line"><span class="comment">&lt;!-- endtab --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- tab id:tab3 &quot;icon:fa-brands fa-qq&quot; title:tab3 --&gt;</span></span><br><span class="line">tab3</span><br><span class="line"><span class="comment">&lt;!-- endtab --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- tab id:tab4 &quot;icon:fa-brands fa-weixin&quot;  title:tab4 --&gt;</span></span><br><span class="line">tab4</span><br><span class="line"><span class="comment">&lt;!-- endtab --&gt;</span></span><br><span class="line">&#123;% endtabs %&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure class="highlight shell"><figcaption><span>更新手法</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+
+
+<p>tab 标签语法 ：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;% tabs [Unique name], [index] %&#125;</span><br><span class="line">  &lt;!-- tab [Tab caption]@[icon] --&gt;</span><br><span class="line">  标签页内容（支持行内标签）</span><br><span class="line">  &lt;!-- endtab --&gt;</span><br><span class="line">&#123;% endtabs %&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;% tabs Tab标签列表 %&#125;</span><br><span class="line">  &lt;!-- tab 标签页1 --&gt;</span><br><span class="line">    标签页1文本内容</span><br><span class="line">  &lt;!-- endtab --&gt;</span><br><span class="line">  &lt;!-- tab 标签页2 --&gt;</span><br><span class="line">    标签页2文本内容</span><br><span class="line">  &lt;!-- endtab --&gt;</span><br><span class="line">  &lt;!-- tab 标签页3 --&gt;</span><br><span class="line">    标签页3文本内容</span><br><span class="line">  &lt;!-- endtab --&gt;</span><br><span class="line">&#123;% endtabs %&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，各参数意义如下：</p>
+<ul>
+<li>Unique name: 全局唯一的 Tab 名称，将作为各个标签页的 id 属性前缀</li>
+<li>index: 当前激活的标签页索引，如果未定义则默认选中显示第一个标签页，如果设为 - 1 则默认隐藏所有标签页</li>
+<li>Tab caption: 当前标签页的标题，如果不指定则会以 Unique name 加上索引作为标题</li>
+<li>icon: 在标签页标题中添加 Font awesome 图标</li>
+</ul>
+<h2 id="Hexo-Icarus-主题配置文件"><a href="#Hexo-Icarus-主题配置文件" class="headerlink" title="Hexo+Icarus 主题配置文件"></a>Hexo+Icarus 主题配置文件</h2><figure class="highlight yml"><figcaption><span>hexo+icarlus >folded</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">未来可妻</span></span><br><span class="line"><span class="attr">subtitle:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">description:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">keywords:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">author:</span> <span class="string">JIeJaitt</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">zh-CN</span></span><br><span class="line"><span class="attr">timezone:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">url:</span> <span class="string">https://jiejaitt.github.io</span></span><br><span class="line"><span class="attr">root:</span> <span class="string">/</span></span><br><span class="line"><span class="comment">#permalink: &#x27;:year/:month/:day/:title/&#x27;</span></span><br><span class="line"><span class="comment"># permalink_defaults: null</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">posts/:abbrlink.html</span></span><br><span class="line"><span class="attr">abbrlink:</span></span><br><span class="line">  <span class="attr">alg:</span> <span class="string">crc32</span>  <span class="comment"># 算法：crc16(default) and crc32</span></span><br><span class="line">  <span class="attr">rep:</span> <span class="string">hex</span>    <span class="comment"># 进制：dec(default) and hex</span></span><br><span class="line"></span><br><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">source_dir:</span> <span class="string">source</span></span><br><span class="line"><span class="attr">public_dir:</span> <span class="string">public</span></span><br><span class="line"><span class="attr">tag_dir:</span> <span class="string">tags</span></span><br><span class="line"><span class="attr">archive_dir:</span> <span class="string">archives</span></span><br><span class="line"><span class="attr">category_dir:</span> <span class="string">categories</span></span><br><span class="line"><span class="attr">code_dir:</span> <span class="string">downloads/code</span></span><br><span class="line"><span class="attr">i18n_dir:</span> <span class="string">&#x27;:lang&#x27;</span></span><br><span class="line"><span class="attr">skip_render:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">new_post_name:</span> <span class="string">&#x27;:title.md&#x27;</span></span><br><span class="line"><span class="attr">default_layout:</span> <span class="string">post</span></span><br><span class="line"><span class="attr">titlecase:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">external_link:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">site</span></span><br><span class="line">  <span class="attr">exclude:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">filename_case:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">render_drafts:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">relative_link:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">future:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">highlight:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">line_number:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">auto_detect:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">tab_replace:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="attr">wrap:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">hljs:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">prismjs:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">preprocess:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">line_number:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">tab_replace:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">index_generator:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">10</span></span><br><span class="line">  <span class="attr">order_by:</span> <span class="string">&#x27;-date&#x27;</span></span><br><span class="line"><span class="attr">default_category:</span> <span class="string">uncategorized</span></span><br><span class="line"><span class="attr">category_map:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">tag_map:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">meta_generator:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">date_format:</span> <span class="string">YYYY-MM-DD</span></span><br><span class="line"><span class="attr">time_format:</span> <span class="string">HH:mm:ss</span></span><br><span class="line"><span class="attr">updated_option:</span> <span class="string">mtime</span></span><br><span class="line"><span class="attr">per_page:</span> <span class="number">10</span></span><br><span class="line"><span class="attr">pagination_dir:</span> <span class="string">page</span></span><br><span class="line"><span class="attr">include:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">exclude:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">ignore:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">theme:</span> <span class="string">icarus</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:JIeJaitt/jiejaitt.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yml"><figcaption><span>_config.yml >folded</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">未来可妻</span></span><br><span class="line"><span class="attr">subtitle:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">description:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">keywords:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">author:</span> <span class="string">JIeJaitt</span></span><br><span class="line"><span class="attr">language:</span> <span class="string">zh-CN</span></span><br><span class="line"><span class="attr">timezone:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">url:</span> <span class="string">https://jiejaitt.github.io</span></span><br><span class="line"><span class="attr">root:</span> <span class="string">/</span></span><br><span class="line"><span class="comment">#permalink: &#x27;:year/:month/:day/:title/&#x27;</span></span><br><span class="line"><span class="comment"># permalink_defaults: null</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">posts/:abbrlink.html</span></span><br><span class="line"><span class="attr">abbrlink:</span></span><br><span class="line">  <span class="attr">alg:</span> <span class="string">crc32</span>  <span class="comment"># 算法：crc16(default) and crc32</span></span><br><span class="line">  <span class="attr">rep:</span> <span class="string">hex</span>    <span class="comment"># 进制：dec(default) and hex</span></span><br><span class="line"></span><br><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">source_dir:</span> <span class="string">source</span></span><br><span class="line"><span class="attr">public_dir:</span> <span class="string">public</span></span><br><span class="line"><span class="attr">tag_dir:</span> <span class="string">tags</span></span><br><span class="line"><span class="attr">archive_dir:</span> <span class="string">archives</span></span><br><span class="line"><span class="attr">category_dir:</span> <span class="string">categories</span></span><br><span class="line"><span class="attr">code_dir:</span> <span class="string">downloads/code</span></span><br><span class="line"><span class="attr">i18n_dir:</span> <span class="string">&#x27;:lang&#x27;</span></span><br><span class="line"><span class="attr">skip_render:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">new_post_name:</span> <span class="string">&#x27;:title.md&#x27;</span></span><br><span class="line"><span class="attr">default_layout:</span> <span class="string">post</span></span><br><span class="line"><span class="attr">titlecase:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">external_link:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">site</span></span><br><span class="line">  <span class="attr">exclude:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">filename_case:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">render_drafts:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">relative_link:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">future:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">highlight:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">line_number:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">auto_detect:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">tab_replace:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="attr">wrap:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">hljs:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">prismjs:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">preprocess:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">line_number:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">tab_replace:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="attr">index_generator:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">10</span></span><br><span class="line">  <span class="attr">order_by:</span> <span class="string">&#x27;-date&#x27;</span></span><br><span class="line"><span class="attr">default_category:</span> <span class="string">uncategorized</span></span><br><span class="line"><span class="attr">category_map:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">tag_map:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">meta_generator:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">date_format:</span> <span class="string">YYYY-MM-DD</span></span><br><span class="line"><span class="attr">time_format:</span> <span class="string">HH:mm:ss</span></span><br><span class="line"><span class="attr">updated_option:</span> <span class="string">mtime</span></span><br><span class="line"><span class="attr">per_page:</span> <span class="number">10</span></span><br><span class="line"><span class="attr">pagination_dir:</span> <span class="string">page</span></span><br><span class="line"><span class="attr">include:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">exclude:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">ignore:</span> <span class="literal">null</span></span><br><span class="line"><span class="attr">theme:</span> <span class="string">icarus</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:JIeJaitt/jiejaitt.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="优化Hexo博客文章永久链接"><a href="#优化Hexo博客文章永久链接" class="headerlink" title="优化Hexo博客文章永久链接"></a>优化Hexo博客文章永久链接</h2><p>文章默认的URL配置是包含年月日以及文章标题的，而且每次文章文章有修改就会引起一些链接的变化，繁琐且不易于检索传播。而URL地址对于SEO来说（Search Engine Optimization：搜索引擎优化）是相当重要的，如何缩短并固定每篇文章的连接，同时又可以在链接后面加上<code>html</code>使其显得更为正式。</p>
+<p>基于<code>Hexo</code>搭建的博客，可以通过插件<code>hexo-abbrlink</code>来实现自定义文章的连接。首先我们使用如下代码进行优化：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-abbrlink --save</span><br></pre></td></tr></table></figure>
+<p>接着打开站点配置文件<code>_config.yml</code>，按照如下部分进行相关配置：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># URL</span></span><br><span class="line"><span class="comment">## If your site is put in a subdirectory, set url as &#x27;http://yoursite.com/child&#x27; and root as &#x27;/child/&#x27;</span></span><br><span class="line"><span class="attr">url:</span> <span class="string">https://jiejaitt.github.io</span></span><br><span class="line"><span class="attr">root:</span> <span class="string">/</span></span><br><span class="line"><span class="comment">#permalink: :year/:month/:day/:title/</span></span><br><span class="line"><span class="comment">#permalink_defaults:</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">posts/:abbrlink.html</span></span><br><span class="line"><span class="attr">abbrlink:</span></span><br><span class="line">  <span class="attr">alg:</span> <span class="string">crc32</span>  <span class="comment"># 算法：crc16(default) and crc32</span></span><br><span class="line">  <span class="attr">rep:</span> <span class="string">hex</span>    <span class="comment"># 进制：dec(default) and hex</span></span><br></pre></td></tr></table></figure>
+<p>如上所示，是我本人的配置，另，<code>permalink</code>的配置，我多加了一个固定链接<code>posts</code>，纯属个人喜好，你也可以去掉直接配置成<code>:abbrlink.html</code>。我们完成了如上的配置后，如果不对博客文章做任何处理的话，在部署的时候，将会根据算法随机生成每篇博客的数字链接。当然，如果你觉得使用随机的数字连接不具有识别性，想要自定义每篇博客的链接的话也是可以的，只需要在你的博客<code>.md</code>文章的头部配置如下字段即可：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">abbrlink: your_blog_url</span><br></pre></td></tr></table></figure>
+<p>通过这一顿操作，你就可以随心所欲控制你的博客的链接了。每次修改博客文章的时候，只要不修改<code>abbrlink</code>配置项，那么这篇博客的链接就永远不会发生变化。这样不仅有利于博客链接的记忆与传播，更有利于整个博客的SEO优化，提升检索度和排名。</p>
+<p>官方文章中你还可以使用如下变量的配置，当然除了这些还可以使用<code>Front-matter</code>中的所有属性。</p>
+<table>
+<thead>
+<tr>
+<th align="left">变量</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>:year</code></td>
+<td align="left">文章的发表年份（4 位数）</td>
+</tr>
+<tr>
+<td align="left"><code>:month</code></td>
+<td align="left">文章的发表月份（2 位数）</td>
+</tr>
+<tr>
+<td align="left"><code>:i_month</code></td>
+<td align="left">文章的发表月份（去掉开头的零）</td>
+</tr>
+<tr>
+<td align="left"><code>:day</code></td>
+<td align="left">文章的发表日期 (2 位数)</td>
+</tr>
+<tr>
+<td align="left"><code>:i_day</code></td>
+<td align="left">文章的发表日期（去掉开头的零）</td>
+</tr>
+<tr>
+<td align="left"><code>:hour</code></td>
+<td align="left">文章发表时的小时 (2 位数)</td>
+</tr>
+<tr>
+<td align="left"><code>:minute</code></td>
+<td align="left">文章发表时的分钟 (2 位数)</td>
+</tr>
+<tr>
+<td align="left"><code>:second</code></td>
+<td align="left">文章发表时的秒钟 (2 位数)</td>
+</tr>
+<tr>
+<td align="left"><code>:title</code></td>
+<td align="left">文件名称 (relative to “source&#x2F;_posts&#x2F;“ folder)</td>
+</tr>
+<tr>
+<td align="left"><code>:name</code></td>
+<td align="left">文件名称</td>
+</tr>
+<tr>
+<td align="left"><code>:post_title</code></td>
+<td align="left">文章标题</td>
+</tr>
+<tr>
+<td align="left"><code>:id</code></td>
+<td align="left">文章 ID (<em>not persistent across <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/commands#clean">cache reset</a></em>)</td>
+</tr>
+<tr>
+<td align="left"><code>:category</code></td>
+<td align="left">分类。如果文章没有分类，则是 <code>default_category</code> 配置信息。</td>
+</tr>
+<tr>
+<td align="left"><code>:hash</code></td>
+<td align="left">文件名（与 <code>:title</code> 相同）和日期（12-16进制）的 SHA1 哈希值</td>
+</tr>
+</tbody></table>
+<p>您可在 <code>permalink_defaults</code> 参数下调整永久链接中各变量的默认值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">permalink_defaults:</span><br><span class="line">  lang: en</span><br></pre></td></tr></table></figure>
+
+<p>示例如下：</p>
+<figure class="highlight yaml"><figcaption><span>source/_posts/lorem/hello-world.md >unfolded</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">Hello</span> <span class="string">World</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2013-07-14 17:01:34</span></span><br><span class="line"><span class="attr">categories:</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">foo</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">bar</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>:year/:month/:day/:title/</code></td>
+<td align="left">2013&#x2F;07&#x2F;14&#x2F;lorem&#x2F;hello-world&#x2F;</td>
+</tr>
+<tr>
+<td align="left"><code>:year/:month/:day/:name/</code></td>
+<td align="left">2013&#x2F;07&#x2F;14&#x2F;hello-world&#x2F;</td>
+</tr>
+</tbody></table>
+<p>若要建立一个多语种的网站，您可修改 <code>new_post_name</code> 和 <code>permalink</code> 参数，如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">new_post_name:</span> <span class="string">:lang/:title.md</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">:lang/:title/</span></span><br></pre></td></tr></table></figure>
+
+<p>当您建立新文章时，文章会被储存到：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">hexo</span> <span class="string">new</span> <span class="string">&quot;Hello World&quot;</span> <span class="string">--lang</span> <span class="string">tw</span></span><br><span class="line"><span class="comment"># =&gt; source/_posts/tw/Hello-World.md</span></span><br></pre></td></tr></table></figure>
+
+<p>而网址会是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:4000/tw/hello-world/</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="Cloud-workSpace"><a href="#Cloud-workSpace" class="headerlink" title="Cloud workSpace"></a>Cloud workSpace</h2><div class="tabs my-3 is-fullwidth is-small is-toggle is-toggle-rounded">
+        <ul class="mx-0 my-0">
+            <li class="is-active">
+          <a href="#tab1">
+              <p>Notion-Like</p>
+
+          </a>
+      </li><li>
+          <a href="#tab2">
+              <p>GitHub-Like</p>
+
+          </a>
+      </li><li>
+          <a href="#tab3">
+              <p>netdisc</p>
+
+          </a>
+      </li><li>
+          <a href="#tab4">
+              <p>list</p>
+
+          </a>
+      </li>
+        </ul>
+    </div>
+    <div id="tab1" class="tab-content">
+          <ul>
+<li><a target="_blank" rel="noopener" href="https://www.notion.so/jiejaitt/">Notion</a></li>
+<li><a target="_blank" rel="noopener" href="https://clickup.com/">ClickUp</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.craft.do/">Craft</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.yuque.com/jiejaitt/">语雀</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.evernote.com/">Evernote</a></li>
+</ul>
+
+      </div><div id="tab2" class="tab-content is-hidden">
+          <ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/JIeJaitt/">Github</a></li>
+<li><a target="_blank" rel="noopener" href="https://gitee.com/jiejaitt/">Gitee</a></li>
+</ul>
+
+      </div><div id="tab3" class="tab-content is-hidden">
+          <ul>
+<li><a target="_blank" rel="noopener" href="https://pan.baidu.com/">百度网盘</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.aliyundrive.com/">阿里网盘</a></li>
+</ul>
+
+      </div><div id="tab4" class="tab-content is-hidden">
+          <ul>
+<li><a target="_blank" rel="noopener" href="https://dida365.com/webapp/">TickTick</a></li>
+</ul>
+
+      </div>
+
+<h2 id="Frequent-bloggers"><a href="#Frequent-bloggers" class="headerlink" title="Frequent bloggers"></a>Frequent bloggers</h2><table>
+<thead>
+<tr>
+<th align="left">博主</th>
+<th align="left">主页链接</th>
+<th align="left">其他</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">PPOffice</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://ppoffice.github.io/hexo-theme-icarus/">PPOffice</a></td>
+<td align="left">&#x2F;</td>
+</tr>
+<tr>
+<td align="left">辣椒の酱</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://removeif.github.io/">辣椒の酱</a></td>
+<td align="left">&#x2F;</td>
+</tr>
+<tr>
+<td align="left">iMaeGoo</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://www.imaegoo.com/">iMaeGoo</a></td>
+<td align="left">&#x2F;</td>
+</tr>
+<tr>
+<td align="left">Yida</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://blog.mchook.cn/">Yida</a></td>
+<td align="left">&#x2F;</td>
+</tr>
+<tr>
+<td align="left">Xinyu Liu</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://www.alphalxy.com/">Xinyu Liu</a></td>
+<td align="left">&#x2F;</td>
+</tr>
+<tr>
+<td align="left">Yida</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://blog.mchook.cn/">Yida</a></td>
+<td align="left">&#x2F;</td>
+</tr>
+<tr>
+<td align="left">李文周</td>
+<td align="left"><a target="_blank" rel="noopener" href="https://www.liwenzhou.com/">李文周</a></td>
+<td align="left">&#x2F;</td>
+</tr>
+</tbody></table>
+<h2 id="Future-plan"><a href="#Future-plan" class="headerlink" title="Future plan"></a>Future plan</h2><ul>
+<li>把博客的评论区搬到搬迁合并为一个仓库</li>
+<li>完善收集一些优化文章样式特殊的语法</li>
+<li><a target="_blank" rel="noopener" href="https://whatsid.me/2019/08/21/hexo-markdown-syntax/#">https://whatsid.me/2019/08/21/hexo-markdown-syntax/#</a></li>
+<li>加密某些重要内容的文章</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>博客发烧党｜关于如何更好的进行知识分享的思考——附带 Hexo+Icarus 主题配置文件</p><p><a href="https://jiejaitt.github.io/posts/44948533.html">https://jiejaitt.github.io/posts/44948533.html</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>JIeJaitt</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-12-06</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2023-05-03</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="notification is-danger">You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.</div></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" href="/" target="_blank" rel="noopener" data-type="afdian"><span class="icon is-small"><i class="fas fa-charging-station"></i></span><span>爱发电</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="https://pic.imgdb.cn/item/611266d05132923bf8a1d198.jpg" alt="支付宝"></span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>送我杯咖啡</span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="patreon"><span class="icon is-small"><i class="fab fa-patreon"></i></span><span>Patreon</span></a><div class="notification is-danger">You forgot to set the <code>business</code> or <code>currency_code</code> for Paypal. Please set it in <code>_config.yml</code>.</div><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="https://pic.imgdb.cn/item/6112669d5132923bf8a16e7d.jpg" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/posts/2dba0c93.html"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Go 语言数据库操作</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/posts/aa9b68a9.html"><span class="level-item">Go语言垃圾回收</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "b143fe693beb08a67b596efae0ed0483",
+            repo: "gitalk",
+            owner: "JIeJaitt",
+            clientID: "62d7216ae38e14428f95",
+            clientSecret: "4ba230f5f04cfa4bcc4b76a1a10e4da56df38fee",
+            admin: ["JIeJaitt"],
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 10,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            language: "zh-CN",
+        })
+        gitalk.render('comment-container')</script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar is-rounded" src="/img/avatar.png" alt="JIeJaitt"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">JIeJaitt</p><p class="is-size-6 is-block">有趣的技术实践分享</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Your location</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">21</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">0</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/jiejaitt" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/jiejaitt"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com/jiejaitt"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/jiejaitt"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Dribbble" href="https://dribbble.com/jiejaitt"><i class="fab fa-dribbble"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://jiejaitt.github.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Icarus</span></span><span class="level-right"><span class="level-item tag">jiejaitt.github.io</span></span></a></li><li><a class="level is-mobile" href="https://jiejaitt.notion.site" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Notion</span></span><span class="level-right"><span class="level-item tag">jiejaitt.notion.site</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/%E6%9C%9F%E6%9C%AB%E8%80%83%E8%AF%95/"><span class="level-start"><span class="level-item">期末考试</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%A7%91%E7%8F%AD%E5%9F%BA%E7%A1%80/"><span class="level-start"><span class="level-item">科班基础</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E7%AE%97%E6%B3%95%E7%AB%9E%E8%B5%9B/"><span class="level-start"><span class="level-item">算法竞赛</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"><span class="level-start"><span class="level-item">项目实战</span></span><span class="level-end"><span class="level-item tag">11</span></span></a></li></ul></div></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2023/05/"><span class="level-start"><span class="level-item">五月 2023</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/04/"><span class="level-start"><span class="level-item">四月 2023</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/02/"><span class="level-start"><span class="level-item">二月 2023</span></span><span class="level-end"><span class="level-item tag">5</span></span></a></li><li><a class="level is-mobile" href="/archives/2023/01/"><span class="level-start"><span class="level-item">一月 2023</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2022/12/"><span class="level-start"><span class="level-item">十二月 2022</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li><li><a class="level is-mobile" href="/archives/2020/07/"><span class="level-start"><span class="level-item">七月 2020</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/archives/2013/07/"><span class="level-start"><span class="level-item">七月 2013</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li></ul></div></div></div><!--!--><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="订阅"></div></div></form></div></div></div><div class="card widget"><div class="card-content"><div class="notification is-danger">You need to set <code>client_id</code> and <code>slot_id</code> to show this AD unit. Please set it in <code>_config.yml</code>.</div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">follow.it</h3><form action="" method="post" target="_blank"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="订阅"></div></div></form></div></div></div><div class="column-right-shadow is-hidden-widescreen"></div></div><div class="column column-right is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only order-3"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#Hexo-Icarus-主题配置文件"><span class="level-left"><span class="level-item">1</span><span class="level-item">Hexo+Icarus 主题配置文件</span></span></a></li><li><a class="level is-mobile" href="#优化Hexo博客文章永久链接"><span class="level-left"><span class="level-item">2</span><span class="level-item">优化Hexo博客文章永久链接</span></span></a></li><li><a class="level is-mobile" href="#Cloud-workSpace"><span class="level-left"><span class="level-item">3</span><span class="level-item">Cloud workSpace</span></span></a></li><li><a class="level is-mobile" href="#Frequent-bloggers"><span class="level-left"><span class="level-item">4</span><span class="level-item">Frequent bloggers</span></span></a></li><li><a class="level is-mobile" href="#Future-plan"><span class="level-left"><span class="level-item">5</span><span class="level-item">Future plan</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-05-13T17:58:18.442Z">2023-05-14</time></p><p class="title"><a href="/posts/2f2e68b6.html">经典库httprouter源码阅读</a></p><p class="categories"><a href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">项目实战</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-05-03T15:38:35.998Z">2023-05-03</time></p><p class="title"><a href="/posts/d6db6725.html">Cobra</a></p><p class="categories"><a href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">项目实战</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-05-03T06:14:01.071Z">2023-05-03</time></p><p class="title"><a href="/posts/328f6061.html">gmp</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-05-02T13:36:12.800Z">2023-05-02</time></p><p class="title"><a href="/posts/572661ae.html">sql｜Structured Query Language</a></p><p class="categories"><a href="/categories/%E7%A7%91%E7%8F%AD%E5%9F%BA%E7%A1%80/">科班基础</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2023-04-24T15:48:25.917Z">2023-04-24</time></p><p class="title"><a href="/posts/cc4d5834.html">置顶</a></p></div></article></div></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="有趣的技术实践分享" height="28"></a><p class="is-size-7"><span>&copy; 2023 JIeJaitt</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/JIeJaitt"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
