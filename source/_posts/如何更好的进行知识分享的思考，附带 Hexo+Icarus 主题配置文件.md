@@ -1,5 +1,5 @@
 ---
-title: 博客发烧党｜关于如何更好的进行知识分享的思考——附带 Hexo+Icarus 主题配置文件
+title: 如何更好的进行知识分享的思考——附带 Hexo+Icarus 主题配置文件
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: '44948533'
 toc: true
