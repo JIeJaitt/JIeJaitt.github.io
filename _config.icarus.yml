@@ -111,10 +111,10 @@ donates:
     -
         type: patreon
         url: ''
-    -
-        type: paypal
-        business: ''
-        currency_code: USD
+    # -
+    #     type: paypal
+    #     business: ''
+    #     currency_code: USD
     -
         type: wechat
         qrcode: 'https://pic.imgdb.cn/item/6112669d5132923bf8a16e7d.jpg'
@@ -123,9 +123,9 @@ share:
     install_url: ''
 sidebar:
     left:
-        sticky: false
+        sticky: true
     right:
-        sticky: false
+        sticky: true
 
 widgets:
     -
@@ -135,7 +135,7 @@ widgets:
         author_title: 有趣的技术实践分享
         location: Your location
         # avatar: https://pic1.imgdb.cn/item/633988e016f2c2beb149e475.jpg
-        avatar: /img/avatar.png
+        avatar: https://pic.imgdb.cn/item/60c054b3844ef46bb2f0d941.jpg
         avatar_rounded: true
         gravatar: 
         follow_link: https://github.com/jiejaitt
