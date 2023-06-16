@@ -368,6 +368,13 @@ http://localhost:4000/tw/hello-world/
 <!-- endtab -->
 {% endtabs %}
 
+## 自动化部署
+
+https://hexo.io/zh-cn/docs/github-pages.html
+
+https://mdnice.com/writing/5c0ea88d4f624fa2b047463a0e24a9ef
+
+
 ## Frequent bloggers
 | 博主 | 主页链接 | 其他 |
 | :-----| :----- | :----- |
