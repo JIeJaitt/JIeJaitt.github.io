@@ -23,10 +23,6 @@ jobs:
           key: ${{ runner.OS }}-npm-cache
           restore-keys: |
             ${{ runner.OS }}-npm-cache
-      - name: Set up Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 2.7 # 指定要安装的 Ruby 版本
       - name: Install Dependencies
         run: npm install
       - name: Build
