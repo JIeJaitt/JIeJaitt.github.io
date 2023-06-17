@@ -1,18 +1,32 @@
-name: GitHub Pages
+name: Build and Deploy Hexo
 
-on: push
-
+on:
+  push:
+    branches:
+      - main
 jobs:
-  publish:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '16'
-      - run: npm install
-      - run: NODE_ENV=production npx hexo g
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+    - name: Checkout 🛎️
+      uses: actions/checkout@master
+      
+    - name: Use Node.js 16
+      uses: actions/setup-node@v2-beta
+      with:
+        node-version: '16'
+        
+    - name: Install and Build 🔧 
+      run: |
+        npm install -g hexo-cli
+        npm install
+        hexo clean
+        hexo generate
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: public
+        BASE_BRANCH: main
