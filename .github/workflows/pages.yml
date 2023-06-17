@@ -1,18 +1,43 @@
-name: Deploy Hexo Icarus to GitHub Pages
+name: Hexo Blog Delopy
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest 
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '16'
-      - run: npm install
-      - run: NODE_ENV=production npx hexo g
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+    - name: Checkout Repository master branch
+      uses: actions/checkout@master
+
+    - name: Setup Node.js
+      uses: actions/setup-node@master
+      with:
+        node-version: "16"
+
+    - name: Setup Hexo
+      run: |
+        npm install hexo-cli -g
+
+    - name: Deploy Hexo
+      run: |
+        hexo clean
+        hexo generate
+        hexo deploy
+
+    - name: Deploy to GitHub Pages
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        # 部署到 gh-pages 分支
+        target_branch: gh-pages
+        # 部署目录为 Hexo 的默认输出目录
+        build_dir: public
+        # 自定义域名(CNAME)(可选)
+        fqdn: 
+        # 强制提交
+        keep_history: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
