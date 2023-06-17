@@ -65,4 +65,4 @@ pagination_dir: page
 include: null
 exclude: null
 ignore: null
-theme: landscape
+theme: icarus
