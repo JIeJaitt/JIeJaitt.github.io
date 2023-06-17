@@ -15,6 +15,9 @@ jobs:
       uses: actions/setup-node@v2-beta
       with:
         node-version: '16'
+
+    - name: Install Theme 🎨 
+      run: git submodule add https://github.com/ppoffice/hexo-theme-icarus.git themes/icarus
         
     - name: Install and Build 🔧 
       run: |
