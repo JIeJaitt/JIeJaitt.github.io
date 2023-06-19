@@ -118,9 +118,9 @@ donates:
     -
         type: wechat
         qrcode: 'https://pic.imgdb.cn/item/6112669d5132923bf8a16e7d.jpg'
-share:
-    type: sharethis
-    install_url: ''
+# share:
+#     type: sharethis
+#     install_url: ''
 sidebar:
     left:
         sticky: true
@@ -132,8 +132,8 @@ widgets:
         position: left
         type: profile
         author: JIeJaitt
-        author_title: 有趣的技术实践分享
-        location: Your location
+        author_title: 𝒶 𝓈𝓉𝓊𝒹ℯ𝓃𝓉
+        location: My location in your heart
         avatar: https://pic.imgdb.cn/item/60c054b3844ef46bb2f0d941.jpg
         avatar_rounded: true
         gravatar: 
@@ -164,7 +164,7 @@ widgets:
         position: left
         type: links
         links:
-            Icarus: https://jiejaitt.github.io
+            HEXO Icarus: https://jiejaitt.github.io
             Notion: https://jiejaitt.notion.site
     -
         position: left
@@ -186,11 +186,11 @@ widgets:
         type: subscribe_email
         description: 
         feedburner_id: ''
-    -
-        position: left
-        type: adsense
-        client_id: ''
-        slot_id: ''
+    # -
+    #     position: left
+    #     type: adsense
+    #     client_id: ''
+    #     slot_id: ''
     -
         position: left
         type: followit
