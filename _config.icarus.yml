@@ -84,9 +84,9 @@ search:
     index_pages: true
 comment:
     type: gitalk
-    client_id: '62d7216ae38e14428f95'
-    client_secret: '4ba230f5f04cfa4bcc4b76a1a10e4da56df38fee'
-    repo: 'gitalk'
+    client_id: '232dcb704588214d213c'
+    client_secret: '839c0eaa6aea55a641a678488944a0f8cac45cfe'
+    repo: 'jiejaitt.github.io'
     owner: 'JIeJaitt'
     admin:
         - JIeJaitt
@@ -132,7 +132,7 @@ widgets:
         position: left
         type: profile
         author: JIeJaitt
-        author_title: 𝒶 𝓈𝓉𝓊𝒹ℯ𝓃𝓉
+        author_title: a student
         location: My location in your heart
         avatar: https://pic.imgdb.cn/item/60c054b3844ef46bb2f0d941.jpg
         avatar_rounded: true
