@@ -1,2 +1,2 @@
-*.md linguist-language=Markdown
-*.yml linguist-language=YAML
+*.md linguist-language = markdown
+*.yml linguist-language = yaml
