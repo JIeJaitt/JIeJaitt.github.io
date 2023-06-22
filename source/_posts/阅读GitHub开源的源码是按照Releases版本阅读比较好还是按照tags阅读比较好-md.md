@@ -1,9 +1,9 @@
 ---
 title: 阅读GitHub开源的源码是按照Releases版本阅读比较好还是按照tags阅读比较好.md
+abbrlink: ff24ad46
+toc: true
 date: 2023-06-22 13:45:25
 tags:
-abbrlink: 
-toc: true
 sticky:
 ---
 
