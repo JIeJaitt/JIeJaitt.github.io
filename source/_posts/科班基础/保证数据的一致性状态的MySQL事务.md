@@ -1,5 +1,6 @@
 ---
-title: 保证数据的一致性状态的MySQL事务.md
+title: 保证数据的一致性状态的MySQL事务
+categories: 数据存储
 toc: true
 abbrlink: 568a927b
 date: 2021-06-22 15:36:42

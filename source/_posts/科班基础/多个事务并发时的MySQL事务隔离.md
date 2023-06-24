@@ -1,9 +1,10 @@
 ---
-title: 多个事务并发时的MySQL事务隔离.md
+title: 多个事务并发时的MySQL事务隔离
+categories: 数据存储
 toc: true
+abbrlink: 94942f6a
 date: 2021-06-22 15:56:09
 tags:
-abbrlink:
 sticky:
 ---
 

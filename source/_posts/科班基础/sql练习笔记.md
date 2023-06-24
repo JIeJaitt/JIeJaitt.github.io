@@ -1,6 +1,6 @@
 ---
 title: sql｜Structured Query Language
-categories: 科班基础
+categories: 数据存储
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 572661ae
 toc: true

@@ -176,7 +176,7 @@ widgets:
         position: left
         type: archives
     -
-        position: left
+        position: right
         type: tags
         order_by: name
         amount: 
