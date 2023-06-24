@@ -1,6 +1,5 @@
 ---
 title: TCP和Udp的区别是什么？
-excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 849b1d99
 toc: true
 ---
@@ -8,6 +7,8 @@ toc: true
 一张图看懂TCP与UDP的区别，秒懂！
 
 ![][img-0] 
+
+<!-- more -->
 
 哈哈，上面的图，大家看个乐就好，接下来，我从 7 个方面说说 **TCP 和 UDP 区别。**
 

@@ -1,6 +1,6 @@
 ---
 title: LRU缓存机制
-date: 2013/7/13 20:46:25
+date: 2020-7-13 20:46:25
 categories: 算法竞赛
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 9daba997

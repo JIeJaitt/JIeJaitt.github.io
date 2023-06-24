@@ -66,3 +66,7 @@ include: null
 exclude: null
 ignore: null
 theme: icarus
+# 在本地启动hexo服务器时启用BrowserSync
+deploy:
+  type: browser-sync
+  port: 4000 # 可选，指定服务器端口号

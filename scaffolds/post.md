@@ -1,8 +1,9 @@
 ---
 title: {{ title }}
 date: {{ date }}
-tags:
-abbrlink: 
+categories: {{ categories }}
+tags: {{ tags }}
+abbrlink:  
 toc: true
 sticky:
 ---
