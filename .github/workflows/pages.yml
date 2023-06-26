@@ -23,6 +23,8 @@ jobs:
         
     - name: Install and Build 🔧 
       run: |
+        npm install -g hexo-cli
+        npm install
         hexo generate
 
     - name: Deploy 🚀
