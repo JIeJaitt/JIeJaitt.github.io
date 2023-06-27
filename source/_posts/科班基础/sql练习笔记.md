@@ -2,7 +2,7 @@
 title: sql｜Structured Query Language
 categories: 数据存储
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 572661ae
+abbrlink: sql
 toc: true
 sticky: 4
 ---
