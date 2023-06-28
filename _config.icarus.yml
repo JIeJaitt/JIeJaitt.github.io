@@ -99,18 +99,18 @@ comment:
     enable_hotkey: true             # 可选填
     language: zh-CN                 # 可选填
 donates:
-    -
-        type: afdian
-        url: ''
+    # -
+    #     type: afdian
+    #     url: ''
     -
         type: alipay
         qrcode: 'https://pic.imgdb.cn/item/611266d05132923bf8a1d198.jpg'
-    -
-        type: buymeacoffee
-        url: ''
-    -
-        type: patreon
-        url: ''
+    # -
+    #     type: buymeacoffee
+    #     url: ''
+    # -
+    #     type: patreon
+    #     url: ''
     # -
     #     type: paypal
     #     business: ''
@@ -133,7 +133,7 @@ widgets:
         type: profile
         author: JIeJaitt
         author_title: a student
-        location: My location in your heart
+        location: in your heart
         avatar: https://pic.imgdb.cn/item/60c054b3844ef46bb2f0d941.jpg
         avatar_rounded: true
         gravatar: 
@@ -165,7 +165,8 @@ widgets:
         type: links
         links:
             HEXO Icarus: https://jiejaitt.github.io
-            Notion: https://jiejaitt.notion.site
+            Notion Blog: https://jiejaitt.vercel.app
+            Anime Nav: https://jiejaitt.gitee.io
     -
         position: left
         type: categories
