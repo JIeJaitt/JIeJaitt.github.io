@@ -1,10 +1,10 @@
 ---
 title: 更好的数据显示MySQL视图
 toc: true
-date: 2023-06-28 23:10:48
 categories: 数据存储
+abbrlink: d2116f67
+date: 2023-06-28 23:10:48
 tags:
-abbrlink:
 sticky:
 ---
 

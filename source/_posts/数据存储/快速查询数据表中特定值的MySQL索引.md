@@ -1,10 +1,10 @@
 ---
 title: 快速查询数据表中特定值的MySQL索引
 toc: true
-date: 2023-06-27 18:16:26
 categories: 数据存储
+abbrlink: 4a78f7f
+date: 2023-06-27 18:16:26
 tags:
-abbrlink:
 sticky:
 ---
 
