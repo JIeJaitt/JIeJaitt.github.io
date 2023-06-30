@@ -12,7 +12,7 @@ jobs:
       uses: actions/checkout@master
       with:
         fetch-depth: 0
-        submodules: true
+        # submodules: true
 
     - name: Restore file modification time
       run: git ls-files -z | while read -d '' path; do touch -d "$(git log -1 --format="@%ct" "$path")" "$path"; done
@@ -22,8 +22,8 @@ jobs:
       with:
         node-version: '16'
 
-    - name: Install Theme 🎨 
-      run: git submodule update --remote themes/icarus
+    # - name: Install Theme 🎨 
+    #   run: git submodule update --remote themes/icarus
         
     - name: Install and Build 🔧 
       run: |
