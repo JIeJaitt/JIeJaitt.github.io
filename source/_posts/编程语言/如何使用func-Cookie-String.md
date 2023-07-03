@@ -9,7 +9,11 @@ sticky:
 
 在Go语言中，func (*Cookie) String 方法用于将http.Cookie类型的对象转换为字符串形式。
 
-具体来说，它返回一个字符串，该字符串是按照HTTP cookie格式构造的。例如：
+具体来说，它返回一个字符串，该字符串是按照HTTP cookie格式构造的。
+
+<!-- more -->
+
+例如：
 
 ```go
 package main

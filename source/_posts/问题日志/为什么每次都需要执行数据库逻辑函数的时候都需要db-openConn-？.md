@@ -1,12 +1,14 @@
 ---
-title: '为什么每次都需要执行数据库逻辑函数的时候都需要db := openConn()？'
+title: 为什么每次都需要执行数据库逻辑函数的时候都需要db := openConn()？
 categories: 问题日志
 toc: true
 abbrlink: 512d9d00
 date: 2023-06-24 20:31:10
-tags:
+tags: log
 sticky:
 ---
+
+为什么每次都需要执行数据库逻辑函数的时候都需要db := openConn()？
 
 <!-- more -->
 

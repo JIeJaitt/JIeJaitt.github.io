@@ -13,6 +13,8 @@ sticky:
 
 如何使用Go语言将json文件反序列化到map里。
 
+<!-- more -->
+
 - 首先，你需要导入`encoding/json`包，这个包提供了json的序列化和反序列化的功能。
 - 然后，你需要定义一个map变量，用来存储反序列化后的数据。map的键类型必须是字符串、整数或者实现了`encoding.TextUnmarshaler`接口的类型，map的值类型可以是任意类型。
 - 接着，你需要调用`json.Unmarshal`函数，将json文件的字节切片和map变量的指针作为参数传入。这个函数会解析json文件，并将数据存储到map变量中。

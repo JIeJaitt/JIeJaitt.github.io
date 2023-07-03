@@ -1,5 +1,5 @@
 ---
-title: '如何使用func (r *Router) Handler(method, path string, handler http.Handler)'
+title: 如何使用func (r *Router) Handler(method, path string, handler http.Handler)
 toc: true
 abbrlink: 7de26cae
 date: 2021-06-24 20:42:14
@@ -7,6 +7,9 @@ tags:
 sticky:
 ---
 
+如何使用func (r *Router) Handler(method, path string, handler http.Handler)
+
+<!-- more -->
 ## 如何使用gorilla/mux 的 Handler方法
 
 func (r *Router) Handler(method, path string, handler http.Handler) 是 Router 结构体的一个方法，用于将一个 http.Handler 添加到路由中。

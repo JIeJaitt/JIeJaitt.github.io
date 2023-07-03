@@ -8,6 +8,8 @@ tags:
 sticky:
 ---
 
+包管理工具 Mac Homebrew 使用经验
+
 <!-- more -->
 
 ## Git 拉取Gitee仓库报错：“fatal: unable to access ''": Failed to connect to 127.0.0.1 port 1080: Connection refused”

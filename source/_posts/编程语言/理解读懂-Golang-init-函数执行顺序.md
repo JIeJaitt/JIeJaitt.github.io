@@ -8,10 +8,9 @@ categories:
 sticky:
 ---
 
-
-
-## init 函数简介
 Golang init 函数是一种特殊的函数，主要用于完成程序的初始化工作，如初始化数据库的连接、载入本地配置文件、根据命令行参数初始化全局变量等。
+
+<!-- more -->
 
 ```go
 package main
