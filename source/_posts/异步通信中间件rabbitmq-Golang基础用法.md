@@ -26,6 +26,36 @@ sticky:
 - rabbitmq教程golang【google搜索结果】：https://www.google.com/search?q=rabbitmq%E6%95%99%E7%A8%8Bgolang&sxsrf=AB5stBhXBgA_KBMJbXJ0lCp3PSqY74mBdA%3A1688472767862&ei=vwykZJKdNMTVkPIP6pes6AQ&oq=rabbitmq%E6%95%99%E7%A8%8B&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQARgDMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADMgoIABBHENYEELADSgQIQRgAUABYAGCkEGgBcAF4AIABAIgBAJIBAJgBAMABAcgBCg&sclient=gws-wiz-serp
 - Mac m1通过Docker安装RabbitMq：https://zhuanlan.zhihu.com/p/517674770
 
+## 查看rabbitmq版本
+```bash
+# 运行此命令将输出一些关于RabbitMQ实例的信息，包括版本号
+# 你可以在输出中寻找RabbitMQ version字段来获取RabbitMQ的版本信息
+rabbitmqctl status
+```
+## 如何下载rabbitmq工具
+```bash
+# 对于Linux或Mac系统
+curl -O http://localhost:15672/cli/rabbitmqadmin
+
+# 对于Windows系统
+powershell -command "(New-Object Net.WebClient).DownloadFile('http://localhost:15672/cli/rabbitmqadmin', 'rabbitmqadmin')"
+
+# 对于docker的rabbitmq容器
+
+# 启动RabbitMQ容器。你可以使用以下命令来启动RabbitMQ容器
+docker run -d --name rabbitmq rabbitmq:tag
+# 运行以下命令来进入到RabbitMQ容器的命令行终端
+docker exec -it <container_name> bash
+apt-get update
+apt-get install -y curl
+curl http://localhost:15672/cli/rabbitmqadmin > /usr/local/bin/rabbitmqadmin
+chmod +x /usr/local/bin/rabbitmqadmin
+```
+
+这将在容器中安装 `curl` 工具，并从 RabbitMQ 的 Web 界面下载 `rabbitmqadmin` 工具。然后，将 `rabbitmqadmin` 工具复制到 `/usr/local/bin` 目录，并将其设置为可执行文件。
+
+请注意，上述命令假定您的 RabbitMQ 容器已经在运行，并且您可以使用 `docker exec` 命令进入容器。如果您的容器没有运行，请使用 `docker start` 命令启动它。
+
 ## 启动网页版RabbitMQ管理面板
 
 在M1 Mac上安装了Docker客户端后，你可以通过在终端中输入以下命令来启动RabbitMQ容器：
