@@ -3,13 +3,239 @@ title: 单点登录身份鉴权系统 authset 源码阅读
 toc: true
 abbrlink: 73bf7b1b
 date: 2023-06-24 20:44:54
-tags:
+tags: 
+	- oauth2
+	- authset
 sticky:
 ---
 
 authset 目前尚处开闭源开发中
 
 <!-- more -->
+
+## 第三方登录鉴权
+
+### 微信
+
+微信网站应用登录功能参考文档：https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
+
+授权流程说明：微信OAuth2.0授权登录让微信用户使用微信身份安全登录第三方应用或网站，在微信用户授权登录已接入微信OAuth2.0的第三方应用后，第三方可以获取到用户的接口调用凭证（access_token），通过access_token可以进行微信开放平台授权关系接口调用，从而可实现获取微信用户基本开放信息和帮助用户实现基础开放功能等。 微信OAuth2.0授权登录目前支持authorization_code模式，适用于拥有server端的应用授权。
+
+该模式整体流程为：
+1. 第三方发起微信授权登录请求，微信用户允许授权第三方应用后，微信会拉起应用或重定向到第三方网站，并且带上授权临时票据code参数；
+2. 通过code参数加上AppID和AppSecret等，通过API换取access_token；
+3. 通过access_token进行接口调用，获取用户基本数据资源或帮助用户实现基本操作。
+
+```go
+package oauth
+
+import (
+	"context"
+	"encoding/base64"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/skip2/go-qrcode"
+	"golang.org/x/oauth2"
+)
+
+type WeChat struct {
+	// 一个 *resty.Client 类型的指针，表示一个HTTP客户端实例，可以用来发送请求和接收响应
+	Client *resty.Client
+	// 一个 *oauth2.Config 类型的指针，表示一个OAuth2.0配置实例，包含了授权服务器的地址、客户端ID、客户端密钥、重定向URI、授权范围等信息
+	Config *oauth2.Config
+}
+
+// NewWeChat 函数，用于创建一个WeChat结构体的实例
+// clientId: 是一个string类型的值，表示微信的客户端ID，用于标识应用的身份。
+// clientSecret: 是一个string类型的值，表示微信的客户端密钥，用于验证应用的合法性。
+// redirectUrl: 是一个string类型的值，表示微信的重定向URI，用于接收授权码和跳转回应用。
+func NewWeChat(clientId string, clientSecret string, redirectUrl string) *WeChat {
+	// 创建一个WeChat结构体的实例
+	idp := &WeChat{}
+	// 调用getConfig函数，创建一个 *oauth2.Config 类型的指针，表示一个OAuth2.0配置实例，包含了授权服务器的地址、客户端ID、客户端密钥、重定向URI、授权范围等信息
+	config := idp.getConfig(clientId, clientSecret, redirectUrl)
+	// 将config赋值给idp.Config，也就是将OAuth2.0配置实例赋值给WeChat结构体的Config字段
+	idp.Config = config
+
+	return idp
+}
+
+//func (idp *WeChat) SetHttpClient(client *resty.Client) {
+//	idp.Client = client
+//}
+
+// SetClient 方法，用于设置WeChat结构体的Client字段
+func (idp *WeChat) SetClient(client *resty.Client) {
+	// 将传入的client赋值给idp的Client字段，表示将HTTP客户端实例保存到WeChat结构体中
+	idp.Client = client
+}
+
+func (w *WeChat) getConfig(clientId string, clientSecret string, redirectUrl string) *oauth2.Config {
+	// 创建一个oauth2.Endpoint类型的变量，表示一个OAuth2.0的授权服务器地址
+	endpoint := oauth2.Endpoint{
+		TokenURL: "https://graph.qq.com/oauth2.0/token",
+	}
+
+	config := &oauth2.Config{
+		Scopes:       []string{"snsapi_login"},
+		Endpoint:     endpoint,
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
+		RedirectURL:  redirectUrl,
+	}
+
+	return config
+}
+
+type WechatAccessToken struct {
+	AccessToken  string `json:"access_token"`
+	ExpiresIn    int64  `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"`
+	Openid       string `json:"openid"`
+	Scope        string `json:"scope"`
+	Unionid      string `json:"unionid"`
+}
+
+func (w *WeChat) GetToken(ctx context.Context, code string) (*oauth2.Token, error) {
+	var wechatAccessToken WechatAccessToken
+	resp, err := w.Client.R().SetContext(ctx).
+		SetQueryParams(map[string]string{
+			"grant_type": "authorization_code",
+			"appid":      w.Config.ClientID,
+			"secret":     w.Config.ClientSecret,
+			"code":       code,
+		}).
+		SetResult(&wechatAccessToken).
+		Get(`https://api.weixin.qq.com/sns/oauth2/access_token`)
+	if err != nil {
+		return nil, err
+	}
+
+	if strings.Contains(resp.String(), "errcode") {
+		return nil, fmt.Errorf(resp.String())
+	}
+
+	token := oauth2.Token{
+		AccessToken:  wechatAccessToken.AccessToken,
+		TokenType:    "WeChatAccessToken",
+		RefreshToken: wechatAccessToken.RefreshToken,
+		Expiry:       time.Time{},
+	}
+
+	raw := map[string]string{
+		"Openid": wechatAccessToken.Openid,
+	}
+	token.WithExtra(raw)
+
+	return &token, nil
+}
+
+type WechatUserInfo struct {
+	Openid     string   `json:"openid"`
+	Nickname   string   `json:"nickname"`
+	Sex        int      `json:"sex"`
+	Language   string   `json:"language"`
+	City       string   `json:"city"`
+	Province   string   `json:"province"`
+	Country    string   `json:"country"`
+	Headimgurl string   `json:"headimgurl"`
+	Privilege  []string `json:"privilege"`
+	Unionid    string   `json:"unionid"`
+}
+
+func (w *WeChat) GetUserInfo(ctx context.Context, token *oauth2.Token) (*UserInfo, error) {
+	accessToken := token.AccessToken
+	openid := token.Extra("Openid")
+
+	var wechatUserInfo WechatUserInfo
+	_, err := w.Client.R().SetContext(ctx).
+		SetQueryParams(map[string]string{
+			"access_token": accessToken,
+			"openid":       openid.(string),
+		}).
+		SetResult(&wechatUserInfo).
+		Get("https://api.weixin.qq.com/sns/userinfo")
+	if err != nil {
+		return nil, err
+	}
+
+	id := wechatUserInfo.Unionid
+	if id == "" {
+		id = wechatUserInfo.Openid
+	}
+
+	return &UserInfo{
+		Id:          id,
+		Username:    wechatUserInfo.Nickname,
+		DisplayName: wechatUserInfo.Nickname,
+		AvatarUrl:   wechatUserInfo.Headimgurl,
+	}, nil
+}
+
+func (w *WeChat) GetWechatOfficialAccountAccessToken(ctx context.Context, clientId string, clientSecret string) (string, error) {
+	var data struct {
+		ExpireIn    int    `json:"expires_in"`
+		AccessToken string `json:"access_token"`
+	}
+
+	_, err := w.Client.R().SetContext(ctx).
+		SetQueryParams(map[string]string{
+			"appid":  clientId,
+			"secret": clientSecret,
+		}).
+		SetResult(&data).
+		Get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential`)
+	if err != nil {
+		return "", err
+	}
+
+	return data.AccessToken, nil
+}
+
+func (w *WeChat) GetWechatOfficialAccountQRCode(ctx context.Context, clientId string, clientSecret string) (string, error) {
+	accessToken, err := w.GetWechatOfficialAccountAccessToken(ctx, clientId, clientSecret)
+	if err != nil {
+		return "", err
+	}
+
+	var data struct {
+		Ticket        string `json:"ticket"`
+		ExpireSeconds int    `json:"expire_seconds"`
+		URL           string `json:"url"`
+	}
+
+	_, err = w.Client.R().SetContext(ctx).
+		SetBody(`{
+			"action_name": "QR_LIMIT_STR_SCENE",
+			"action_info": { "scene": { "scene_str": "test" } }
+		}`).
+		SetPathParam("access_token", accessToken).
+		SetBody(&data).
+		Post(`https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token`)
+	if err != nil {
+		return "", err
+	}
+
+	var png []byte
+	png, err = qrcode.Encode(data.URL, qrcode.Medium, 256)
+	if err != nil {
+		return "", err
+	}
+
+	base64Image := base64.StdEncoding.EncodeToString(png)
+	return base64Image, nil
+}
+```
+
+
+### QQ
+
+### Google
+
+文档：https://developers.google.com/identity/protocols/oauth2/web-server?hl=zh-cn#obtainingaccesstokens
 
 ## 搭建项目框架
 
@@ -282,3 +508,5 @@ func (h *Handle) Login(c *gin.Context) {
 ## 参考资料
 - [Github 仓库](https://github.com/opsets/authset)
 - []
+- [使用go-oauth2实现一个极简的Oauth2授权服务](https://juejin.cn/post/7211805251216949305)
+- [Google登录授权详细过程](https://blog.csdn.net/qq_37754001/article/details/115111044)
