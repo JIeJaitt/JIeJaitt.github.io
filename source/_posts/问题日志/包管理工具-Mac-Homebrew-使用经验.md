@@ -12,6 +12,16 @@ brew的配置不可谓不艰难，包管理工具 Mac Homebrew 使用经验。�
 
 <!-- more -->
 
+## brew services - Unknown command: services
+
+使用于m系列的芯片mac
+```bash
+cd /opt/homebrew/Library/Taps/homebrew
+rm -rf /opt/homebrew/Library/Taps/homebrew/homebrew-services
+brew tap homebrew/services
+```
+
+
 ## Git 拉取Gitee仓库报错：“fatal: unable to access ''": Failed to connect to 127.0.0.1 port 1080: Connection refused”
 
 ```bash
