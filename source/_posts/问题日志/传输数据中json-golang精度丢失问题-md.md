@@ -1,5 +1,5 @@
 ---
-title: 传输数据中json-golang精度丢失问题.md
+title: 传输数据中json-golang精度丢失问题
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
 categories: 问题日志
