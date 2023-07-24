@@ -3,7 +3,7 @@ title: gmp
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 328f6061
 toc: true
-sticky: 3
+sticky: 
 ---
 
 第一点gmp每个协程有独立的任务队列，线程池只维护了一个全局的任务队列，高并发情况下同步开销大，这里gmp体现的也是一个本地和全局的思想

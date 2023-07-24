@@ -4,7 +4,7 @@ categories: 数据存储
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: sql
 toc: true
-sticky: 4
+sticky: 
 ---
 
 Character Set：utf8mb3
