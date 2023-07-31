@@ -3,9 +3,9 @@ title: Go语言（Pingo）插件化开发
 categories: 编程语言
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
+abbrlink: e2ff4cb2
 date: 2023-07-30 23:33:14
 tags:
-abbrlink:
 sticky:
 ---
 

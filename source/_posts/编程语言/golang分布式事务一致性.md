@@ -3,9 +3,9 @@ title: golang分布式事务一致性
 categories: 默认分类
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
+abbrlink: d83391dc
 date: 2023-07-30 23:37:49
 tags:
-abbrlink:
 sticky:
 ---
 
