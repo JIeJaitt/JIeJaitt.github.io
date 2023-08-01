@@ -22,3 +22,4 @@ ElasticSearch介绍：Elasticsearch（ES）是一个基于Lucene构建的开源�
 ## 参考资料
 
 - https://www.topgoer.com/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C/go%E6%93%8D%E4%BD%9Celasticsearch/
+- M1芯片 Mac安装Docker、ElasticSearch等：https://juejin.cn/post/7112706563151757342 。值得注意的是es8版本是默认开启ssl的，这点对本地测试不是很好，如果你是docker安装的话，可以在docker的es8镜像里面下载vim然后编es8的辑配置文件关闭ssl选项。
