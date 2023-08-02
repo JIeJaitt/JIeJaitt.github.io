@@ -1,5 +1,5 @@
 ---
-title: 分布式对象存储 -- 原理、架构及Go语言实现
+title: 分布式对象存储 -- 原理、架构及Go语言实现之元数据服务
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
 abbrlink: f6782cca
@@ -58,3 +58,57 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 接下来我们会在一个无限 for 循环中调用 es 包的 SearchAlIVersions 函数并将 name、from 和 size 作为参数传递给该函数。from 从0开始，size 则固定为1000。es.SearchAIIVersions 函数会返回一个元数据的数组，我们遍历该数组，将元数据一一写入HTTP 响应的正文。如果返回的数组长度不等于 size，说明元数据服务中没有更多的数据了，此时我们让函数返回；否则我们就把fom 的值增加1000进行下一个选代。
 
 es 包封装了我们访问元数据服务的各种 API 的操作，本章后续会有详细介绍。
+
+
+
+
+objects 包 put 逻辑相关的函数如下所示：
+
+```go
+// goDistributed-Object-storage/apiServer/objects/put.go
+
+func put(w http.ResponseWriter, r *http.Request) {
+	// 从请求头中获取对象的哈希值
+	hash := utils.GetHashFromHeader(r.Header)
+	if hash == "" {
+		log.Println("missing object hash in digest header")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// 将对象存储到存储系统中
+	statusCode, err := storeObject(r.Body, url.PathEscape(hash))
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(statusCode)
+		return
+	}
+	if statusCode != http.StatusOK {
+		w.WriteHeader(statusCode)
+		return
+	}
+
+	// 从 URL 中获取对象的名称
+	name := strings.Split(r.URL.EscapedPath(), "/")[2]
+	// 从请求头中获取对象的大小
+	size := utils.GetSizeFromHeader(r.Header)
+	// 将对象的元数据添加到 Elasticsearch 中
+	err = es.AddVersion(name, hash, size)
+	// 异步方式将对象的元数据添加到 Elasticsearch 中
+	// go func() {
+	// 	err = es.AddVersion(name, hash, size)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	}
+	// }()
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	// 返回 HTTP 状态码 200 表示成功
+	w.WriteHeader(http.StatusOK)
+}
+```
+
+在第2 章中，我们以`<object_name>`为参数调用 storeObject。而本章我们首先调用`utils.GetHashFromHeader` 从 HTTP 请求头部获取对象的散列值，然后以散列值为参数调用 storeObject。之后我们从 URL 中获取对象的名字并且调用 `utils.GetSizeFromHeader`从 HTTP 请求头部取对象的大小，然后以对象的名字、散列值和大小为参数调用`es.AddVersion` 给该对象添加新版本。
