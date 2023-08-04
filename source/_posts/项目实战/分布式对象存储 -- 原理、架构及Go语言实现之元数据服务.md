@@ -62,7 +62,7 @@ es 包封装了我们访问元数据服务的各种 API 的操作，本章后
 
 
 
-objects 包 put 逻辑相关的函数如下所示：
+### objects 包 put 逻辑相关的函数如下所示
 
 ```go
 // goDistributed-Object-storage/apiServer/objects/put.go
@@ -112,3 +112,29 @@ func put(w http.ResponseWriter, r *http.Request) {
 ```
 
 在第2 章中，我们以`<object_name>`为参数调用 storeObject。而本章我们首先调用`utils.GetHashFromHeader` 从 HTTP 请求头部获取对象的散列值，然后以散列值为参数调用 storeObject。之后我们从 URL 中获取对象的名字并且调用 `utils.GetSizeFromHeader`从 HTTP 请求头部取对象的大小，然后以对象的名字、散列值和大小为参数调用`es.AddVersion` 给该对象添加新版本。
+
+```go
+func GetHashFromHeader(h http.Header) string {
+	digest := h.Get("digest")
+	if len(digest) < 9 {
+		return ""
+	}
+	if digest[:8] != "SHA-256=" {
+		return ""
+	}
+	return digest[8:]
+}
+```
+
+```go
+func GetSizeFromHeader(h http.Header) int64 {
+	size, _ := strconv.ParseInt(h.Get("content-length"), 0, 64)
+	return size
+}
+```
+
+`GetHashFromHeader` 和 `GetSizeFromHeader` 是 utils 包提供的两个函数。
+
+`GetHashFromHeader` 函数首先调用 `h.Get` 获取 “digest” 头部。`r` 的类型是一个指向 `http.Request` 的指针。它的 Header 成员类型则是一个http.Header，用于记录 HTTP 的头部，其Get 方法用于根据提供的参数获取相对应的头部的值。在这里，我们获取的就是 HTTP 请求中 digest 头部的值。我们检查该值的形式是否为“SHA-256=<hash>”，如果不是以“SHA-256=”开头我们返回空字符串，否则返回其后的部分。
+
+同样， `GetSizeFromHeader` 也是调用 `h.Get` 获取“content-length”头部，并调用strconv.Parselnt 将字符串转化为 int64 输出。strconv.ParseInt 和例3-6中 strconv.Atoi这两个函数的作用都是将一个字符串转换成一个数字。它们的区别在于 Parselnt 返回的类型是 int64 而 Atoi返回的类型是 int，且 ParseInt 的功能更加复杂，它额外的输入参数用于指定转换时的进制和结果的比特长度。比如说 ParseInt 可以将一个字符串“OxFF”以十六进制的方式转换为整数255，而 Atoi 则只能将字符串“255”转换为整数255。
