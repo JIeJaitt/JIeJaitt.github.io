@@ -1,5 +1,5 @@
 ---
-title: 分布式对象存储 -- 原理、架构及Go语言实现之元数据服务
+title: 分布式对象存储原理架构Go实现之元数据服务
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
 abbrlink: f6782cca
