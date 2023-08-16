@@ -1,6 +1,6 @@
 ---
 title: golang分布式事务一致性
-categories: 默认分类
+categories: 编程语言
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
 abbrlink: d83391dc

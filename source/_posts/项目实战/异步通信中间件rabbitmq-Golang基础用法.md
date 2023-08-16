@@ -4,7 +4,7 @@ excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
 abbrlink: e5381a9c
 date: 2023-07-04 22:09:10
-categories:
+categories: 项目实战
 tags: rabbitmq
 sticky:
 ---
