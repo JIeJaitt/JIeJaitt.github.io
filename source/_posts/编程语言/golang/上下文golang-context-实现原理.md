@@ -150,7 +150,8 @@ func (deadlineExceededError) Error() string   { return "context deadline exceede
 func (deadlineExceededError) Timeout() bool   { return true }
 func (deadlineExceededError) Temporary() bool { return true }
 ```
-
+- Canceled：context 被 cancel 时会报此错误；
+- DeadlineExceeded：context 超时时会报此错误.
 
 
 
@@ -162,4 +163,5 @@ func (deadlineExceededError) Temporary() bool { return true }
 ## 参考资料
 
 - https://pkg.go.dev/context#pkg-variables
+- https://cs.opensource.google/go/go/+/refs/tags/go1.21.0:src/context/context.go
 - Golang context 实现原理：https://mp.weixin.qq.com/s/AavRL-xezwsiQLQ1OpLKmA
