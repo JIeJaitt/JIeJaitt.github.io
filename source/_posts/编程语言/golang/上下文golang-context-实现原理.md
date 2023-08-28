@@ -13,7 +13,7 @@ sticky:
 
 ## 前言
 
-context 是 golang 中的经典工具，主要在异步场景中用于实现并发协调以及对 goroutine 的生命周期控制. 除此之外，context 还兼有一定的数据存储能力. 本着知其然知其所以然的精神，本文和大家一起深入 context 源码一探究竟，较为细节地对其实现原理进行梳理.
+context 是 golang 中的经典工具，主要在异步场景中用于实现并发协调以及对 goroutine 的生命周期控制. 除此之外，context 还兼有一定的数据存储能力。 本着知其然知其所以然的精神，本文和大家一起深入 context 源码一探究竟，较为细节地对其实现原理进行梳理.
 
 ## 核心数据结构
 
@@ -165,3 +165,8 @@ func (deadlineExceededError) Temporary() bool { return true }
 - https://pkg.go.dev/context#pkg-variables
 - https://cs.opensource.google/go/go/+/refs/tags/go1.21.0:src/context/context.go
 - Golang context 实现原理：https://mp.weixin.qq.com/s/AavRL-xezwsiQLQ1OpLKmA
+
+## 待参考资料
+
+- 深度解密Go语言之context：https://zhuanlan.zhihu.com/p/68792989?utm_id=0
+	> Go 语言的 context 包短小精悍，非常适合新手学习。不论是它的源码还是实际使用，都值得投入时间去学习。

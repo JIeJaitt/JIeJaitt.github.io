@@ -564,16 +564,9 @@ RemoteAddr: 18.235.124.214:443
 
 大家如果发现好玩、好用的 Go 语言库，欢迎到 Go 每日一库 GitHub 上提交 issue😄
 
-参考
---
+## 参考
 
-1.  Go 每日一库 GitHub：[https://github.com/darjun/go-daily-lib](https://link.segmentfault.com/?enc=giK9kkQ351hKA8uhq3F6uA%3D%3D.chiJlG%2FUbZKb57MOjLH7jqXp%2F%2Fy5iXbHBryjixyx1JQ4oEeLBPkYmiudA4SQGLb6)
-2.  resty GitHub：[github.com/go-resty/resty](https://link.segmentfault.com/?enc=A4TLXDWv%2BzwLsM6sbT%2BqfQ%3D%3D.bPdFrDb5xZR6PuierngFwfCyjtEzDQ4BuUlkKcMqHNhi7RZ%2B95XshplJPaTqAoLn)
-3.  GitHub API：[https://docs.github.com/en/rest/overview/resources-in-the-rest-api](https://link.segmentfault.com/?enc=zoZboJGfn3sSq%2FU0wexLmw%3D%3D.drEERK8u8%2FjrUkCyIhqH3brRyx1qBpgZs00deYvbssTjU30lWOQVBOuBWkR8XTyB8MJCdRzQsNE%2FjRFkjQ6zKOprzlmKcl0ob0x2Nd%2Ffy4E%3D)
-
-我
--
-
-我的博客：[https://darjun.github.io](https://link.segmentfault.com/?enc=Fw%2FLI9F8w0WOm%2FkBFndIkg%3D%3D.%2F%2BpuAeOY6W8%2BxuAy5Z2SUgG1%2BWPVU7gEJyDX%2Fg%2BLrf0%3D)
-
-欢迎关注我的微信公众号【GoUpUp】，共同学习，一起进步~
+1. Go 每日一库 GitHub：https://github.com/darjun/go-daily-lib
+2. resty GitHub：https://github.com/go-resty/resty
+3. Go 每日一库之 resty：https://segmentfault.com/a/1190000040247099
+4. go package resty：https://pkg.go.dev/github.com/go-resty/resty/v2#example-package-Get
