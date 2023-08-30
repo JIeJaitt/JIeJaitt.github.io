@@ -3,7 +3,7 @@ title: 理解读懂 Golang init 函数执行顺序
 toc: true
 tags: golang
 abbrlink: 74a5ec07
-date: 2023-06-28 23:53:41
+date: 2021-06-28 23:53:41
 categories:
 sticky:
 ---

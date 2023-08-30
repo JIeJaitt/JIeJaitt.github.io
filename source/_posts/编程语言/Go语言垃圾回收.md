@@ -1,6 +1,6 @@
 ---
 title: Go语言垃圾回收
-categories: 项目实战
+categories: 编程语言
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: aa9b68a9
 toc: true

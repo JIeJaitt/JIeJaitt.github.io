@@ -2,7 +2,7 @@
 title: Go语言竞态检测——检测代码在并发环境下可能出现的问题
 toc: true
 abbrlink: e06f9db7
-date: 2023-08-29 23:04:10
+date: 2021-08-29 23:04:10
 categories: 编程语言
 tags: 
     - golang
@@ -18,29 +18,37 @@ Go 语言程序可以使用通道进行多个 goroutine 间的数据交换，但
 当多线程并发运行的程序竞争访问和修改同一块资源时，会发生竞态问题。 
 
 下面的代码中有一个 ID 生成器，每次调用生成器将会生成一个不会重复的顺序序号，使用 10 个并发生成序号，观察 10 个并发后的结果。  
+
 竞态检测的具体代码：
 
 ```go
 package main
+
 import (
     "fmt"
     "sync/atomic"
 )
+
 var (
     // 序列号
     seq int64
 )
+
 // 序列号生成器
 func GenID() int64 {
-// 尝试原子的增加序列号
+
+    // 尝试原子的增加序列号
     atomic.AddInt64(&seq, 1)
     return seq
 }
+
 func main() {
+
     //生成10个并发序列号
     for i := 0; i < 10; i++ {
             go GenID()
     }
+
     fmt.Println(GenID())
 }
 ```
