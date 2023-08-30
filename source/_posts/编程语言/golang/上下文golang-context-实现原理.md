@@ -1,6 +1,5 @@
 ---
 title: 上下文golang context 实现原理
-excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
 abbrlink: golang-context
 date: 2021-08-24 23:13:54
@@ -11,9 +10,9 @@ tags:
 sticky:
 ---
 
-## 前言
-
 context 是 golang 中的经典工具，主要在异步场景中用于实现并发协调以及对 goroutine 的生命周期控制. 除此之外，context 还兼有一定的数据存储能力。 本着知其然知其所以然的精神，本文和大家一起深入 context 源码一探究竟，较为细节地对其实现原理进行梳理.
+
+<!-- more -->
 
 ## 核心数据结构
 
