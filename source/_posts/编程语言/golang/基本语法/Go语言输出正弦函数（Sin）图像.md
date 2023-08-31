@@ -1,12 +1,11 @@
 ---
 title: Go语言输出正弦函数（Sin）图像
-excerpt: 本博客暂不显示摘要，请大家谅解
-toc: true
-abbrlink: e4e80b9d
 date: 2021-08-31 21:15:56
 categories: 编程语言
 tags: 
     - golang
+abbrlink: e4e80b9d
+toc: true
 sticky:
 ---
 
