@@ -2,7 +2,7 @@
 title: LRU缓存机制
 date: 2020-7-13 20:46:25
 categories: 算法竞赛
-tags: LRU
+tags: lru
 abbrlink: 9daba997
 toc: true
 ---
