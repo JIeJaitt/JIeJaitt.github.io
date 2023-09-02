@@ -22,3 +22,6 @@ Releases版本指的是在GitHub仓库中发布的具体版本，通过在Releas
 
 总而言之，按照Releases版本阅读对于了解软件的发布历史和使用稳定的代码较为方便。而按照Tags阅读则更适合特定版本的代码以及版本比较的需求。
 
+## github
+
+在github的`Settings/Security/Secrets and variables`设置中可以设置某些不方便公开在仓库内的变量值，类似vercel的环境变量，需要把这些变量设置到secrets里，然后通过`$`引用。另外正确的语法是`${{ secrets.GITHUB_TOKEN }}`，不需要在末尾添加额外的$符号。`${{ secrets.GITHUB_TOKEN }}`是 GitHub Actions 中引用 GitHub 仓库密钥（GitHub Token）的正确方式。在您的工作流配置中。
