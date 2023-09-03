@@ -1,5 +1,5 @@
 ---
-abbrlink: JIeJaitt
+abbrlink: ''
 categories:
 - - 编程语言
 date: '2023-09-03T22:04:50.659451+08:00'
@@ -9,7 +9,7 @@ tags:
 - golang
 title: Go语言函数中的参数传递效果测试
 toc: true
-updated: 2023-9-3T22:5:42.864+8:0
+updated: 2023-9-3T22:14:5.751+8:0
 ---
 Go语言中传入与返回参数在调用和返回时都使用值传递，这里需要注意的是指针、切片和 map 等引用型对象在参数传递中不会发生复制，而是将指针进行复制，类似于创建一次引用。
 
@@ -156,7 +156,6 @@ fmt.Printf("out value: %+v\n", out)
 // 输出结构的指针地址
 fmt.Printf("out ptr: %p\n", &out)
 ```
-
 
 代码说明如下：
 
