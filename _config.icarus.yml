@@ -2,7 +2,7 @@ version: 5.1.0
 variant: default
 logo: /img/logo.svg
 head:
-    favicon: /img/favicon.svg
+    favicon: /img/favicon.png
     manifest:
         name: 
         short_name: 
