@@ -82,4 +82,5 @@ func main() {
 
 ## 参考资料
 
-[GORM文档](https://gorm.io/zh_CN/)
+- [GORM中文文档](https://gorm.io/zh_CN/)
+- https://www.topgoer.com/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C/gorm/gorm%E4%BB%8B%E7%BB%8D.html?q=
