@@ -1,9 +1,12 @@
 ---
 title: rand 随机数生成方法研究草稿
+date: 2021-09-16 01:24:24
 categories: 项目实战
+tags: golang
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 57e7820e
 toc: true
+sticky:
 ---
 
 package rand 实现了用于加解密的更安全的随机数生成器。

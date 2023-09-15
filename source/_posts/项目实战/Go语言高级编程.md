@@ -1,9 +1,12 @@
 ---
 title: Go语言高级编程(Advanced Go Programming)
+data: 2021-06-02 10:00:00
 categories: 项目实战
+tags:
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 43af5e27
 toc: true
+sticky:
 ---
 
 - [Go语言高级编程(Advanced Go Programming)](https://chai2010.cn/advanced-go-programming-book/index.html#go%E8%AF%AD%E8%A8%80%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8Badvanced-go-programming)

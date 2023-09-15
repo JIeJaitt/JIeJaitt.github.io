@@ -1,9 +1,13 @@
 ---
 title: Go 语言数据库操作
+data: 2021-06-29 22:00:01
 categories: 项目实战
+tags:
+- Go
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 2dba0c93
 toc: true
+sticky:
 ---
 
 # **数据库连接建立和增删改查基本实现**

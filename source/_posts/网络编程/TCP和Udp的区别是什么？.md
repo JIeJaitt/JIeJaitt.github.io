@@ -1,7 +1,22 @@
 ---
 title: TCP和Udp的区别是什么？
+data: 2021-06-01 10:00:01
+categories: 
+- 科班基础
+tags:
+- tcp
+- udp
 abbrlink: 849b1d99
 toc: true
+sticky:
+---
+
+categories: 项目实战
+tags: httprouter
+excerpt: 本博客暂不显示摘要，请大家谅解
+abbrlink: 2f2e68b6
+toc: true
+sticky:
 ---
 
 一张图看懂TCP与UDP的区别，秒懂！

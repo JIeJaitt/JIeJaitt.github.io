@@ -1,6 +1,10 @@
 ---
 title: gmp
+data: 2021-06-03 10:00:00
 excerpt: 本博客暂不显示摘要，请大家谅解
+tags:
+- Go
+- GMP
 abbrlink: 328f6061
 toc: true
 sticky: 

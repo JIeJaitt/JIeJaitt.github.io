@@ -1,9 +1,13 @@
 ---
 title: Cobra
+data: 2021-06-03 10:00:00
 categories: 项目实战
+tags: 
+- Go
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: d6db6725
 toc: true
+sticky:
 ---
 ## 解释一下在main函数中调用cmd.ShioriCmd().Execute()函数来
 在这个程序中，cmd.ShioriCmd()返回一个cobra.Command对象，该对象包含了所有的命令行工具命令。

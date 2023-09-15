@@ -1,6 +1,9 @@
 ---
 title: sql｜Structured Query Language
+data: 2022-06-03 10:00:00
 categories: 数据存储
+tags:
+- SQL
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: sql
 toc: true
