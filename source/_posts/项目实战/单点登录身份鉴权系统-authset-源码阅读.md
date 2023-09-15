@@ -504,6 +504,13 @@ func (h *Handle) Login(c *gin.Context) {
 }
 ```
 
+## twiter
+
+- Oauth 第三方授权登陆 facebook google twitter instagram：https://blog.csdn.net/amy260231120/article/details/114385026
+- https://developer.twitter.com/zh-cn/docs/authentication/oauth-2-0/bearer-tokens
+- https://developer.twitter.com/en/docs/authentication/oauth-2-0
+
+
 
 ## 参考资料
 - [Github 仓库](https://github.com/opsets/authset)
