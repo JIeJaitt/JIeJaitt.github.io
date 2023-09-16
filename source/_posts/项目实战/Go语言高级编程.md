@@ -1,6 +1,6 @@
 ---
 title: Go语言高级编程(Advanced Go Programming)
-data: 2021-06-02 10:00:00
+date: 2021-06-02 10:00:00
 categories: 项目实战
 tags:
 excerpt: 本博客暂不显示摘要，请大家谅解

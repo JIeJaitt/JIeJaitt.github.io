@@ -1,6 +1,6 @@
 ---
 title: sql｜Structured Query Language
-data: 2022-06-03 10:00:00
+date: 2022-06-03 10:00:00
 categories: 数据存储
 tags:
 - SQL

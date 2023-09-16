@@ -1,6 +1,6 @@
 ---
 title: Go 开发并发的Web应用
-data: 2021-06-29 16:00:03
+date: 2021-06-29 16:00:03
 categories: 项目实战
 tags:
 - Go

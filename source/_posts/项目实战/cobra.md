@@ -1,6 +1,6 @@
 ---
 title: Cobra
-data: 2021-06-03 10:00:00
+date: 2021-06-03 10:00:00
 categories: 项目实战
 tags: 
 - Go

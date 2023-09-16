@@ -1,6 +1,6 @@
 ---
 title: Go 语言数据库操作
-data: 2021-06-29 22:00:01
+date: 2021-06-29 22:00:01
 categories: 项目实战
 tags:
 - Go
