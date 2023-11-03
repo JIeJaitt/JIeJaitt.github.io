@@ -70,3 +70,8 @@ theme: icarus
 deploy:
   type: browser-sync
   port: 4000 # 可选，指定服务器端口号
+feed:
+  type: rss2
+  path: rss2.xml
+  limit: false
+  hub:
