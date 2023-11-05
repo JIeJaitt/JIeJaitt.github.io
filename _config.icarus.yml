@@ -153,7 +153,7 @@ widgets:
                 url: https://dribbble.com/jiejaitt
             RSS:
                 icon: fas fa-rss
-                url: /
+                url: https://jiejaitt.github.io/rss2.xml
     -
         position: right
         type: toc
