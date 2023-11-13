@@ -1,11 +1,11 @@
 ---
 title: defer退出顺序
-date: 2023-11-03T10:53:46+08:00
-categories: 
-tags: 
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
+abbrlink: 134dad43
 toc: true
+date: 2023-11-03 02:53:46
+categories:
+tags:
 sticky:
 ---
 
