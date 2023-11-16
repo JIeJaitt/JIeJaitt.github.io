@@ -113,25 +113,39 @@ func setApiGroupRoutes(
 }
 ```
 
-定义了一个名为 `CheckPointHandler` 的函数，它是用于处理断点续传的 HTTP GET 请求：
+这段 Go 语言代码定义了用于配置和初始化一个 web 服务器路由的逻辑，使用了 `gin` 框架和一些中间件。我们可以逐步分析这两个函数：
 
-1. **函数签名和注释**:
-    - `CheckPointHandler(c *gin.Context)`：这是一个处理 HTTP 请求的函数，接受一个 `gin.Context` 类型的参数 `c`。`gin` 是一个流行的 Go 语言 web 框架。
-    - 注释中的标签（如 `@Summary`、`@Description`、`@Tags` 等）用于生成 API 文档，描述了这个接口的用途（断点续传）、接收的参数（`uid`）和返回的响应类型。
-2. **解析请求参数**:
-    - 从请求中提取名为 `uid` 的查询参数。`uid` 代表文件的唯一标识符。
-    - 使用 `strconv.ParseInt` 函数将 `uid` 从字符串转换为整数。如果转换失败，则返回参数错误信息。
-3. **数据库操作**:
-    - 创建 `LangGoDB` 的实例并使用默认配置连接数据库。
-    - 调用 `GetPartByUid` 函数从 `MetaDataInfoRepo` 仓库中获取与 `uid` 相关的分片信息。如果查询失败，记录错误并返回内部错误信息。
-    - 如果没有找到相关的分片数据，返回错误信息。
-4. **处理断点续传数据**:
-    - 调用 `GetPartNumByUid` 函数从 `MultiPartInfoRepo` 仓库中获取分片编号信息。
-    - 将获取到的分片编号添加到 `partNum` 切片中。
-5. **响应**:
-    - 最后，使用 `web.Success` 函数将包含分片编号的 `partNum` 切片作为响应返回给客户端。
+### `NewRouter` 函数
 
-总的来说，这个函数处理来自客户端的断点续传请求，通过 `uid` 查询分片信息，如果找到相关信息，则返回分片编号，否则返回相应的错误信息。
+1. **函数签名**:
+    - `NewRouter(conf *config.Configuration, lgLogger *bootstrap.LangGoLogger) *gin.Engine`: 这个函数接受配置 (`config.Configuration`) 和日志记录器 (`bootstrap.LangGoLogger`) 作为参数，并返回一个 `gin.Engine` 实例，它代表了整个 web 应用的路由。
+2. **环境配置**:
+    - 根据配置中的环境变量 (`conf.App.Env`) 判断是否是生产环境。如果是，则设置 `gin` 的模式为 `ReleaseMode`。
+3. **创建路由实例**:
+    - 使用 `gin.New()` 创建一个新的 `gin.Engine` 实例。
+4. **中间件配置**:
+    - 创建各种中间件，包括跨域处理 (`corsM`)、追踪日志 (`traceL`)、请求日志 (`requestL`) 和异常恢复 (`panicRecover`)。
+    - 将这些中间件添加到路由中，以便于所有请求都经过这些处理。
+5. **静态资源**:
+    - 配置静态资源的路由，例如图片。
+6. **API 文档**:
+    - 使用 `swaggo/gin-swagger` 生成 Swagger API 文档，并设置访问路径。
+7. **动态资源路由**:
+    - 调用 `setApiGroupRoutes` 函数设置 API 路由。
+
+### `setApiGroupRoutes` 函数
+
+1. **函数签名**:
+    - `setApiGroupRoutes(router *gin.Engine) *gin.RouterGroup`: 这个函数接收一个 `gin.Engine` 实例并返回一个 `gin.RouterGroup` 实例。
+2. **路由分组**:
+    - 创建一个路由分组 `/api/storage/v0`。
+3. **API 路由**:
+    - 为不同的功能（如健康检查、断点续传、文件上传和下载等）设置路由。每个路由指向 `v0` 包中相应的处理函数。
+4. **返回路由组**:
+    - 最后，返回创建的路由组。
+
+总体来说，这段代码是用来设置一个基于 `gin` 框架的 web 服务器的路由，包括静态资源、API 文档和各种 API 端点。它利用中间件处理跨域请求、日志记录、请求追踪和异常恢复等功能。
+
 
 ```go
 // osproxy/api/v0/checkpoint.go
@@ -187,6 +201,26 @@ func CheckPointHandler(c *gin.Context) {
 	return
 }
 ```
+
+定义了一个名为 `CheckPointHandler` 的函数，它是用于处理断点续传的 HTTP GET 请求：
+
+1. **函数签名和注释**:
+    - `CheckPointHandler(c *gin.Context)`：这是一个处理 HTTP 请求的函数，接受一个 `gin.Context` 类型的参数 `c`。`gin` 是一个流行的 Go 语言 web 框架。
+    - 注释中的标签（如 `@Summary`、`@Description`、`@Tags` 等）用于生成 API 文档，描述了这个接口的用途（断点续传）、接收的参数（`uid`）和返回的响应类型。
+2. **解析请求参数**:
+    - 从请求中提取名为 `uid` 的查询参数。`uid` 代表文件的唯一标识符。
+    - 使用 `strconv.ParseInt` 函数将 `uid` 从字符串转换为整数。如果转换失败，则返回参数错误信息。
+3. **数据库操作**:
+    - 创建 `LangGoDB` 的实例并使用默认配置连接数据库。
+    - 调用 `GetPartByUid` 函数从 `MetaDataInfoRepo` 仓库中获取与 `uid` 相关的分片信息。如果查询失败，记录错误并返回内部错误信息。
+    - 如果没有找到相关的分片数据，返回错误信息。
+4. **处理断点续传数据**:
+    - 调用 `GetPartNumByUid` 函数从 `MultiPartInfoRepo` 仓库中获取分片编号信息。
+    - 将获取到的分片编号添加到 `partNum` 切片中。
+5. **响应**:
+    - 最后，使用 `web.Success` 函数将包含分片编号的 `partNum` 切片作为响应返回给客户端。
+
+总的来说，这个函数处理来自客户端的断点续传请求，通过 `uid` 查询分片信息，如果找到相关信息，则返回分片编号，否则返回相应的错误信息。
 
 ```go
 // osproxy/api/v0/download.go
@@ -560,6 +594,45 @@ func DownloadHandler(c *gin.Context) {
 }
 ```
 
+这段 Go 语言代码定义了一个名为 `DownloadHandler` 的函数，用于处理下载请求。该函数是一个典型的 HTTP 服务端处理逻辑，使用 `gin` web 框架，并涉及到多个组件，如 Redis 缓存、数据库操作、条件判断、文件读取、并发处理等。让我们逐步分析它：
+
+### 函数签名和注释
+
+- `DownloadHandler(c *gin.Context)`：这是一个处理 HTTP 请求的函数，接受一个 `gin.Context` 类型的参数 `c`。函数注释提供了 Swagger API 文档的相关信息，如参数和响应类型。
+
+### 参数解析和校验
+
+- 从请求中获取多个查询参数（如 `uid`, `name`, `online`, `date`, `expire`, `bucket`, `object`, `signature`）。
+- 进行参数校验，包括检查 `online` 参数的有效性和签名校验。
+
+### Redis 缓存和数据库操作
+
+- 尝试从 Redis 中获取元数据信息。如果不存在，则从数据库中查询并存入 Redis。
+- 对于分片数据，也进行类似的 Redis 缓存和数据库查询操作。
+
+### 文件下载处理逻辑
+
+- 根据元数据信息和请求的范围（通过 HTTP `Range` 头部指定）设置响应头。
+- 通过不同条件判断决定下载资源的来源，可以是本地存储、对象存储或者通过集群其他服务代理下载。
+
+### 本地和代理下载逻辑
+
+- 如果数据在本地存储或对象存储中，使用 Go 的并发特性（goroutines）和通道（channels）来读取数据并以流式传输的方式发送到客户端。
+- 如果数据需要通过代理下载，首先发现服务集群中可用的节点，然后从选定的节点下载数据，同样以流式传输的方式发送到客户端。
+
+### 并发和流式响应
+
+- 对于分片数据，使用多个 goroutine 并发读取各个分片，再通过主通道将数据发送到客户端。
+- 使用 `c.Stream` 以流式方式将数据写入 HTTP 响应。这种方式适合大文件传输，因为它可以减少内存占用并提高效率。
+
+### 错误处理和日志记录
+
+- 在多个地方进行错误检查，并在发生错误时记录日志并发送适当的 HTTP 响应。
+
+### 总结
+
+这个函数是一个复杂的下载处理逻辑，涉及到许多典型的 web 开发和并发处理场景。它充分利用了 Go 的并发特性，以及中间件和框架提供的功能，以实现高效且可靠的文件下载服务。
+
 ```go
 // api/v0/healthcheck.go
 
@@ -623,6 +696,90 @@ func HealthCheckHandler(c *gin.Context) {
 	return
 }
 ```
+
+这段代码定义了两个 HTTP 请求处理函数，`PingHandler` 和 `HealthCheckHandler`，使用 Go 语言编写，并用到了 `gin` 框架。这些函数位于名为 `v0` 的 Go 包中。让我们逐步解释每个部分：
+
+### 导入的包
+- `fmt`, `gin`, `web`, `bootstrap`, `plugins`: 这些包提供了用于构建 web 应用的各种功能，包括 HTTP 路由（`gin`），日志（`bootstrap` 和 `plugins`），和 web 响应处理（`web`）。
+
+### 全局变量
+- `lgLogger *bootstrap.LangGoLogger`: 定义了一个全局的日志记录器变量。它可能在应用的其他部分被初始化。
+
+### `PingHandler` 函数
+1. **函数签名和注释**:
+   - `PingHandler(c *gin.Context)`: 这是一个处理 HTTP GET 请求的函数，接受一个 `gin.Context` 类型的参数 `c`。注释提供了 Swagger API 文档的相关信息。
+
+2. **数据库连接**:
+   - 在函数内部创建了一个新的数据库连接（`lgDB`），而不是使用全局变量。这是因为提前创建全局变量可能会导致 `lgDB` 为 nil（因为变量初始化在 `main` 函数之前）。
+
+3. **数据库操作测试**:
+   - 执行一个简单的 SQL 查询（`select now();`）来测试数据库连接。
+
+4. **日志记录**:
+   - 使用 `lgLogger` 记录一条信息日志。
+
+5. **Redis 操作测试**:
+   - 使用 `lgRedis`（Redis 客户端）设置和获取一个键值对来测试 Redis 连接。
+   - 如果操作中有错误，会触发 panic。
+
+6. **响应**:
+   - 使用 `web.Success` 函数向客户端发送成功响应。
+
+### `HealthCheckHandler` 函数
+1. **函数签名和注释**:
+   - `HealthCheckHandler(c *gin.Context)`: 同样是一个处理 HTTP GET 请求的函数，用于健康检查。
+   - 注释提供了 Swagger API 文档的相关信息。
+
+2. **响应**:
+   - 向客户端发送一个表示服务健康的成功响应。
+
+### 总结
+这段代码是一个 web 服务的一部分，主要用于测试和健康检查目的。它展示了如何在 Go 语言中使用 `gin` 框架创建 HTTP 请求处理函数、如何使用日志记录、以及如何与数据库和 Redis 进行交互。这些是构建现代 web 应用的常见模式。
+
+
+
+
+这段 Go 语言代码包含两个 HTTP 处理函数，`PingHandler` 和 `HealthCheckHandler`，都是定义在名为 `v0` 的包中。这些函数使用了 `gin` 框架来处理 web 请求，并且与数据库和 Redis 进行交互。让我们逐步解析这两个函数：
+
+### `PingHandler` 函数
+1. **注释**:
+   - 使用 Swagger 注释来描述 API，包括接口概要、描述、标签、接收和生产的内容类型、成功响应等。
+
+2. **函数签名**:
+   - `PingHandler(c *gin.Context)`: 接收一个 `gin.Context` 对象，这是 `gin` 框架中处理请求和响应的核心对象。
+
+3. **数据库和 Redis 实例创建**:
+   - 创建 `LangGoDB` 实例并使用默认配置（`Use("default")`）来连接数据库。
+   - 创建 `LangGoRedis` 实例来连接 Redis。
+
+4. **数据库操作**:
+   - 执行一个简单的 SQL 查询（`select now();`），用于测试数据库连接。
+
+5. **Redis 操作**:
+   - 使用 Redis 实例设置一个键值对（`key`, `value`），并读取这个键的值来测试 Redis 连接。
+   - 错误处理：如果 Redis 操作出错，使用 `panic` 引发异常。
+
+6. **记录日志**:
+   - 使用 `lgLogger` 记录操作信息。
+
+7. **响应**:
+   - 使用 `web.Success` 发送成功响应。
+
+### `HealthCheckHandler` 函数
+1. **注释**:
+   - 同样使用 Swagger 注释描述 API。
+
+2. **函数签名**:
+   - `HealthCheckHandler(c *gin.Context)`: 同样接收一个 `gin.Context` 对象。
+
+3. **响应**:
+   - 发送简单的健康检查响应。
+
+### 总结
+- 这两个函数是 web 服务的一部分，用于处理 HTTP GET 请求。`PingHandler` 用于测试数据库和 Redis 连接是否正常，`HealthCheckHandler` 用于健康检查。
+- `PingHandler` 中，数据库和 Redis 的实例是在函数内创建的，以确保它们在需要时可用（而不是在程序启动时初始化）。
+- 这两个函数都遵循 `gin` 框架的标准模式来处理请求和发送响应。
+
 
 ```go
 // osproxy/api/v0/link.go
@@ -812,6 +969,57 @@ func DownloadLinkHandler(c *gin.Context) {
 }
 ```
 
+这段代码定义了两个函数，`UploadLinkHandler` 和 `DownloadLinkHandler`，都属于 `v0` 包。这些函数用于处理文件上传和下载链接的生成，使用了 `gin` 框架来处理 HTTP 请求。我们将一步步解析这两个函数：
+
+### `UploadLinkHandler` 函数
+
+1. **参数解析**:
+    - 使用 `c.ShouldBindJSON` 解析请求体到 `models.GenUpload` 结构体。
+    - 检查路径数量是否超过限制。
+2. **路径去重和校验**:
+    - 去重并检查每个文件路径的有效性。
+3. **并发生成上传链接**:
+    - 使用 `sync.WaitGroup` 和 Go 协程并发地为每个文件生成上传链接。
+    - 通过两个通道 `respChan` 和 `metaDataInfoChan` 收集生成的上传链接和元数据信息。
+4. **链接和元数据的收集**:
+    - 从通道中收集生成的链接和元数据信息。
+5. **数据一致性检查**:
+    - 检查生成的链接数量与输入文件数量是否一致，不一致时清理本地目录并返回错误。
+6. **批量存储元数据到数据库**:
+    - 使用数据库批量操作存储元数据。
+7. **返回生成的上传链接**:
+    - 使用 `web.Success` 返回生成的链接。
+
+### `DownloadLinkHandler` 函数
+
+1. **参数解析**:
+    - 解析请求体到 `models.GenDownload` 结构体。
+2. **参数校验**:
+    - 检查 `uid` 数量是否超过限制。
+3. **Redis 查询和数据库回退**:
+    - 对每个 `uid`，先尝试从 Redis 获取链接，如果不存在则记录下来，稍后从数据库查询。
+4. **数据库查询**:
+    - 使用记录下的 `uid` 从数据库查询元数据。
+5. **并发生成下载链接**:
+    - 使用 `sync.WaitGroup` 和 Go 协程为数据库查询出的元数据生成下载链接。
+6. **收集生成的下载链接**:
+    - 从通道中收集生成的下载链接。
+7. **返回生成的下载链接**:
+    - 使用 `web.Success` 返回生成的链接。
+
+### 总结
+
+- 这两个函数处理文件上传和下载链接的生成，涉及参数解析、数据校验、并发处理、Redis 缓存操作和数据库交互。
+- 通过并发编程提高了处理效率，同时使用通道和 `sync.WaitGroup` 来同步并发操作的结果。
+- 对异常情况进行了处理，包括参数错误、Redis 和数据库查询失败等，并记录相关日志。
+
+
+
+
+
+
+
+
 ```go
 // osproxy/api/v0/proxy.go
 
@@ -859,6 +1067,41 @@ func IsOnCurrentServerHandler(c *gin.Context) {
 	}
 }
 ```
+
+这段代码定义了一个名为 `IsOnCurrentServerHandler` 的函数，它是一个 HTTP GET 请求处理器，用于判断特定文件是否在当前服务上。我们可以逐步分析这个函数：
+
+### 导入的包
+- `fmt`: 格式化输入输出。
+- `github.com/gin-gonic/gin`: Gin 是一个用 Go (Golang) 编写的 Web 框架。
+- `github.com/qinguoyi/osproxy/app/pkg/*`: 这些可能是自定义的包，用于处理应用的基本操作、工具函数和 web 相关的响应。
+
+### 函数 `IsOnCurrentServerHandler`
+1. **请求参数解析**:
+   - 从请求的查询参数中获取 `uid` 字符串。
+
+2. **参数有效性验证**:
+   - 尝试将 `uid` 转换为整数。如果转换失败（即 `uid` 不是有效的整数字符串），返回参数错误信息。
+
+3. **文件存在性检查**:
+   - 使用 `path.Join` 和 `os.Stat` 来确定由 `uid` 指定的文件或目录是否存在于服务器的本地存储中。
+
+4. **响应处理**:
+   - 如果文件或目录不存在，则返回“未找到资源”的错误。
+   - 如果文件或目录存在，则获取当前服务器的出站 IP 地址，并将其作为成功响应返回。
+
+### 错误处理和响应
+- 函数使用 `gin` 框架的 `c.Query` 方法来获取查询参数，并使用 `web` 包的函数来发送不同类型的响应，例如 `web.ParamsError`、`web.NotFoundResource` 和 `web.Success`。
+- 在检查文件存在性时，如果有错误（除了“文件不存在”的错误），它会引发 panic。这在生产环境中可能不是最佳实践，因为 panic 会中断当前 Goroutine，可能导致服务不稳定。
+
+### 总结
+这个函数是一个 web 服务的一部分，用于检查请求的文件是否存储在当前服务的本地存储中。它首先验证输入参数的有效性，然后检查文件的存在性，并据此返回相应的响应。这个函数的实现显示了参数解析、错误处理、文件系统交互和网络操作的基本方法。
+
+
+
+
+
+
+
 
 ```go
 // osproxy/api/v0/resume.go
@@ -988,6 +1231,47 @@ func ResumeHandler(c *gin.Context) {
 	return
 }
 ```
+
+这段代码定义了一个名为 `ResumeHandler` 的函数，用于处理秒传和断点续传的 HTTP POST 请求。该函数部分实现了秒传功能，即通过检查文件的 MD5 值来快速确定文件是否已经存在于服务中，从而避免重复上传。我们可以逐步解析这个函数：
+
+### 导入的包
+- 标准库和第三方库被导入，以支持网络通信、数据处理、日志记录等。
+
+### 函数 `ResumeHandler`
+1. **参数解析**:
+   - 使用 `c.ShouldBindJSON` 将请求体绑定到 `models.ResumeReq` 结构体。这个结构体预计包含文件的 MD5 值和路径。
+
+2. **参数校验**:
+   - 检查请求中包含的数据项数量是否超过了预设的限制。
+
+3. **MD5 值和路径处理**:
+   - 提取并去重 MD5 值，同时建立一个从 MD5 值到文件路径的映射。
+
+4. **数据库查询**:
+   - 查询数据库，检查每个 MD5 值对应的文件是否已经存在。
+
+5. **处理查询结果**:
+   - 对于数据库中已存在的文件，准备创建新的元数据条目，表示这些文件已被上传。这里使用了 `base.NewSnowFlake().NextId()` 来生成唯一标识符（UID）。
+
+6. **批量创建元数据**:
+   - 如果有新的元数据需要创建，通过 `BatchCreate` 批量存储它们到数据库。
+
+7. **Redis 缓存更新**:
+   - 对于新创建的元数据条目，将它们序列化为 JSON 并存储到 Redis 缓存。
+
+8. **构建响应**:
+   - 将处理结果组装成响应列表，并通过 `web.Success` 发送给客户端。
+
+### 错误处理
+- 在多个地方进行错误检查，如参数绑定失败、数据库查询错误、批量创建元数据错误等，对于这些情况进行了适当的错误响应。
+
+### 总结
+`ResumeHandler` 函数实现了秒传的核心逻辑，通过检查文件的 MD5 值来确定文件是否已经存在，如果存在，则复制一份数据的元数据，并更新数据库和缓存。该函数利用了并发编程、数据库操作、缓存管理以及错误处理等多种编程技巧。
+
+
+
+
+
 
 ```go
 // osproxy/api/v0/upload.go
@@ -1638,5 +1922,142 @@ func UploadMergeHandler(c *gin.Context) {
 
 	web.Success(c, "")
 	return
+}
+```
+
+这段代码定义了三个函数：`UploadSingleHandler`, `UploadMultiPartHandler`, 和 `UploadMergeHandler`, 用于处理文件的单个上传、分片上传和分片合并。这些函数部署于 `v0` 包中，使用 `gin` 框架处理 HTTP 请求。下面是对这些函数的逐步解释：
+
+### `UploadSingleHandler` 函数
+- **参数解析和校验**: 解析请求中的 `uid`, `md5`, `date`, `expire`, `signature` 参数，并对它们进行有效性校验。
+- **文件处理**: 接收和解析上传的文件。
+- **数据库查询**: 检查 `uid` 对应的元数据记录是否存在，以及对应的 `md5` 值是否已上传。
+- **文件处理逻辑**: 如果文件已存在，更新元数据信息并删除本地文件夹；如果文件不存在，则判断文件所在位置（本地或远程）并进行相应的处理。
+- **上传至存储服务**: 如果文件在本地，将其上传到对象存储服务，如 MinIO。
+- **更新数据库和缓存**: 更新元数据信息到数据库，并在 Redis 中缓存相应的元数据信息。
+
+### `UploadMultiPartHandler` 函数
+- **参数解析和校验**: 类似于 `UploadSingleHandler`，但增加了 `chunkNum` 参数来处理分片上传。
+- **文件处理**: 接收和处理上传的分片文件。
+- **分片上传逻辑**: 检查分片是否已上传，如果未上传，则在本地或远程存储服务中保存该分片。
+- **更新数据库和缓存**: 为每个上传的分片创建元数据记录，并更新 Redis 缓存。
+
+### `UploadMergeHandler` 函数
+- **参数解析和校验**: 解析并校验 `uid`, `md5`, `num` (总分片数量), `size` (文件总大小), `date`, `expire`, `signature` 参数。
+- **分片合并逻辑**: 检查所有分片是否已上传且数量一致，然后创建合并任务。
+- **更新数据库和缓存**: 更新元数据信息，并在 Redis 中缓存元数据和分片信息。
+
+### 总结
+这些函数是文件上传服务的核心，包括单个文件上传、分片上传和分片合并。它们使用了并发编程、文件 I/O 操作、数据库交互和网络通信等多种编程技巧，并对异常情况进行了处理。此外，还涉及到了与存储服务和缓存服务的交互。
+
+
+
+
+
+
+
+
+## app 中间件、模型及业务逻辑
+
+```go
+package app
+
+import (
+	"context"
+	"github.com/gin-gonic/gin"
+	"github.com/qinguoyi/osproxy/app/pkg/base"
+	"github.com/qinguoyi/osproxy/app/pkg/event/dispatch"
+	"github.com/qinguoyi/osproxy/config"
+	"go.uber.org/zap"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
+// App 应用结构体
+type App struct {
+	conf    *config.Configuration
+	logger  *zap.Logger
+	httpSrv *http.Server
+}
+
+func NewHttpServer(
+	conf *config.Configuration,
+	router *gin.Engine,
+) *http.Server {
+	return &http.Server{
+		Addr:    ":" + conf.App.Port,
+		Handler: router,
+	}
+}
+
+func NewApp(
+	conf *config.Configuration,
+	logger *zap.Logger,
+	httpSrv *http.Server,
+) *App {
+	return &App{
+		conf:    conf,
+		logger:  logger,
+		httpSrv: httpSrv,
+	}
+}
+
+// RunServer 启动服务
+func (a *App) RunServer() {
+	// 启动应用
+	a.logger.Info("start app ...")
+	if err := a.Run(); err != nil {
+		panic(err)
+	}
+
+	// service register
+	go base.NewServiceRegister().HeartBeat()
+
+	// 启动 任务
+	a.logger.Info("start task ...")
+	p, consumers := dispatch.RunTask()
+
+	// 等待中断信号以优雅地关闭应用
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	// 关闭任务
+	log.Printf("stop task ...")
+	dispatch.StopTask(p, consumers)
+
+	// 设置 5 秒的超时时间
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// 关闭应用
+	log.Printf("shutdown app ...")
+	if err := a.Stop(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Run 启动服务
+func (a *App) Run() error {
+	// 启动 http server
+	go func() {
+		if err := a.httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+
+	}()
+	return nil
+}
+
+// Stop 停止服务
+func (a *App) Stop(ctx context.Context) error {
+	// 关闭 http server
+	if err := a.httpSrv.Shutdown(ctx); err != nil {
+		return err
+	}
+	return nil
 }
 ```
