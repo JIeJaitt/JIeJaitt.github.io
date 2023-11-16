@@ -113,6 +113,26 @@ func setApiGroupRoutes(
 }
 ```
 
+定义了一个名为 `CheckPointHandler` 的函数，它是用于处理断点续传的 HTTP GET 请求：
+
+1. **函数签名和注释**:
+    - `CheckPointHandler(c *gin.Context)`：这是一个处理 HTTP 请求的函数，接受一个 `gin.Context` 类型的参数 `c`。`gin` 是一个流行的 Go 语言 web 框架。
+    - 注释中的标签（如 `@Summary`、`@Description`、`@Tags` 等）用于生成 API 文档，描述了这个接口的用途（断点续传）、接收的参数（`uid`）和返回的响应类型。
+2. **解析请求参数**:
+    - 从请求中提取名为 `uid` 的查询参数。`uid` 代表文件的唯一标识符。
+    - 使用 `strconv.ParseInt` 函数将 `uid` 从字符串转换为整数。如果转换失败，则返回参数错误信息。
+3. **数据库操作**:
+    - 创建 `LangGoDB` 的实例并使用默认配置连接数据库。
+    - 调用 `GetPartByUid` 函数从 `MetaDataInfoRepo` 仓库中获取与 `uid` 相关的分片信息。如果查询失败，记录错误并返回内部错误信息。
+    - 如果没有找到相关的分片数据，返回错误信息。
+4. **处理断点续传数据**:
+    - 调用 `GetPartNumByUid` 函数从 `MultiPartInfoRepo` 仓库中获取分片编号信息。
+    - 将获取到的分片编号添加到 `partNum` 切片中。
+5. **响应**:
+    - 最后，使用 `web.Success` 函数将包含分片编号的 `partNum` 切片作为响应返回给客户端。
+
+总的来说，这个函数处理来自客户端的断点续传请求，通过 `uid` 查询分片信息，如果找到相关信息，则返回分片编号，否则返回相应的错误信息。
+
 ```go
 // osproxy/api/v0/checkpoint.go
 
