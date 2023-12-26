@@ -30,7 +30,7 @@
     "hexo-server": "^3.0.0",
     "hexo-theme-landscape": "^1.0.0",
     "inferno": "^7.4.11",
-    "inferno-create-element": "^7.4.11",
+    "inferno-create-element": "^8.2.3",
     "semver": "^7.3.7",
     "source-map-resolve": "^0.6.0"
   }
