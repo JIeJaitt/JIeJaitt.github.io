@@ -164,10 +164,9 @@ widgets:
         position: left
         type: links
         links:
-            HEXO Icarus: https://jiejaitt.github.io
-            Notion Blog: https://jiejaitt.vercel.app
-            handsome: https://jiejaitt.hyijie.me
-            Anime Nav: https://jiejaitt.gitee.io
+            Icarus: https://blog.jiejaitt.tech
+            Handsome: https://jiejaitt.now.cc
+            AnimeNav: https://anime.jiejaitt.top
     -
         position: left
         type: categories
