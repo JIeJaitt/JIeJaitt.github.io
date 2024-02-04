@@ -9,11 +9,14 @@ import (
 )
 
 func main() {
-	// 获取当前时间戳
-	timestamp := time.Now().Unix()
+	// 获取当前时间
+	currentTime := time.Now()
+
+	// 格式化时间戳
+	timestamp := currentTime.Format("2006-01-02 15:04:05")
 
 	// 构造commit消息
-	commitMessage := fmt.Sprintf("Site updated: %d", timestamp)
+	commitMessage := fmt.Sprintf("Site updated: %s", timestamp)
 
 	// 执行git add命令
 	cmdAdd := exec.Command("git", "add", "-A")
