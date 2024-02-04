@@ -1,2 +1,2 @@
-"*.md" linguist-language=markdown
+"*.md" linguist-language=go
 "*.yml" linguist-language=yaml
