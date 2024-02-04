@@ -75,3 +75,10 @@ feed:
   path: rss2.xml
   limit: false
   hub:
+# hexo-lazyload-image
+lazyload:
+  enable: true
+  onlypost: false # optional
+  loadingImg: # optional eg ./images/loading.gif
+  isSPA: false # optional
+  preloadRatio: 3 # optional, default is 1
