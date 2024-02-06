@@ -70,6 +70,7 @@ theme: icarus
 deploy:
   type: browser-sync
   port: 4000 # 可选，指定服务器端口号
+# feed
 feed:
   type: rss2
   path: rss2.xml
@@ -78,7 +79,7 @@ feed:
 # hexo-lazyload-image
 lazyload:
   enable: true
-  onlypost: false # optional
+  onlypost: true # optional
   loadingImg: # optional eg ./images/loading.gif
   isSPA: false # optional
   preloadRatio: 3 # optional, default is 1
