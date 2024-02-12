@@ -1,6 +1,6 @@
 const moment = require('moment');
 const { Component, Fragment } = require('inferno');
-const { toMomentLocale } = require('hexo/lib/plugins/helper/date');
+const { toMomentLocale } = require('hexo/dist/plugins/helper/date');
 const Share = require('./share');
 const Donates = require('./donates');
 const Comment = require('./comment');
@@ -24,8 +24,10 @@ module.exports = class extends Component {
         const { article, plugins } = config;
         const { url_for, date, date_xml, __, _p } = helper;
 
-        const indexLaunguage = toMomentLocale(config.language || 'en');
-        const language = toMomentLocale(page.lang || page.language || config.language || 'en');
+        const defaultLanguage = Array.isArray(config.language) && config.language.length ? config.language[0] : config.language;
+
+        const indexLanguage = toMomentLocale(defaultLanguage || 'en');
+        const language = toMomentLocale(page.lang || page.language || defaultLanguage || 'en');
         const cover = page.cover ? url_for(page.cover) : null;
         const updateTime = article && article.update_time !== undefined ? article.update_time : true;
         const isUpdated = page.updated && !moment(page.date).isSame(moment(page.updated));
@@ -74,7 +76,7 @@ module.exports = class extends Component {
                                 {(() => {
                                     const words = getWordCount(page._content);
                                     const time = moment.duration((words / 150.0) * 60, 'seconds');
-                                    return `${_p('article.read_time', time.locale(index ? indexLaunguage : language).humanize())} (${_p('article.word_count', words)})`;
+                                    return `${_p('article.read_time', time.locale(index ? indexLanguage : language).humanize())} (${_p('article.word_count', words)})`;
                                 })()}
                             </span> : null}
                             {/* Visitor counter */}
