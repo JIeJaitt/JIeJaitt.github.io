@@ -42,7 +42,7 @@ highlight:
   wrap: true
   hljs: false
 prismjs:
-  enable: false
+  enable: true
   preprocess: true
   line_number: true
   tab_replace: ''
@@ -77,19 +77,8 @@ lazyload:
   loadingImg: null
   isSPA: false
   preloadRatio: 3
-html_minifier:  
-  collapseBooleanAttributes: true
-  collapseWhitespace: true
-  # Ignore '<!-- more -->' https://hexo.io/docs/tag-plugins#Post-Excerpt
-  # ignoreCustomComments: [ !!js/regexp /^\s*more/]
-  removeComments: true
-  removeEmptyAttributes: true
-  removeScriptTypeAttributes: true
-  removeStyleLinkTypeAttributes: true
-  minifyJS: true
-  minifyCSS: true
 filter_optimize:
-  enable: true
+  enable: false
   # remove the surrounding comments in each of the bundled files
   remove_comments: false
   css:
