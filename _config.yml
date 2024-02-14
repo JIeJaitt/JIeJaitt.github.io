@@ -78,7 +78,7 @@ lazyload:
   isSPA: false
   preloadRatio: 3
 filter_optimize:
-  enable: false
+  enable: true
   # remove the surrounding comments in each of the bundled files
   remove_comments: false
   css:
@@ -97,7 +97,7 @@ filter_optimize:
     # minify all js files
     minify: true
     # bundle loaded js files into one
-    bundle: true
+    bundle: false
     excludes:
   # set the priority of this plugin,
   # lower means it will be executed first, default of Hexo is 10
