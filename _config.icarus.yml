@@ -2,7 +2,7 @@ version: 6.0.0
 variant: default
 logo: /img/logo.svg
 head:
-    favicon: /img/favicon.webp
+    favicon: /img/favicon.svg
     manifest:
         name: 
         short_name: 
