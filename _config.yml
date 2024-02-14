@@ -77,17 +77,6 @@ lazyload:
   loadingImg: null
   isSPA: false
   preloadRatio: 3
-uglify:
-    mangle: true
-    output:
-    compress:
-    exclude:
-        - "*.min.js"
-
-clean_css:
-    exclude:
-        - "*.min.css"
-
 html_minifier:  
   collapseBooleanAttributes: true
   collapseWhitespace: true
@@ -101,14 +90,12 @@ html_minifier:
   minifyCSS: true
 filter_optimize:
   enable: true
-  # remove static resource query string
-  #   - like `?v=1.0.0`
-  remove_query_string: true
   # remove the surrounding comments in each of the bundled files
-  remove_comments: true
+  remove_comments: false
   css:
-    enable: true
-    # bundle loaded css file into the one
+    # minify all css files
+    minify: true
+    # bundle loaded css files into one
     bundle: true
     # use a script block to load css elements dynamically
     delivery: true
@@ -118,9 +105,62 @@ filter_optimize:
     inlines:
     excludes:
   js:
-    # bundle loaded js file into the one
+    # minify all js files
+    minify: true
+    # bundle loaded js files into one
     bundle: true
     excludes:
   # set the priority of this plugin,
-  # lower means it will be executed first, default is 10
+  # lower means it will be executed first, default of Hexo is 10
   priority: 12
+## Hexo-minify Default Config Options
+minify:
+  preview: false ## 本地预览时是否压缩
+  exclude: ['*.min.*']
+  js:
+    enable: true
+    sourceMap:
+      enable: false ## 生成 sourceMap
+      ## 将 sourceMappingURL 插入压缩后的 js 文件，如果为 false 则需要在浏览器开发者工具中手动添加 sourceMap
+      sourceMappingURL: false ## //# sourceMappingURL=xxx.js.map
+    ## 详细配置: https://github.com/terser/terser#minify-options
+    options: {}
+  css:
+    enable: true
+    ## 详细配置: https://github.com/clean-css/clean-css#compatibility-modes
+    options: {}
+  html:
+    enable: true
+    ## 详细配置: https://github.com/kangax/html-minifier#options-quick-reference
+    options:
+      minifyJS: true # Compressed JavaScript
+      minifyCSS: true # CSS Compressed
+      removeComments: true # Remove the comments
+      collapseWhitespace: true # Delete any extra space
+      removeAttributeQuotes: true # Delete attribute quotes
+  image:
+    enable: true
+    svg:
+      enable: true
+      ## 详细配置: https://github.com/imagemin/imagemin-svgo#imageminsvgooptionsbuffer
+      options: {}
+    jpg:
+      enable: true
+      ## 详细配置: https://github.com/imagemin/imagemin-jpegtran#options
+      options: {}
+    png:
+      enable: true
+      ## 详细配置: https://github.com/imagemin/imagemin-pngquant#options
+      options: {}
+    gif:
+      enable: true
+      ## 详细配置: https://www.npmjs.com/package/imagemin-gifsicle#options
+      options: {}
+    webp:
+      enable: true
+      ## 详细配置: https://github.com/imagemin/imagemin-webp#options
+      options: {}
+  font:
+    enable: false
+    ## 详细配置: https://github.com/Lete114/fontmin-spider#api
+    options: {}
