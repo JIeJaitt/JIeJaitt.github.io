@@ -6,7 +6,3 @@ node_modules/
 public/
 .deploy*/
 _multiconfig.yml
-.vscode/
-
-# 忽略.idea文件夹
-.idea/

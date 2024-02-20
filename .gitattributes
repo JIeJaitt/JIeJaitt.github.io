@@ -1,2 +1,2 @@
-"*.md" linguist-language=go
-"*.yml" linguist-language=yaml
+"*.js" linguist-language=js
+"*.go" linguist-language=go
