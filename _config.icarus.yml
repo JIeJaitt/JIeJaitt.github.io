@@ -174,20 +174,20 @@ widgets:
     -
         position: right
         type: recent_posts
-    -
-        position: right
-        type: archives
+    # -
+    #     position: right
+    #     type: archives
     -
         position: right
         type: tags
         order_by: name
         amount: 
         show_count: true
-    -
-        position: left
-        type: subscribe_email
-        description: 
-        feedburner_id: ''
+    # -
+    #     position: left
+    #     type: subscribe_email
+    #     description: 
+    #     feedburner_id: ''
     # -
     #     position: left
     #     type: adsense
