@@ -174,9 +174,9 @@ widgets:
     -
         position: right
         type: recent_posts
-    # -
-    #     position: right
-    #     type: archives
+    -
+        position: right
+        type: archives
     -
         position: right
         type: tags
