@@ -2,7 +2,7 @@
 title: 分布式对象存储原理架构Go实现
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
-abbrlink: f6782cca
+abbrlink: goDistributed-Object-storage
 date: 2022-08-01 22:03:43
 categories: 项目实战
 tags: 
@@ -208,7 +208,7 @@ GET /metadata/_search?sort=name,version&from=<from>&size=<size>&q=name:<object n
 
 加入元数据服务的方法和元数据服务的互动完全在接口服务层实现，数据服务的实现和上一章相比没有发生变化，因此本章不再赘述。
 
-- 接口服务
+- 接口服务的main函数
 
 由于接口服务的locate包和heartbeat包与上一章相比也没有发生变化，我们会略过对它们的代码示例，需要回顾的读者可自行翻阅上一章的相关内容。
 
@@ -227,21 +227,11 @@ func main() {
 相比上一章，本章的接口服务main函数多了一个用于处理/versions/的函数，名字叫versions.Handler。读者现在应该已经对这样的写法很熟悉了，明白这是versions包的Handler函数。
 
 
-### 接口服务的 versions 包
+- 接口服务的 versions 包
 
 versions 包比较简单，只有Handler 函数，其主要工作都是调用es 包的函数来完成的，见例 3-2。
 
 ```go
-package versions
-
-import (
-	"encoding/json"
-	"goDistributed-Object-storage/src/lib/es"
-	"log"
-	"net/http"
-	"strings"
-)
-
 func Handler(w http.ResponseWriter, r *http.Request) {
 	m := r.Method
 	if m != http.MethodGet {
@@ -273,14 +263,61 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 这个函数首先检查 HTTP 方法是否为GET，如果不为 GET，则返回 405 Method Not Allowed；如果方法为 GET，则获取 URL 中`<object_name＞` 的部分，获取的方式跟之前一样，调用 strings.Split 函数将 URL 以 ”/“ 分隔符切成数组并取第三个元素赋值给 name。这里要注意的是，如果客户端的 HTTP 请求的 URL 是“/versions/”而不含 `<object_name>` 部分，那么 name 就是空字符串。
 
-接下来我们会在一个无限 for 循环中调用 es 包的 SearchAlIVersions 函数并将 name、from 和 size 作为参数传递给该函数。from 从0开始，size 则固定为1000。es.SearchAIIVersions 函数会返回一个元数据的数组，我们遍历该数组，将元数据一一写入HTTP 响应的正文。如果返回的数组长度不等于 size，说明元数据服务中没有更多的数据了，此时我们让函数返回；否则我们就把fom 的值增加1000进行下一个选代。
+接下来我们会在一个无限 for 循环中调用 es 包的 SearchAlIVersions 函数并将 name、from 和 size 作为参数传递给该函数。from 从0开始，size 则固定为1000。es.SearchAIIVersions 函数会返回一个元数据的数组，我们遍历该数组，将元数据一一写入HTTP 响应的正文。如果返回的数组长度不等于 size，说明元数据服务中没有更多的数据了，此时我们让函数返回；否则我们就把from 的值增加1000进行下一个选代。
 
 es 包封装了我们访问元数据服务的各种 API 的操作，本章后续会有详细介绍。
 
+- 接口服务的objects包
+
+本章加入元数据服务以后，接口服务的objects包与上一章相比发生了较大的变化，除了多了一个对象的DELETE方法以外，对象的PUT和GET方法也都有所改变，它们需要跟元数据服务互动。首先让我们从Handler函数的改变开始看起，见例3-3。
 
 
+```go
+// goDistributed-Object-storage/apiServer/objects/handler.go
 
-### objects 包 put 逻辑相关的函数如下所示
+func Handler(w http.ResponseWriter, r *http.Request) {
+	m := r.Method
+	if m == http.MethodPut {
+		put(w, r)
+		return
+	}
+	if m == http.MethodGet {
+		get(w, r)
+		return
+	}
+	if m == http.MethodDelete {
+		del(w, r)
+		return
+	}
+	w.WriteHeader(http.StatusMethodNotAllowed)
+}
+```
+
+可以看到，跟上一章相比，在Handler里多出了对DELETE方法的处理函数del。其具体实现见例3-4。
+
+```go
+// goDistributed-Object-storage/apiServer/objects/del.go
+
+func del(w http.ResponseWriter, r *http.Request) {
+	name := strings.Split(r.URL.EscapedPath(), "/")[2]
+	version, e := es.SearchLatestVersion(name)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	e = es.PutMetadata(name, version.Version+1, 0, "")
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+```
+
+del函数用同样的方式从URL中获取<object name>并赋值给name。然后它以name为参数调用cs.SearchLatestVersion,搜索该对象最新的版本。接下来函数调用es.PutMetadata插入一条新的元数据。es.PutMetadata接受4个输入参数，分别是元数据的name、version、size和hash。我们可以看到，函数参数中name就是对象的名字，version就是该对象最新版本号加1,size为O,hash为空字符串，以此表示这是一个删除标记。
+
+objects包put相关的函数见例3-5。
 
 ```go
 // goDistributed-Object-storage/apiServer/objects/put.go
@@ -295,14 +332,14 @@ func put(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 将对象存储到存储系统中
-	statusCode, err := storeObject(r.Body, url.PathEscape(hash))
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(statusCode)
+	c, e := storeObject(r.Body, url.PathEscape(hash))
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(c)
 		return
 	}
-	if statusCode != http.StatusOK {
-		w.WriteHeader(statusCode)
+	if c != http.StatusOK {
+		w.WriteHeader(c)
 		return
 	}
 
@@ -311,7 +348,7 @@ func put(w http.ResponseWriter, r *http.Request) {
 	// 从请求头中获取对象的大小
 	size := utils.GetSizeFromHeader(r.Header)
 	// 将对象的元数据添加到 Elasticsearch 中
-	err = es.AddVersion(name, hash, size)
+	e = es.AddVersion(name, hash, size)
 	// 异步方式将对象的元数据添加到 Elasticsearch 中
 	// go func() {
 	// 	err = es.AddVersion(name, hash, size)
@@ -319,19 +356,15 @@ func put(w http.ResponseWriter, r *http.Request) {
 	// 		log.Println(err)
 	// 	}
 	// }()
-	if err != nil {
-		log.Println(err)
+	if e != nil {
+		log.Println(e)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	// 返回 HTTP 状态码 200 表示成功
 	w.WriteHeader(http.StatusOK)
 }
-```
 
-在第2 章中，我们以`<object_name>`为参数调用 storeObject。而本章我们首先调用`utils.GetHashFromHeader` 从 HTTP 请求头部获取对象的散列值，然后以散列值为参数调用 storeObject。之后我们从 URL 中获取对象的名字并且调用 `utils.GetSizeFromHeader`从 HTTP 请求头部取对象的大小，然后以对象的名字、散列值和大小为参数调用`es.AddVersion` 给该对象添加新版本。
-
-```go
 func GetHashFromHeader(h http.Header) string {
 	digest := h.Get("digest")
 	if len(digest) < 9 {
@@ -342,18 +375,25 @@ func GetHashFromHeader(h http.Header) string {
 	}
 	return digest[8:]
 }
-```
 
-```go
 func GetSizeFromHeader(h http.Header) int64 {
 	size, _ := strconv.ParseInt(h.Get("content-length"), 0, 64)
 	return size
 }
+
 ```
+
+在第2 章中，我们以`<object_name>`为参数调用 storeObject。而本章我们首先调用`utils.GetHashFromHeader` 从 HTTP 请求头部获取对象的散列值，然后以散列值为参数调用 storeObject。之后我们从 URL 中获取对象的名字并且调用 `utils.GetSizeFromHeader`从 HTTP 请求头部取对象的大小，然后以对象的名字、散列值和大小为参数调用`es.AddVersion` 给该对象添加新版本。
 
 `GetHashFromHeader` 和 `GetSizeFromHeader` 是 utils 包提供的两个函数。
 
 `GetHashFromHeader` 函数首先调用 `h.Get` 获取 “digest” 头部。`r` 的类型是一个指向 `http.Request` 的指针。它的 Header 成员类型则是一个http.Header，用于记录 HTTP 的头部，其Get 方法用于根据提供的参数获取相对应的头部的值。在这里，我们获取的就是 HTTP 请求中 digest 头部的值。我们检查该值的形式是否为“SHA-256=<hash>”，如果不是以“SHA-256=”开头我们返回空字符串，否则返回其后的部分。
 
-同样， `GetSizeFromHeader` 也是调用 `h.Get` 获取“content-length”头部，并调用strconv.Parselnt 将字符串转化为 int64 输出。strconv.ParseInt 和例3-6中 strconv.Atoi这两个函数的作用都是将一个字符串转换成一个数字。它们的区别在于 Parselnt 返回的类型是 int64 而 Atoi返回的类型是 int，且 ParseInt 的功能更加复杂，它额外的输入参数用于指定转换时的进制和结果的比特长度。比如说 ParseInt 可以将一个字符串“OxFF”以十六进制的方式转换为整数255，而 Atoi 则只能将字符串“255”转换为整数255。
+同样， `GetSizeFromHeader` 也是调用 `h.Get` 获取“content-length”头部，并调用strconv.Parselnt 将字符串转化为 int64 输出。`strconv.ParseInt` 和例3-6中 strconv.Atoi这两个函数的作用都是将一个字符串转换成一个数字。它们的区别在于 Parselnt 返回的类型是 int64 而 Atoi返回的类型是 int，且 ParseInt 的功能更加复杂，它额外的输入参数用于指定转换时的进制和结果的比特长度。比如说 ParseInt 可以将一个字符串“OxFF”以十六进制的方式转换为整数255，而 Atoi 则只能将字符串“255”转换为整数255。
+
+
+
+
+
+## 参考资料
 

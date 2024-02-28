@@ -364,3 +364,62 @@ hidden: true
 插件也在 [Local Variables](https://hexo.io/api/locals) 中添加了 `all_posts` 和 `hidden_posts` 变量，供自定义主题使用。
 
 转载:[https://blog.garryde.com/archives/37712.html](https://blog.garryde.com/archives/37712.html)
+
+
+
+## 废话测试
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+
+
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
+> 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [www.zywvvd.com](https://www.zywvvd.com/notes/hexo/website/48-hexo-hide/hexo-hide/)    
