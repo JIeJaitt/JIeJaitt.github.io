@@ -391,6 +391,176 @@ func GetSizeFromHeader(h http.Header) int64 {
 
 同样， `GetSizeFromHeader` 也是调用 `h.Get` 获取“content-length”头部，并调用strconv.Parselnt 将字符串转化为 int64 输出。`strconv.ParseInt` 和例3-6中 strconv.Atoi这两个函数的作用都是将一个字符串转换成一个数字。它们的区别在于 Parselnt 返回的类型是 int64 而 Atoi返回的类型是 int，且 ParseInt 的功能更加复杂，它额外的输入参数用于指定转换时的进制和结果的比特长度。比如说 ParseInt 可以将一个字符串“OxFF”以十六进制的方式转换为整数255，而 Atoi 则只能将字符串“255”转换为整数255。
 
+objects.get函数的变化见例3-6。
+
+```go
+func get(w http.ResponseWriter, r *http.Request) {
+	name := strings.Split(r.URL.EscapedPath(), "/")[2]
+	versionId := r.URL.Query()["version"]
+	version := 0
+	var e error
+	if len(versionId) != 0 {
+		version, e = strconv.Atoi(versionId[0])
+		if e != nil {
+			log.Println(e)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	meta, e := es.GetMetadata(name, version)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if meta.Hash == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	object := url.PathEscape(meta.Hash)
+	stream, e := getStream(object)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	io.Copy(w, stream)
+}
+```
+
+跟第2章相比，本章的objects.get函数从URL获取了对象的名字之后还需要从URL的查询参数中获取“version”参数的值。r.URL的类型是*url.URL,它是指向url.URL结构体的指针。url.URL结构体的Query方法会返回一个保存URL所有查询参数的map,该map的键是查询参数的名字，而值则是一个字符串数组，这是因为HTTP的URL查询参数允许存在多个值。以“version”为key就可以得到URL中该查询参数的所有值，然后赋值给versionId变量。如果URL中并没有“version”这个查询参数，versionld变量则是空数组。由于我们不考虑多个“version”查询参数的情况，所以我们始终以versionId数组的第一个元素作为客户端提供的版本号，并将其从字符串转换为整型赋值给version变量。
+
+然后我们以对象的名字和版本号为参数调用es.GetMetadata,得到对象的元数据meta。meta.Hash就是对象的散列值。如果散列值为空字符串说明该对象该版本是一个删除标记，我们返回404 Not Found；否则以散列值为对象名从数据服务层获取对象并输出。getStream函数我们在上一章已经介绍过了，本章略。
+
+### es包
+
+我们的es包封装了以HTTP访问ES的各种API的操作，由于代码较长不能全部列出，我们在这里只列出了本章用到的一部分函数和结构体，首先是getMetadata,见例3-7。
+
+```go
+
+type Metadata struct {
+	Name    string
+	Version int
+	Size    int64
+	Hash    string
+}
+
+func getMetadata(name string, versionId int) (meta Metadata, e error) {
+	url := fmt.Sprintf("http://%s/metadata/objects/%s_%d/_source",
+		os.Getenv("ES_SERVER"), name, versionId)
+	r, e := http.Get(url)
+	if e != nil {
+		return
+	}
+	if r.StatusCode != http.StatusOK {
+		e = fmt.Errorf("fail to get %s_%d: %d", name, versionId, r.StatusCode)
+		return
+	}
+	result, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(result, &meta)
+	return
+}
+```
+
+getMetadata用于根据对象的名字和版本号来获取对象的元数据，其URL中的服务器地址来自环境变量ES_SERVER,索引是metadata,类型是objects,文档的id由对象的名字和版本号拼接而成。通过这种方式GET这个URL可以直接获取该对象的元数据，这样就免除了耗时的搜索操作。ES返回的结果经过JSON解码后被es、SearchLatestVerson函数的实现见例3-8，保存在meta变量返回。meta的类型是Metadata结构体，其结构和ES映射中定义的objects类型的属性一一对应，同样是包含Name、Version、Size和Hash。
+
+```go
+type hit struct {
+	Source Metadata `json:"_source"`
+}
+
+type searchResult struct {
+	Hits struct {
+		Total int
+		Hits  []hit
+	}
+}
+
+func SearchLatestVersion(name string) (meta Metadata, e error) {
+	url := fmt.Sprintf("http://%s/metadata/_search?q=name:%s&size=1&sort=version:desc",
+		os.Getenv("ES_SERVER"), url.PathEscape(name))
+	r, e := http.Get(url)
+	if e != nil {
+		return
+	}
+	if r.StatusCode != http.StatusOK {
+		e = fmt.Errorf("fail to search latest metadata: %d", r.StatusCode)
+		return
+	}
+	result, _ := ioutil.ReadAll(r.Body)
+	var sr searchResult
+	json.Unmarshal(result, &sr)
+	if len(sr.Hits.Hits) != 0 {
+		meta = sr.Hits.Hits[0].Source
+	}
+	return
+}
+```
+
+例3-8显示了es包的SearchLatestVersion函数，它以对象的名字为参数，调用ES搜索API。它在URL中指定了对象的名字，且版本号以降序排列只返回第一个结果。
+ES返回的结果被JSON解码到一个searchResult结构体，这个结构体和ES搜索API返回的结构保持一致，以方便我们读取搜索到的元数据并赋值给mta返回。如果ES返回的结果长度为O,说明没有搜到相对应的元数据，我们直接返回。此时mta中各属性都为初始值：字符串为空字符串“”，整型为0。
+
+es.GetMetadata函数的实现见例3-9。
+
+```go
+// es.GetMetadata函数
+
+func GetMetadata(name string, version int) (Metadata, error) {
+	if version == 0 {
+		return SearchLatestVersion(name)
+	}
+	return getMetadata(name, version)
+}
+```
+
+GetMetadata函数的功能类似getMetadata,输入对象的名字和版本号返回对象，区别在于当version为O时，我们会调用SearchLatestVersion获取当前最新的版本。
+
+es.PutMetadata函数的实现见例3-l0。
+
+```go
+// es.PutMetadata函数
+
+func PutMetadata(name string, version int, size int64, hash string) error {
+	doc := fmt.Sprintf(`{"name":"%s","version":%d,"size":%d,"hash":"%s"}`,
+		name, version, size, hash)
+	client := http.Client{}
+	url := fmt.Sprintf("http://%s/metadata/objects/%s_%d?op_type=create",
+		os.Getenv("ES_SERVER"), name, version)
+	request, _ := http.NewRequest("PUT", url, strings.NewReader(doc))
+	r, e := client.Do(request)
+	if e != nil {
+		return e
+	}
+	if r.StatusCode == http.StatusConflict {
+		return PutMetadata(name, version+1, size, hash)
+	}
+	if r.StatusCode != http.StatusCreated {
+		result, _ := ioutil.ReadAll(r.Body)
+		return fmt.Errorf("fail to put metadata: %d %s", r.StatusCode, string(result))
+	}
+	return nil
+}
+```
+
+PutMetadata函数用于向ES服务上传一个新的元数据。它的4个输入参数对应元数据的4个属性，函数会将它们拼成一个ES文档，一个ES的文档相当于数据库的一条记录。我们用PUT方法把这个文档上传到metadata索引的objects类型，且文档id由元数据的name和version拼成，方便我们GET。
+
+我们使用了op_type=create参数，如果同时有多个客户端上传同一个元数据，结果会发生冲突，只有第一个文档被成功创建。之后的PUT请求，ES会返回409 Conflict。此时，我们的函数会让版本号加1并递归调用自身继续上传。
+
+es.AddVersion函数的实现见例3-l1。
+
+```go
+// es.AddVersion函数
+
+func AddVersion(name, hash string, size int64) error {
+	version, e := SearchLatestVersion(name)
+	if e != nil {
+		return e
+	}
+	return PutMetadata(name, version.Version+1, size, hash)
+}
+```
+
+AddVersion函数首先调用SearchLatestVersion获取对象最新的版本，然后在版本号上加1调用PutMetadata。
 
 
 
