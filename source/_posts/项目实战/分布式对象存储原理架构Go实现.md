@@ -562,8 +562,145 @@ func AddVersion(name, hash string, size int64) error {
 
 AddVersion函数首先调用SearchLatestVersion获取对象最新的版本，然后在版本号上加1调用PutMetadata。
 
+es.SearchAllVersions函数的实现见例3-12。
 
 
+```go
+// es.SearchAllVersions函数
+
+func SearchAllVersions(name string, from, size int) ([]Metadata, error) {
+	url := fmt.Sprintf("http://%s/metadata/_search?sort=name,version&from=%d&size=%d",
+		os.Getenv("ES_SERVER"), from, size)
+	if name != "" {
+		url += "&q=name:" + name
+	}
+	r, e := http.Get(url)
+	if e != nil {
+		return nil, e
+	}
+	metas := make([]Metadata, 0)
+	result, _ := ioutil.ReadAll(r.Body)
+	var sr searchResult
+	json.Unmarshal(result, &sr)
+	for i := range sr.Hits.Hits {
+		metas = append(metas, sr.Hits.Hits[i].Source)
+	}
+	return metas, nil
+}
+```
+
+SearchAllVersions函数用于搜索某个对象或所有对象的全部版本。它的输入参数name表示对象的名字，如果name不为空字符串则搜索指定对象的所有版本，否则搜索所有对象的全部版本。输入参数from和size指定分页的显示结果，其功能和ES搜索API的from和size参数一致。搜索的结果按照对象的名字和版本号排序，并被保存在Metadata的数组里用于返回。
+
+G0语言的实现已经全部介绍完成，接下来我们需要进行功能测试来验证我们的系统能否正常工作。
+
+### 功能测试
+
+保持第2章的环境设置不变。同时，我们让之前的RabbitMQ服务器(10.29.102.173)兼任ES服务器，在其上安装elasticsearch。
+```bash
+sudo apt-get install elasticsearch
+```
+在作者的机器上elasticsearch包自带的启动脚本有点问题，没能正常启动ES,让我们手动启动。
+```bash
+sudo /usr/share/elasticsearch/bin/elasticsearch /dev/null
+```
+元数据服务启动以后，我们还需要在其上创建metadata索引以及objects类型的
+映射。
+```bash
+curl 10.29.102.173:9200/metadata -XPUT -d'{"mappings":{"objects":{"properties":{"name":{"type":"string","index":"not analyzed"},"version":{"type":"integer"},"size":{"type":"integer"},"hash":{"type":"string"}}}}}'
+```
+创建索引和映射的语法详见ES映射API其官方网站。
+
+ES服务器就绪。现在，和上一章一样，我们同时启动8个服务程序（注意apiServer.go
+的启动命令变了，增加了ES SERVER环境变量的设置）。
+```bash
+export RABBITMQ_SERVER=amqp://test:test@10.29.102.173:5672
+export ES SERVER=10.29.102.173:9200
+LISTEN_ADDRESS=10.29.1.1:12345 STORAGE ROOT=/tmp/1 go run dataserver/
+dataServer.go
+LISTEN ADDRESS=10.29.1.2:12345 STORAGE ROOT=/tmp/2 go run dataserver/
+dataServer.go&
+LISTEN ADDRESS=10.29.1.3:12345 STORAGE ROOT=/tmp/3 go run dataserver/
+dataserver.go
+LISTEN ADDRESS=10.29.1.4:12345 STORAGE ROOT=/tmp/4 go run dataserver/
+dataServer.go
+LISTEN ADDRESS=10.29.1.5:12345 STORAGE ROOT=/tmp/5 go run dataserver/
+dataServer.go
+LISTEN ADDRESS=10.29.1.6:12345 STORAGE ROOT=/tmp/6 go run dataserver/
+dataserver.go
+LISTEN ADDRESS=10.29.2.1:12345 go run apiserver/apiserver.go
+LISTEN ADDRESS=10.29.2.2:12345 go run apiserver/apiserver.go
+```
+
+接下来我们用curl命令作为客户端来访问服务节点10.29.2.2：12345，PUT一个名为test3的对象。
+
+
+```bash
+➜  goDistributed-Object-storage git:(main) ✗ curl -v 10.29.2.2:12345/objects/test3 -XPUT -d"this is object test3"
+*   Trying 10.29.2.2:12345...
+* Connected to 10.29.2.2 (10.29.2.2) port 12345
+> PUT /objects/test3 HTTP/1.1
+> Host: 10.29.2.2:12345
+> User-Agent: curl/8.4.0
+> Accept: */*
+> Content-Length: 20
+> Content-Type: application/x-www-form-urlencoded
+> 
+< HTTP/1.1 400 Bad Request
+< Date: Thu, 29 Feb 2024 07:47:21 GMT
+< Content-Length: 0
+< 
+* Connection #0 to host 10.29.2.2 left intact
+```
+
+这里出现400错误是因为我们没有提供对象的散列值。我们可以用openssl命令轻松计算出这个对象的散列值。
+
+```bash
+echo -n "this is object test3" | openssl dgst -sha256 -binary | openssl enc -base64
+➜  tools git:(main) ✗ echo -n "this is object test3" | openssl dgst -sha256 -binary | openssl enc -base64
+GYqqAdFPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM=
+
+```
+
+```bash
+curl -v 10.29.2.2:12345/objects/test3 -XPUT -d"this is object test3"
+-H "Digest:SHA-256=GYqqAdEPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM="
+*Trying10.29.2.2,..
+*Connected to10.29.2.2(10.29.2.2)port12345(#0)
+PUT /objects/test3 HTTP/1.1
+>Host:10.29.2.2:12345
+User-Agent:curl/7.47.0
+Accept:*/
+Digest:SHA-256=GYqqAdFPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM=
+Content-Length:20
+Content-Type:application/x-www-form-urlencoded
+>
+upload completely sent off:20 out of 20 bytes
+<HTTP/1,12000K
+<Date:Mon,03Ju1201709:41:10GwT
+Content-Length:0
+Content-Type:text/plain;charset=utf-8
+<
+Connection #0 to host 10.29.2.2 left intact
+```
+
+
+
+
+
+
+
+
+
+
+
+
+## 数据检验和去重
+
+我们在上一章给对象存储系统添加了一个重要的组件：元数据服务。有了元数据服务，我们就可以将对象的散列值作为数据服务层对象的名字进行引用。我们将在本章介绍和实现对客户端提供的散列值进行数据校验的原因和方法，并实现对象存储的去重功能。同时，本章还会对数据服务的对象定位性能进行优化。
+
+### 何为去重
+
+去重是一种消除重复数据多余副本的数据压缩技术。对于一个对象存储系统来说，通常都会有来自不同（或相同）用户的大量重复数据。如果没有去重，每一份重复的数据都会占据我们的存储空间。
 
 ## 参考资料
 
