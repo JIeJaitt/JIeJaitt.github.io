@@ -1,4 +1,4 @@
-hexo.extend.injector.register('head_end', () => `
+hexo.extend.injector.register('body_end', () => `
    <style>
       /* 置顶导航栏样式 */
       .navbar {
