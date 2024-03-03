@@ -97,7 +97,7 @@ filter_optimize:
     # minify all js files
     minify: true
     # bundle loaded js files into one
-    bundle: false
+    bundle: true
     excludes:
   # set the priority of this plugin,
   # lower means it will be executed first, default of Hexo is 10
