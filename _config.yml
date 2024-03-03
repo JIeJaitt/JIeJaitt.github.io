@@ -78,7 +78,7 @@ lazyload:
   isSPA: false
   preloadRatio: 3
 filter_optimize:
-  enable: false
+  enable: true
   # remove the surrounding comments in each of the bundled files
   remove_comments: false
   css:
