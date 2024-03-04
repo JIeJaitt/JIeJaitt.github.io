@@ -200,7 +200,7 @@ widgets:
     #     action_url: ''
     #     verification_code: ''
 plugins:
-    animejs: false
+    animejs: true
     back_to_top: true
     baidu_analytics:
         tracking_id: 
@@ -224,7 +224,7 @@ plugins:
     katex: true
     mathjax: true
     outdated_browser: true
-    progressbar: false
+    progressbar: true
     statcounter:
         project: 
         security: 
