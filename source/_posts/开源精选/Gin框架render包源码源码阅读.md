@@ -9,7 +9,18 @@ tags: [Gin,Go]
 sticky: 9990
 ---
 
-## 前言
+## 前情提要
+
+gin 框架render包地址：https://github.com/gin-gonic/gin/blob/master/render/render.go
+
+中文文档：https://gin-gonic.com/zh-cn/docs/examples/rendering/ 和英文文档：https://gin-gonic.com/docs/examples/rendering/
+
+render_test.go：https://github.com/gin-gonic/gin/blob/master/render/render_test.go
+朋友提的测试pr：https://github.com/gin-gonic/gin/pull/3525/commits/74a81ee4a0f07a579658d0346d1ac22ae27c2a02
+
+我在copilot也提出过一些问题：https://copilot.microsoft.com/ 和google搜索：https://www.google.com/search?q=gin%20render%20json&ie=UTF-8#ip=1
+
+## 快速上手
 
 Gin框架的render包主要是用于HTML模板渲染的。在Gin中，你可以使用`LoadHTMLGlob()`或者`LoadHTMLFiles()`方法来加载模板文件。例如，以下是一个简单的示例，展示了如何在Gin中加载和渲染HTML模板：
 

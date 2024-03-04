@@ -315,7 +315,7 @@ func del(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-del函数用同样的方式从URL中获取<object name>并赋值给name。然后它以name为参数调用cs.SearchLatestVersion,搜索该对象最新的版本。接下来函数调用es.PutMetadata插入一条新的元数据。es.PutMetadata接受4个输入参数，分别是元数据的name、version、size和hash。我们可以看到，函数参数中name就是对象的名字，version就是该对象最新版本号加1,size为O,hash为空字符串，以此表示这是一个删除标记。
+del函数用同样的方式从URL中获取`<object name>`并赋值给name。然后它以name为参数调用cs.SearchLatestVersion,搜索该对象最新的版本。接下来函数调用es.PutMetadata插入一条新的元数据。es.PutMetadata接受4个输入参数，分别是元数据的name、version、size和hash。我们可以看到，函数参数中name就是对象的名字，version就是该对象最新版本号加1,size为O,hash为空字符串，以此表示这是一个删除标记。
 
 objects包put相关的函数见例3-5。
 
@@ -387,7 +387,7 @@ func GetSizeFromHeader(h http.Header) int64 {
 
 `GetHashFromHeader` 和 `GetSizeFromHeader` 是 utils 包提供的两个函数。
 
-`GetHashFromHeader` 函数首先调用 `h.Get` 获取 “digest” 头部。`r` 的类型是一个指向 `http.Request` 的指针。它的 Header 成员类型则是一个http.Header，用于记录 HTTP 的头部，其Get 方法用于根据提供的参数获取相对应的头部的值。在这里，我们获取的就是 HTTP 请求中 digest 头部的值。我们检查该值的形式是否为“SHA-256=<hash>”，如果不是以“SHA-256=”开头我们返回空字符串，否则返回其后的部分。
+`GetHashFromHeader` 函数首先调用 `h.Get` 获取 “digest” 头部。`r` 的类型是一个指向 `http.Request` 的指针。它的 Header 成员类型则是一个http.Header，用于记录 HTTP 的头部，其Get 方法用于根据提供的参数获取相对应的头部的值。在这里，我们获取的就是 HTTP 请求中 digest 头部的值。我们检查该值的形式是否为“`SHA-256=<hash>`”，如果不是以“SHA-256=”开头我们返回空字符串，否则返回其后的部分。
 
 同样， `GetSizeFromHeader` 也是调用 `h.Get` 获取“content-length”头部，并调用strconv.Parselnt 将字符串转化为 int64 输出。`strconv.ParseInt` 和例3-6中 strconv.Atoi这两个函数的作用都是将一个字符串转换成一个数字。它们的区别在于 Parselnt 返回的类型是 int64 而 Atoi返回的类型是 int，且 ParseInt 的功能更加复杂，它额外的输入参数用于指定转换时的进制和结果的比特长度。比如说 ParseInt 可以将一个字符串“OxFF”以十六进制的方式转换为整数255，而 Atoi 则只能将字符串“255”转换为整数255。
 
