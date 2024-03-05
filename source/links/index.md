@@ -15,11 +15,12 @@ date: 2024-02-19 19:47:24
 - 翻译：[谷歌翻译](https://translate.google.com/) ；[百度翻译](https://fanyi.baidu.com/)；
 - 邮箱：[outlook](https://outlook.live.com/)；[gmail](https://mail.google.com/)；[qq邮箱](https://mail.qq.com/)；[网易邮箱](https://mail.163.com/)；[Roundcube Webmail(0000@edu.bond)](https://witcher.mxrouting.net/roundcube/?_task=mail&_mbox=INBOX)  
 - 监控：[uptimerobot](https://dashboard.uptimerobot.com/monitors)；  
-- 智能：[反向代理使用ChatGPT官网的通用解决方案](https://github.com/RawChat/RawChat)；[sharedchat](https://sharedchat.cn/shared.html)；[RawChat商业版](https://chat.openai.fo/)；[CaiFree](https://chat.caifree.com/#/)；[]()
+- 智能：[反向代理使用ChatGPT官网的通用解决方案](https://github.com/RawChat/RawChat)；[sharedchat](https://sharedchat.cn/shared.html)；[RawChat商业版](https://chat.openai.fo/)；[CaiFree](https://chat.caifree.com/#/)；[c2c.gpt4fr.ee](https://c2c.gpt4fr.ee/)；[]()；[]()；
 - 智能搜索引擎：[Devv](https://devv.ai/)；[秘塔AI搜索](https://metaso.cn/)；[]()；[]()；[]()；
 - 云数据库：[TiDB](https://tidbcloud.com/)；[aiven](https://console.aiven.io/)；[supabase](https://supabase.com/)；[qexo部署文档中提到的数据库](https://www.oplog.cn/qexo/start/build.html#vercel-%E9%83%A8%E7%BD%B2-postgresql-supabase)；[Redis Cloud Console](https://app.redislabs.com/)；[upstash](https://console.upstash.com/)；
-
+- 画图：[asciiflow](https://asciiflow.com/)
 - 图床：[Dooong公益图床](https://image.dooo.ng/)；[]()；[]()；[]()；
+- 网速：
 
 
 - 在线运行代码：[Go在线运行](https://www.bejson.com/runcode/golang/)；[]()；[]()
