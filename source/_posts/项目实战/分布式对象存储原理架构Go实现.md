@@ -807,7 +807,737 @@ this is object test3 version 2
 
 ### 何为去重
 
-去重是一种消除重复数据多余副本的数据压缩技术。对于一个对象存储系统来说，通常都会有来自不同（或相同）用户的大量重复数据。如果没有去重，每一份重复的数据都会占据我们的存储空间。
+去重是一种消除重复数据多余副本的数据压缩技术。对于一个对象存储系统来说，通常都会有来自不同（或相同）用户的大量重复数据。如果没有去重，每一份重复的数据都会占据我们的存储空间。去重能够让重复数据在系统中只保留一个实体，是一个极好的节省存储空间、提升存储利用率的技术。
+
+一个很常见的去重的例子是邮件的转发。假设某个邮件内含一个大小为1MB的附件，如果该邮件被转发了100次，那么邮件服务器上就保存了100个一模一样的附件，总共占用100MB的空间。每次管理员对该邮件服务器进行云备份，都会上传100个一模一样的附件对象到对象存储系统。如果这个对象存储系统使用了数据去重技术，那么无论这个管理员备份多少次，在对象存储系统中，这个附件所代表的对象就只有一份。
+
+本书实现的去重基于对象的全局唯一标识符，也就是通过对该对象的散列值进行单例检查(Single Instance Storage,SIS)来实现。具体来说，每次当接口服务节点接收到对象的PUT请求之后，我们都会进行一次定位，如果PUT对象的散列值已经存在于数据服务中，我们就会跳过之后的数据服务PUT请求，直接生成该对象的新版本插入元数据服务：如果PUT对象的散列值不存在于数据服务中，说明这是一个全新的对象。接口服务会读取PUT请求的正文，写入数据服务。
+
+但是在实现去重之前，我们还有一个步骤要做，就是数据校验。
+
+### 需要数据校验的原因
+
+一般来说，客户端上传的数据不一致可能由以下几种情况导致。
+- 客户端是一个恶意客户端，故意上传不一致的数据给服务器。
+- 客户端有bug,计算出来的数据是错误的。
+- 客户端计算的数据正确，但是传输过程中发生了错误。
+
+对象存储是一个服务，如果我们全盘接收来自客户端的数据，而不对这个散列值进行校验，那么恶意客户端就可以通过随意编造散列值的方式上传大量内容和散列值不符的对象来污染我们的数据；且即使是善意的客户端也难免因为软件错误或上传的数据损坏而导致对象数据和散列值不符。如果我们不对数据进行校验，允许错误的对象数据被保存在系统中，那么当另一个用户上传的数据的散列值恰好跟错误数据的相同时，就会因为SS检查而导致其数据并没有被真正上传。然后当这个用户需要下载自己的对象时，下载到的就会是那个错误的数据。
+
+为了防止这种情况发生，我们必须进行数据校验，验证客户端提供的散列值和我们自己根据对象数据计算出来的散列值是否一致。有了数据校验，我们才能确保数据服务中保存的对象数据和散列值一致，然后放心对后续上传的对象根据散列值进行去重。
+
+那么现在问题来了：一直以来我们都是以数据流的形式处理来自客户端的请求，接口服务调用io.Copy从对象PUT请求的正文中直接读取对象数据并写入数据服务。这是因为客户端上传的对象大小可能超出接口服务节点的内存，我们不能把整个对象读入内存后再进行处理。而现在我们必须等整个对象都上传完以后才能算出散列值，然后才能决定是否要存进数据服务。这就形成了一个悖论：在客户端的对象完全上传完毕之前，我们不知道要不要把这个对象写入数据服务：但是等客户端的对象上传完毕之后再开始写入我们又做不到，因为对象可能太大，内存里根本放不下。
+
+有些读者看到这里，心里可能会想：要解决这个悖论太容易了，只需要在数据服务节点进行数据校验，将校验一致的对象保留，不一致的删除不就可以了吗？这样的设计在本章是没问题的。在数据服务节点上进行数据校验的前提是数据服务节点上的数据和用户上传的数据完全相同，本章的设计满足这个前提。但是我们在本书的后续章节中会看到，随着对象存储系统的不断完善，最终我们保存在数据服务节点上的对象数据和用户上传的对象数据可能截然不同。那时，我们就无法在数据服务节点上进行数据校验。数据校验这一步骤必须在接口服务节点完成。
+
+### 实现数据校验的方法
+
+为了真正解决上述矛盾，我们需要在数据服务上提供对象的缓存功能，接口服务不需要将用户上传的对象缓存在自身节点的内存里，而是传输到某个数据服务节点的一个临时对象里，并在传输数据的同时计算其散列值。当整个数据传输完毕以后，散列值计算也同步完成，如果一致，接口节点需要将临时对象转成正式对象；如果不一致，则将临时对象删除。
+
+### 给数据服务加入缓存功能
+
+本章接口服务的功能没有发生变化，数据服务删除了objects接口的PUT方法并新增了temp接口的POST、PATCH、PUT、DELETE4种方法作为替代。
+
+- 数据服务的RESP接口
+
+```text
+POST /temp/<hash>
+请求头部
+- Size:<需要缓存的对象的大小>
+响应正文
+- uuid
+```
+接口服务以POST方法访问数据服务temp接口，在URL的`<hash>`部分指定对象散列值，并提供一个名为siz的HTTP请求头部，用于指定对象的大小。这会在数据服务节点上创建一个临时对象。该接口返回一个随机生成的uuid(见其官方网站)用以标识这个临时对象，后续操作通过uuid进行。
+
+```text
+PATCH /temp/<uuid>
+请求正文
+- 对象的内容
+接口服务以PATCH方法访问数据服务节点上的临时对象，HTTP请求的正文会被写入该临时对象。
+- PUT /temp/<uuid>
+接口服务数据校验一致，调用PUT方法将该临时文件转正。
+DELETE /temp/<uuid>
+接口服务数据校验不一致，调用DELETE方法将该临时文件删除。
+```
+
+### 对象PUT流程
+
+<img width="754" alt="加入数据校验的对象PUT流程" src="https://github.com/JIeJaitt/goDistributed-Object-storage/assets/77219045/02254045-a4c6-4c60-81da-bf056d9ad810">
+
+客户端在PUT对象时需要提供对象的散列值和大小。接口服务首先在数据服务层定位散列值，如果已经存在，则直接添加元数据：如果不存在，则用POST方法访问数据服务节点的temp接口，提供对象的散列值和大小。数据服务节点返回一个uuid。然后接口服务用PATCH方法将客户端的数据上传给数据服务，同时计算数据的散列值。客户端数据上传完毕后核对计算出的散列值和客户端提供的散列值是否一致，如果一致则用PUT方法将临时对象转正；否则用DELETE方法删除临时对象。临时对象的内容首先被保存在数据服务本地磁盘的`$STORAGE_ROOT/temp/uuid>.dat`文件，转
+正后会被重命名为`$STORAGE_ROOT/objects/<hash>`文件。
+
+本章对象GET流程相比上一章没有发生很大的变化。
+
+### GO语言实现接口服务的变化
+
+```go 
+// object.put 相关函数
+// apiServer/object/put.go
+func put(w http.ResponseWriter, r *http.Request) {
+	// 计算哈希
+	hash := utils.GetHashFromHeader(r.Header)
+	if hash == "" {
+		log.Println("missing object hash in digest header")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// 从请求中获取对象的信息
+	size := utils.GetSizeFromHeader(r.Header)
+	c, e := storeObject(r.Body, hash, size)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(c)
+		return
+	}
+	if c != http.StatusOK {
+		w.WriteHeader(c)
+		return
+	}
+
+	// 添加元数据
+	name := strings.Split(r.URL.EscapedPath(), "/")[2]
+	e = es.AddVersion(name, hash, size)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+// apiServer/object/store.go
+func storeObject(r io.Reader, hash string, size int64) (int, error) {
+	// 本地存在返回http.StatusOK,
+	if locate.Exist(url.PathEscape(hash)) {
+		return http.StatusOK, nil
+	}
+
+	// 本地不存在，上传到数据服务
+	stream, e := putStream(url.PathEscape(hash), size)
+	if e != nil {
+		return http.StatusInternalServerError, e
+	}
+
+    // 上传到数据服务
+	reader := io.TeeReader(r, stream)
+	// 计算哈希值
+	d := utils.CalculateHash(reader)
+	// 比较哈希值
+	if d != hash {
+		// 哈希值不一致，删除临时对象
+		stream.Commit(false)
+		return http.StatusBadRequest, fmt.Errorf("object hash mismatch, calculated=%s, requested=%s", d, hash)
+	}
+	// 哈希值一致，转正
+	stream.Commit(true)
+	return http.StatusOK, nil
+}
+
+// src/lib/utils.go
+func CalculateHash(r io.Reader) string {
+	h := sha256.New()
+	io.Copy(h, r)
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
+}
+
+// apiServer/objects/put_stream.go
+func putStream(hash string, size int64) (*objectstream.TempPutStream, error) {
+	// 选择一个数据服务
+	server := heartbeat.ChooseRandomDataServer()
+	if server == "" {
+		return nil, fmt.Errorf("cannot find any dataServer")
+	}
+
+    // 上传到数据服务临时磁盘
+	return objectstream.NewTempPutStream(server, hash, size)
+}
+```  
+
+跟第3章的实现相比，put函数唯一的区别在于storeObject多了一个size参数。这是因为我们新的PUT流程需要在一开始就确定临时对象的大小。
+
+storeObject函数首先调用locate.Exist定位对象的散列值，如果已经存在，则跳过后续上传操作直接返回200OK;否则调用putStream生成对象的写入流stream用于写入。注意，这里进行定位的散列值和之后作为参数调用putStream的散列值都经过`url.PathEscape`的处理，原因在之前的章节已经讲过，是为了确保这个散列值可以被放在URL中使用。
+
+io.TeeReader的功能类似Unix的tee命令，它有两个输入参数，分别是作为`io.Reader`的`r`和作为`io.Writer`的`stream`,它返回的reader也是一个`io.Reader`。当reader被读取时，其实际的内容读取自`r`,同时会写入stream。我们用`utils.CalculateHash`从`reader`中读取数据的同时也写入了`stream`。
+
+`utils.CalculateHash`函数调用`sha256.New`生成的变量`h`,类型是`sha256.digest`结构体，实现的接口则是`hash.Hash`。`io.Copy`从参数`r`中读取数据并写入`h`,`h`会对写入的数据计算其散列值，这个散列值可以通过`h.Sum`方法读取。我们从`h.Sum`读取到的散列值是一个二进制的数据，还需要用`base64.StdEncoding.EncodeToString`函数进行Base64编码，然后跟对象的散列值hash进行比较，如果不一致，则调用`stream.Commit(false)`删除临时对象，并返回`400 Bad Request`;如果一致，则调用`stream.Commit(true)`将临时对象转正并返回200OK。
+
+
+putStream唯一的变化在于：第2章的putStream调用objectstream.NewPutStream生成一个对象的写入流，而本章的putStream调用的则是objectstream.NewTempPutStream,这是因为数据服务的temp接口代替了原先的对象PUT接口。TempPutStream相关代码见例4-2。
+
+```go
+// objectstream.NewTempPutStream相关代码
+// src/lib/objectstream/temp.go
+
+type TempPutStream struct {
+	Server string
+	Uuid   string
+}
+
+func NewTempPutStream(server, object string, size int64) (*TempPutStream, error) {
+	request, e := http.NewRequest("POST", "http://"+server+"/temp/"+object, nil)
+	if e != nil {
+		return nil, e
+	}
+	request.Header.Set("size", fmt.Sprintf("%d", size))
+	client := http.Client{}
+	response, e := client.Do(request)
+	if e != nil {
+		return nil, e
+	}
+	uuid, e := ioutil.ReadAll(response.Body)
+	if e != nil {
+		return nil, e
+	}
+	return &TempPutStream{server, string(uuid)}, nil
+}
+
+func (w *TempPutStream) Write(p []byte) (n int, err error) {
+	request, e := http.NewRequest("PATCH", "http://"+w.Server+"/temp/"+w.Uuid, strings.NewReader(string(p)))
+	if e != nil {
+		return 0, e
+	}
+	client := http.Client{}
+	r, e := client.Do(request)
+	if e != nil {
+		return 0, e
+	}
+	if r.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("dataServer return http code %d", r.StatusCode)
+	}
+	return len(p), nil
+}
+
+func (w *TempPutStream) Commit(good bool) {
+	method := "DELETE"
+	if good {
+		method = "PUT"
+	}
+	request, _ := http.NewRequest(method, "http://"+w.Server+"/temp/"+w.Uuid, nil)
+	client := http.Client{}
+	client.Do(request)
+}
+```
+
+TempPutStream结构体包含Server和Uuid字符串。NewTempPutStream函数的输入参数分别是server,hash和size。server参数表明了数据服务的节点地址，hash和siz分别是对象的散列值和大小。我们根据这些信息以POST方法访问数据服务的temp接口从而获得uuid,并将server和uuid保存在TempPutStream结构体的相应属性中返回。
+
+TempPutStream.Write方法根据Server和Uuid属性的值，以PATCH方法访问数据服务的temp接口，将需要写入的数据上传。
+
+TempPutStream.Commit方法根据输入参数good决定用PUT还是DELETE方法访问数据服务的temp接口。
+
+接口服务的变化就是这些，接下来我们来看看数据服务的实现。
+
+
+### Go语言实现数据服务的变化
+
+数据服务的main函数
+
+```diff
+func main() {
++	locate.CollectObjects()
+	go heartbeat.StartHeartbeat()
+	go locate.StartLocate()
+	http.HandleFunc("/objects/", objects.Handler)
++	http.HandleFunc("/temp/", temp.Handler)
+	log.Fatal(http.ListenAndServe(os.Getenv("LISTEN_ADDRESS"), nil))
+}
+```
+
+和第2章相比我们的main函数多了一个locate.CollectObjects的函数调用并引入temp.Handler处理函数的注册。
+
+数据服务的locate包是用来对节点本地磁盘上的对象进行定位的。在第2章，我们的定位通过调用os.Stat检查对象文件是否存在来实现。这样的实现意味着每次定位请求都会导致一次磁盘访问。这会对整个系统带来很大的负担。别忘了我们不止在PUT去重的时候需要进行一次定位，GET的时候也一样要做，可以说定位是对象存储系统最频繁的操作。
+
+为了减少对磁盘访问的次数，从而提高磁盘的性能，本章的数据服务定位功能仅在程序启动的时候扫描一遍本地磁盘，并将磁盘中所有的对象散列值读入内存，之后在定位的时候就不需要再次访问磁盘，只需要搜索内存就可以了。
+
+```go
+// 数据服务的locate包
+// dataServer/locate/locate.go
+
+// 缓存所有对象
+var objects = make(map[string]int)
+// 保护对objects的读写操作
+var mutex sync.Mutex
+
+func Locate(hash string) bool {
+	mutex.Lock()
+	_, ok := objects[hash]
+	mutex.Unlock()
+	return ok
+}
+
+func Add(hash string) {
+	mutex.Lock()
+	objects[hash] = 1
+	mutex.Unlock()
+}
+
+func Del(hash string) {
+	mutex.Lock()
+	delete(objects, hash)
+	mutex.Unlock()
+}
+
+func StartLocate() {
+	q := rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
+	defer q.Close()
+	q.Bind("dataServers")
+	c := q.Consume()
+	// 将RabbitMQ消息队列里收到的对象散列值作为Locate参数
+	for msg := range c {
+		hash, e := strconv.Unquote(string(msg.Body))
+		if e != nil {
+			panic(e)
+		}
+		exist := Locate(hash)
+		if exist {
+			q.Send(msg.ReplyTo, os.Getenv("LISTEN_ADDRESS"))
+		}
+	}
+}
+
+func CollectObjects() {
+	files, _ := filepath.Glob(os.Getenv("STORAGE_ROOT") + "/objects/*")
+	for i := range files {
+		hash := filepath.Base(files[i])
+		objects[hash] = 1
+	}
+}
+```
+
+例4-4显示了数据服务的locate包的实现，函数中的包变量objects是一个以字符串为键，整型为值的map,它用于缓存所有对象。mutex互斥锁用于保护对objects的读写操作。Locate函数利用Go语言的map操作判断某个散列值是否存在于objects中，如果存在返回true,否则返回false。
+
+Add函数用于将一个散列值加入缓存，其输入参数hash作为存入map的键，值为1。
+
+Del函数则相反，用于将一个散列值移出缓存。
+
+StartLocate函数大半部分和第2章一样，第2章的StartLocate函数需要拼出完整的文件名作为Locate的参数，本章则直接将RabbitMQ消息队列里收到的对象散列值作为Locate参数。
+
+CollectObjects函数首先调用`filepath.Glob`读取`STORAGE_ROOT/objects/`目录里的所有文件，对这些文件一一调用`filepath.Base`获取其基本文件名，也就是对象的散列
+值，将它们加入`objects`缓存。
+
+- 数据服务的temp包
+
+```go
+// 数据服务的temp包
+
+// dataServer/temp/handler.go
+func Handler(w http.ResponseWriter, r *http.Request) {
+	m := r.Method
+	if m == http.MethodPut {
+		put(w, r)
+		return
+	}
+	if m == http.MethodPatch {
+		patch(w, r)
+		return
+	}
+	if m == http.MethodPost {
+		post(w, r)
+		return
+	}
+	if m == http.MethodDelete {
+		del(w, r)
+		return
+	}
+	w.WriteHeader(http.StatusMethodNotAllowed)
+}
+```
+
+Handler函数针对访问temp接口的HTTP方法分别调用相应的处理函数put、patch、post和del。
+
+P0ST方法的相关函数见例4-6。
+
+```go
+// dataServer/temp/post.go
+
+// 临时对象
+type tempInfo struct {
+	Uuid string
+	Name string
+	Size int64
+}
+
+// 在本地磁盘记录对象的元数据并且创建一个保存对象内容的临时文件
+// 并通过HTTP响应返回uuid给接口服务
+func post(w http.ResponseWriter, r *http.Request) {
+	output, _ := exec.Command("uuidgen").Output()
+	uuid := strings.TrimSuffix(string(output), "\n")
+	name := strings.Split(r.URL.EscapedPath(), "/")[2]
+	size, e := strconv.ParseInt(r.Header.Get("size"), 0, 64)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	t := tempInfo{uuid, name, size}
+	e = t.writeToFile()
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	os.Create(os.Getenv("STORAGE_ROOT") + "/temp/" + t.Uuid + ".dat")
+	w.Write([]byte(uuid))
+}
+
+func (t *tempInfo) writeToFile() error {
+	f, e := os.Create(os.Getenv("STORAGE_ROOT") + "/temp/" + t.Uuid)
+	if e != nil {
+		return e
+	}
+	defer f.Close()
+	b, _ := json.Marshal(t)
+	f.Write(b)
+	return nil
+}
+```
+
+结构体tempInfo用于记录临时对象的uuid、名字和大小。post函数用于处理HTTP请求，它会生成一个随机的uuid,从请求的URL获取对象的名字，也是散列值。从Size头部读取对象的大小，然后拼成一个tempInfo结构体，调用tempInfo的writeToFile方法将该结构体的内容写入磁盘上的文件。然后它还会在`$STORAGE_ROOT/temp/`目录里创建一个名为`<uuid>.dat`的文件(`<uuid>`心为实际生成的uuid的值)，用于保存该临时对象的内容，最后将该uuid通过HTTP响应返回给接口服务。
+
+tempInfo的writeToFile方法会在`$STORAGE_ROOT/temp/`目录里创建一个名为`<uuid>`的文件，并将自身的内容经过JSON编码后写入该文件。注意，这个文件是用于保存临时对象信息的，跟用于保存对象内容的`<uuid>.dat`是不同的两个文件。
+
+接口服务在调用了POST方法之后会从数据服务获得一个uuid,这意味着数据服务已经为这个临时对象做好了准备。之后接口服务还需要继续调用PATCH方法将数据上传，PATCH方法相关函数见例4-7。
+
+```go
+// temp包的patch函数
+
+func patch(w http.ResponseWriter, r *http.Request) {
+	uuid := strings.Split(r.URL.EscapedPath(), "/")[2]
+	tempinfo, e := readFromFile(uuid)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	infoFile := os.Getenv("STORAGE_ROOT") + "/temp/" + uuid
+	datFile := infoFile + ".dat"
+	f, e := os.OpenFile(datFile, os.O_WRONLY|os.O_APPEND, 0)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer f.Close()
+	_, e = io.Copy(f, r.Body)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	info, e := f.Stat()
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	actual := info.Size()
+	if actual > tempinfo.Size {
+		os.Remove(datFile)
+		os.Remove(infoFile)
+		log.Println("actual size", actual, "exceeds", tempinfo.Size)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func readFromFile(uuid string) (*tempInfo, error) {
+	f, e := os.Open(os.Getenv("STORAGE_ROOT") + "/temp/" + uuid)
+	if e != nil {
+		return nil, e
+	}
+	defer f.Close()
+	b, _ := ioutil.ReadAll(f)
+	var info tempInfo
+	json.Unmarshal(b, &info)
+	return &info, nil
+}
+```
+
+patch函数首先获取请求URL的`<uuid>`部分，然后从相关信息文件中读取tempInfo结构体，如果找不到相关的信息文件，我们就返回`4O4 Not Found`;如果相关信息文件存在，则用`os.OpenFile`打开临时对象的数据文件，并用`io.Copy`将请求的正文写入数据文件。写完后调用`f.Stat`方法获取数据文件的信息info,用`info.Size`获取数据文件当前的大小，如果超出
+了tempInfo中记录的大小，我们就删除信息文件和数据文件并返回`500 Internal Server Error`。
+
+`readFromFile`函数的输入参数是uuid,它用`os.Open`打开`$STORAGE_ROOT/temp/<uuid>`文件，读取其全部内容并经过JSON解码成一个tempInfo结构体返回。
+
+接口服务调用PATCH方法将整个临时对象上传完毕后，自己也已经完成了数据校验的工作，根据数据校验的结果决定是调用PUT方法将临时文件转正还是调
+DELETE方法删除临时文件，PUT方法相关函数见例4-8。
+
+```go
+// temp包的put函数
+func put(w http.ResponseWriter, r *http.Request) {
+	uuid := strings.Split(r.URL.EscapedPath(), "/")[2]
+	tempinfo, e := readFromFile(uuid)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	infoFile := os.Getenv("STORAGE_ROOT") + "/temp/" + uuid
+	datFile := infoFile + ".dat"
+	f, e := os.Open(datFile)
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer f.Close()
+	info, e := f.Stat()
+	if e != nil {
+		log.Println(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	actual := info.Size()
+	os.Remove(infoFile)
+	if actual != tempinfo.Size {
+		os.Remove(datFile)
+		log.Println("actual size mismatch, expect", tempinfo.Size, "actual", actual)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	commitTempObject(datFile, tempinfo)
+}
+
+func commitTempObject(datFile string, tempinfo *tempInfo) {
+	os.Rename(datFile, os.Getenv("STORAGE_ROOT")+"/objects/"+tempinfo.Name)
+	locate.Add(tempinfo.Name)
+}
+```
+
+和patch函数类似，put函数一开始也是获取uuid,打开信息文件读取tempInfo结构体，打开数据文件读取临时对象大小并进行比较，如果大小一致，则调用commitTempObject将临时对象转正。
+
+commitTempObject函数会调用os.Rename将临时对象的数据文件改名为`$STORAGE_ROOT/objects/<hash>`。`<hash>`是对象的名字，也是散列值。之后还会调用`locate.Add`
+将`<hash>`加入数据服务的对象定位缓存。
+
+DELETE方法相关函数见例4-9。
+
+```go
+// temp包的del函数
+func del(w http.ResponseWriter, r *http.Request) {
+	uuid := strings.Split(r.URL.EscapedPath(), "/")[2]
+	infoFile := os.Getenv("STORAGE_ROOT") + "/temp/" + uuid
+	datFile := infoFile + ".dat"
+	os.Remove(infoFile)
+	os.Remove(datFile)
+}
+```
+
+DELETE方法相关函数只有temp.del,它读取uuid,并删除相应的信息文件和数据文件。
+
+数据服务的objects包
+
+数据服务除了新增temp包用于处理temp接口的请求以外，原来的objects包也需要进行改动，第一个改动的地方是删除objects接口的PUT方法，见例4-10。
+
+```go
+// object.Handler函数
+package objects
+
+import "net/http"
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+	m := r.Method
+	if m == http.MethodGet {
+		get(w, r)
+		return
+	}
+	w.WriteHeader(http.StatusMethodNotAllowed)
+}
+```
+
+跟第2章的数据服务相比，本章的objects.Handler去除了处理PUT方法的put函数。这是因为现在数据服务的对象上传完全依靠temp接口的临时对象转正，所以不再需要objects接口的PUT方法。
+
+第二个改动则是在读取对象时进行一次数据校验，见例4-11。
+
+```go
+// object.get函数
+func get(w http.ResponseWriter, r *http.Request) {
+	file := getFile(strings.Split(r.URL.EscapedPath(), "/")[2])
+	if file == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	sendFile(w, file)
+}
+
+func getFile(hash string) string {
+	file := os.Getenv("STORAGE_ROOT") + "/objects/" + hash
+	f, _ := os.Open(file)
+	d := url.PathEscape(utils.CalculateHash(f))
+	f.Close()
+	if d != hash {
+		log.Println("object hash mismatch, remove", file)
+		locate.Del(hash)
+		os.Remove(file)
+		return ""
+	}
+	return file
+}
+
+
+func sendFile(w io.Writer, file string) {
+	f, _ := os.Open(file)
+	defer f.Close()
+	io.Copy(w, f)
+}
+```
+
+get函数首先从URL中获取对象的散列值，然后以散列值为参数调用getFile获得对象的文件名fle,如果fle为空字符串则返回404 Not Found;否则调用sendFile将该对象文件的内容输出到HTTP响应。
+
+getFile函数的输入参数是对象的散列值`<hash>`,它根据这个参数找到`$STORAGE_ROOT/objects/<hash>`对象文件，然后对这个对象的内容计算`SHA-256`散列值，并用`url.PathEscape`转义，最后得到的就是可用于URL的散列值字符串。我们将该字符串和对象的散列值进行比较，如果不一致则打印错误日志，并从缓存和磁盘上删除对象，返回空字符串；如果一致则返回对象的文件名。
+
+sendfile有两个输入参数，分别是用于写入对象数据的w和对象的文件名file。调用os.open打开对象文件，并用io.copy将文件的内容写入w。
+
+有读者可能要质疑这里的数据校验没有必要，因为在对象上传的时候已经在接口服务进行过数据校验了。事实上这里的数据校验是用于防止存储系统的数据降解，哪怕在上传时正确的数据也有可能随着时间的流逝而逐渐发生损坏，我们会在下一章介绍数据降解的成因。
+
+对数据安全有要求的读者可能会进一步要求在临时文件转正时进行一次数据校验，以此来确保从接口服务传输过来的数据没有发生损坏。然而这一步骤仅在本章可行。我们在本章开头也讲过，随着我们的系统功能不断完善，最终保存在数据服务节点上的对象数据和用户的对象数据可能截然不同，我们无法根据用户对象的散列值校验数据服务节点上的对象数据。
+
+### 功能测试
+
+开始测试前记得先创建`$STORAGE_ROOT/temp/`目录。
+```bash
+for i in 'seq 1 6';do mkdir -p /tmp/si/temp;done
+```
+
+我们用cul命令作为客户端来访问服务节点10.29.2.1：12345，连续PUT多个名字不同而内容相同的对象。
+
+```bash
+➜  echo -n "this object will have only 1 instance" ｜ openssl dgst -sha256 -binary ｜ base64
+aWKQ2BipX94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY=
+➜  curl -v 10.29.2.1:12345/objects/test4_1 -XPUT -d "this object will have only 1 instance"-H "Digest:SHA-256=aWKQ2Bipx94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY="
+Hostname was NOT found in DNS cache
+* Trying 10.29.2.1...
+* Connected to 10.29.2.1 (10.29.2.1) port 12345 (#0)
+> PUT /objects/test4_1 HTTP/1.1
+> User-Agent: curl/7.38.0
+> Host: 10.29.2.1:12345
+> Accept: */*
+> Digest: SHA-256=aWKQ2Bipx94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY=
+> Content-Length:37
+> Content-Type:application/x-www-form-urlencoded
+>
+* upload completely sent off:37 out of 37 bytes
+< HTTP/1.1 200 OK
+< Date:Thu,03 Aug 2017 16:35:46 GMT
+< Content-Length:0
+< Content-Type:text/plain;charset=utf-8
+<
+* Connection #0 to host 10.29.2.1 left intact
+
+➜  curl -v 10.29.2.1:12345/objects/test4 2 -XPUT -d "this object will have only 1 instance"-H "Digest:SHA-256=aWKQ2Bipx94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY="
+* Hostname was NOT found in DNS cache
+* Trying 10.29.2.1...
+* Connected to 10.29.2.1 (10.29.2.1) port 12345 (#0)
+> PUT /objects/test4_ 2 HTTP/1.1
+> User-Agent:cur1/7.38.0
+> Host:10.29.2.1:12345
+> Accept:*/*
+> Digest:SHA-256=aWKQ2Bipx94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY=
+> Content-Length:37
+> Content-Type:application/x-www-form-urlencoded
+>
+* upload completely sent off:37 out of 37 bytes
+< HTTP/1.1 200 OK
+< Date:Thu,03 Aug 2017 16:36:19 GMT
+< Content-Length:0
+< Content-Type:text/plain;charset=utf-8
+<
+* Connection #0 to host 10.29.2.1 left intact
+```
+
+我们可以用定位命令查看该对象被保存在哪个数据服务节点上。
+
+```bash
+➜  curl 10.29.2.1:12345/locate/aWKQ2Bipx94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY=
+"10.29.1.1:12345"
+```
+
+我们还可以用ls命令访问各数据服务节点的`$STORAGE_ROOT/objects`目录。
+```bash
+➜  ls /tmp/?/objects/aWKQ2Bipx94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY\=
+/tmp/1/objects/aWKQ2Bipx94sb+h3xdTbWYAulyzjn5vyFG2SOwUQIXY=
+```
+
+可以看到仅在一个数据服务节点上存在aWKQ2BipX94sb+h3xdTbWYAulyzjn5yFG2SowUQIXY=文件（注意，在我们的测试环境中所有的数据服务节点运行都在同一个服务器上且存储根目录都在/tmp的子目录里，所以可以使用“？”通配符。如果读者自己的测试环境跟我们不同，则需要分别访问相应的数据服务节点的存储根目录)。
+
+尝试GET对象。
+```bash
+$ curl 10.29.2.1:12345/objects/test41
+this object will have only 1 instance
+$ curl 10.29.2.1:12345/objects/test42
+this object will have only 1 instance
+```
+
+两个对象都可以GET。
+
+尝试PUT一个散列值不正确的对象。
+```bash
+➜  curl -v 10.29.2.1:12345/objects/test4 1 -XPUT -d "this object will have only 1 instance" -H "Digest:SHA-256=incorrecthash"
+* Hostname was NOT found in DNS cache
+* Trying 10.29.2.1...
+* Connected to10.29.2.1(10.29.2.1)port12345(#0)
+> PUT /objects/test4 1 HTTP/1.1
+> User-Agent:curl/7.38.0
+> Host:10.29.2.1:12345
+> Accept:*/*
+> Digest:SHA-256=incorrecthash
+> Content-Length:37
+> Content-Type:application/x-www-form-urlencoded
+>
+* upload completely sent off:37 out of 37 bytes
+< HTTP/1.1 400 Bad Request
+< Date:Thu,03 Aug 2017 16:40:06 GMT
+< Content-Length:0
+< Content-Type:text/plain;charset-utf-8
+< Connection 0 to host 10.29.2.1 left intact
+```
+收到预期的400 Bad Request。
+
+### 去重导致的性能问题
+
+有实际动手兴趣的读者在功能测试的时候应该已经发现了，我们的系统在第一次PUT对象时等待了约1s。这是我们locate定位的超时时间。为了去重，每一个新对象上传时都不得不等待这个时间以确保数据服务中不存在散列值相等的对象。实际使用中大多数情况下上传的都是内容不同的新对象，这是一个很严重的性能问题。减少定位的超时时间可以减少用户的等待时间，但这并不算是从根本上解决了问题，且超时时间设置过短也会提升 SIS 检查的失败概率（比如某个对象其实存在于数据服务中但没能及时返回定位消息），这么做得不偿失。
+
+有一个看上去可行的解决方案是免除小对象的去重：对于大对象，其上传的时间本来就比较长，比如1个10MB的对象在20 Mbit/s上行带宽的连接上需要4s的传输时间，1s的定位超时只是25%的额外时间，看上去这个并不特别突出。而一个10KB的对象上传只需要0.004s,25000%的额外等待就显得无法忍受了。如果我们免除小对象的去重，看上去性能会好很多，小对象本身占用的空间也不大，不去重似乎也可以接受。
+
+真的是这样吗？
+
+很可惜这样是不行的，原因有两点：首先，对小对象不去重会导致它们在对象存储系统的每一个数据服务节点上都存在一个备份，这就会占用大量的磁盘资源。更重要的原因在于，一旦接口服务定位一个这样的小对象，所有的数据服务节点都会响应，然后每一个节点都会反馈一个消息以通知该对象的存在。渐渐的消息队列会塞满反馈消息。而如果有用户在同一时间下载大量小对象（比如用户从云端恢复客户机的操作系统），那就成了系统的灾难，要知道，真正的生产环境可不会像实验室这样只有寥寥几台数据服务节点，而是可能有成千上万的数据节点。
+
+很遗憾，这个性能问题单靠对象存储服务端是无法解决的。一个有效的解决方案是优化客户端的行为。如果客户端能将多个小对象尽量打包成一个大对象上传而不是分别上传，那么1s的等待时间就可以忽略。而且，当客户端下载小对象时，就需要下载含有该小对象的大对象，然后从中取出小对象。这样看上去有些烦琐，但是在需要一次性恢复大量小对象时非常有利，因为无须为每个小对象而频繁访问对象存储服务。
+### 4.6小结
+
+本章优化了数据服务的定位性能，通过在程序启动时扫描磁盘，一次性将全部对象缓存起来，从而避免了每次定位时的磁盘访问。这样做的好处是减免了磁盘访问的次数，从而提升磁盘的io效率，但是缺点是会占用大量的内存且拖慢节点启动速度。假设一个对象存储系统的对象平均大小为100KB,如果数据节点使用的磁盘大小是2TB,那么一共能存放大约20兆个对象。而我们一个SHA-256散列值经过Base64编码后长度是44B,缓存20兆个对象总共需要占用880MB内存（如果我们使用未经Base64编码的二进制的散列值，则是32B,依然需要占用640MB内存）。而节点启动时需要扫描整个磁盘，一次性将所有的对象导入缓存，耗时也需要数分钟至数十分钟不等。
+
+我们在本章的接口服务上实现了用户对象散列值和内容的校验，为了实现这样的数据校验，我们将用户上传的对象作为临时对象缓存在数据服务节点上。如果接口服务的数据校验成功，这些临时对象会被重命名成正式对象保存；如果接口服务的数据校验失败，这些临时对象则会被删除。然而需要当心的是，删除操作并不一定每次都会成功，接口服务崩溃或网络错误都有可能导致漏做删除操作。因此我们需要定期检查并删除这些临时对象，一个检查`$STORAGE_ROOT/temp/`目录下所有临时对象文件创建时间的cro工作就足以完成这样的清理。本书没有实现这样的一个清理工具，有
+兴趣的读者可以自行实现。
+
+本章以SIS（安全仪表系统）检查的方式实现了对象去重，确保一个对象在系统中只有一份实体。这对于节省磁盘空间来说很有用，但是对于保护用户数据来说却很危险。因为一旦这唯一的存储实体损坏或丢失，用户的数据就丢失了。在计算机存储领域，我们通过数据冗余来解决这个问题。我们会在下一章详细介绍并实现这一重要的技术。
+
+
+## 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 参考资料
 
