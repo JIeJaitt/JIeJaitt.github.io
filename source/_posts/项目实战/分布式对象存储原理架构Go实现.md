@@ -610,8 +610,7 @@ curl 10.29.102.173:9200/metadata -XPUT -d'{"mappings":{"objects":{"properties":{
 ```
 创建索引和映射的语法详见ES映射API其官方网站。
 
-ES服务器就绪。现在，和上一章一样，我们同时启动8个服务程序（注意apiServer.go
-的启动命令变了，增加了ES SERVER环境变量的设置）。
+ES服务器就绪。现在，和上一章一样，我们同时启动8个服务程序（注意apiServer.go的启动命令变了，增加了ES_SERVER环境变量的设置）。
 ```bash
 export RABBITMQ_SERVER=amqp://test:test@10.29.102.173:5672
 export ES SERVER=10.29.102.173:9200
@@ -658,29 +657,130 @@ LISTEN ADDRESS=10.29.2.2:12345 go run apiserver/apiserver.go
 echo -n "this is object test3" | openssl dgst -sha256 -binary | openssl enc -base64
 ➜  tools git:(main) ✗ echo -n "this is object test3" | openssl dgst -sha256 -binary | openssl enc -base64
 GYqqAdFPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM=
-
 ```
 
+现在我们把散列值加入PUT请求的Digest头部。
+
 ```bash
-curl -v 10.29.2.2:12345/objects/test3 -XPUT -d"this is object test3"
--H "Digest:SHA-256=GYqqAdEPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM="
-*Trying10.29.2.2,..
-*Connected to10.29.2.2(10.29.2.2)port12345(#0)
-PUT /objects/test3 HTTP/1.1
->Host:10.29.2.2:12345
+➜  curl -v 10.29.2.2:12345/objects/test3 -XPUT -d"this is object test3" -H "Digest:SHA-256=GYqqAdEPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM="
+* Trying 10.29.2.2...
+* Connected to10.29.2.2(10.29.2.2) port 12345 (#0)
+> PUT /objects/test3 HTTP/1.1
+> Host: 10.29.2.2:12345
+> User-Agent: curl/7.47.0
+> Accept: */*
+> Digest: SHA-256=GYqqAdFPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM=
+> Content-Length: 20
+> Content-Type:application/x-www-form-urlencoded
+>
+* upload completely sent off: 20 out of 20 bytes
+< HTTP/1.1 200 OK
+< Date: Mon,03 Jul 2017 09:41:10 GMT
+< Content-Length: 0
+< Content-Type: text/plain; charset=utf-8
+<
+* Connection #0 to host 10.29.2.2 left intact
+```
+
+接下来我们往10.29.2.1这个节点PUT一个test3的新版本。
+```bash
+➜  echo -n "this is object test3 version 2" | openssl dgst -sha256 -binary | base64
+cAPvsxZelPR54zIESQy0BaxClpYJIvaHSF3qEOZYYIo=
+➜  curl -v 10.29.2.1:12345/objects/test3 -XPUT -d"this is object test3 version 2" -H "Digest: SHA-256=cAPvsxZelPR54zIESQy0BaxClpYJIvaHSF3qEOZYYIo="
+* Trying10.29.2.1...
+* Connected to 10.29.2.1(10.29.2.1) port 12345 (#0)
+> PUT /objects/test3 HTTP/1.1
+> Host: 10.29.2.1:12345
+> User-Agent: curl/7.47.0
+> Accept: */*
+> Digest: SHA-256=cAPvsxZelPR54zIESQyOBaxc1pYJIvaHSF3qEOZYYIo=
+> Content-Length: 30
+> Content-Type: application/x-www-form-urlencoded
+>
+* upload completely sent off: 30 out of 30 bytes
+< HTTP/1.1 200 OK
+< Date: Mon, 03 Jul 2017 13:05:48 GMT
+< Content-Length: 0
+< Content-Type: text/plain; charset=utf-8
+<
+* Connection #0 to host 10.29.2.1 left intact
+```
+
+现在我们一共上传了两个test3对象，其散列值分别是“GYqqAdFPt+-CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM="和"cAPvsxZelPR54zIESQy0BaxC1pYJIvaHSF3q
+EOZYYIo=”。下面我们用locate命令看看它们分别被保存在哪个存储节点上。
+
+```bash
+➜  curl 10.29.2.1:12345/locate/GYqqAdFPt+CScnUDc0%2FGcu3kwcWmOADKNYpiZtdbgsM=
+"10.29.1.6:12345"
+➜  curl 10.29.2.1:12345/locate/cAPvsxZelPR54zIESQyOBaxClpYJIvaHSF3qEOZYYIO=
+"10.29.1.3:12345"
+```
+
+注意我们的URL中需要定位的散列值是经过转义的，原因在第1章说过了。
+
+现在让我们查看一下test3对象的版本。
+
+```bash
+➜  curl 10.29.2.1:12345/versions/test3
+{"Name":"test3","Version":1,"Size"20,"Hash":"GYqqAdFPt+CScnUDc0/Gcu3kwcWmOADKNYpiztdbgsM="}
+("Name":"test3","Version":2,"Size":30,"Hash":"cAPvsxZe1PR54ZIESQyOBaxclpYJIvaHSF3qEOZYYIo=")
+```
+
+很好，test3对象现在一共有两个版本，让我们用GET方法获取它们。
+```bash
+curl 10.29.2.1:12345/objects/test3?version=1
+this is object test3
+curl 10.29.2.1:12345/objects/test3
+this is object test3 version 2
+```
+现在让我们删除test3对象。
+```bash
+➜  curl -v 10.29.2.1:12345/objects/test3 -XDELETE
+*Trying10.29.2.1..·
+*Connected to10.29.2.1(10.29.2.1)port12345(#0)
+DELETE /objects/test3 HTTP/1.1
+>Host:10.29.2.1:12345
 User-Agent:curl/7.47.0
 Accept:*/
-Digest:SHA-256=GYqqAdFPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM=
-Content-Length:20
-Content-Type:application/x-www-form-urlencoded
 >
-upload completely sent off:20 out of 20 bytes
-<HTTP/1,12000K
-<Date:Mon,03Ju1201709:41:10GwT
+<HTTP/1.12000K
+<Date:Mon,03Ju1201713:33:33GMT
 Content-Length:0
 Content-Type:text/plain;charset=utf-8
 <
-Connection #0 to host 10.29.2.2 left intact
+Connection #0 to host 10.29.2.1 left intact
+
+➜  curl -v 10.29.2.1:12345/objects/test3
+*Trying10.29.2.1..
+*Connected to10.29.2.1(10.29.2.1)port12345(t0)
+GET /objects/test3 HTTP/1.1
+>Host:10.29.2,1:12345
+User-Agent:cur1/7.47.0
+Accept:*/
+小
+HTTP/1.1 404 Not Found
+<Date:Mon,03Ju1201713:33:48GMr
+Content-Length:0
+Content-Type:text/plain;charset=utf-8
+Connection #0 to host 10.29.2.1 left intact
+```
+
+对象被删除后，我们的GET请求返回404 Not Found。.此时再次查看test3的版本。
+
+```bash
+curl 10.29.2.1:12345/versions/test3
+{"Name":"test3","Version":1,"Size":20,"Hash":"GYqgAdFPt+CScnUDc0/Gcu3kwcWmOADKNYpiZtdbgsM="}
+{"Name""test3","Version":2,"Size"30,"Hash":"cAPvsxZe1PR54ZIESQy0BaxclpYJIvaHSF3qEOZYYIo="}
+{"Name":"test3","Version":3,"Size"0,"Hash":""}
+```
+我们可以发现虽然从接口服务看tst3对象已经不存在，但是在元数据服务中现在有3个版本，最新的那个版本的Size为0，Hash为空字符串。
+
+而且我们依然可以指定版本号获取test3的旧版本。
+```bash
+➜  curl 10.29.2.1:12345/objects/test3?version=1
+this is object test3
+➜  curl 10.29.2.1:12345/objects/test3?version=2
+this is object test3 version 2
 ```
 
 
@@ -688,6 +788,13 @@ Connection #0 to host 10.29.2.2 left intact
 
 
 
+### 小结
+
+我们在本章加入了对象存储服务的最后一块主要拼图：元数据服务。有了元数据服务，我们可以在不实际删除数据的情况下实现对象的删除功能：我们可以实现对象的版本控制：我们还确保了对象数据的一致性和GET方法的幂等性。这些都是因为元数据服务可以保存对象的元数据。
+
+本章的接口服务会要求客户端提供对象的散列值作为其全局唯一的标识符，也就是数据服务存储的对象名，但是我们没有对这个散列值进行校验，用户提供的对象散列值和数据有可能是不一致的，产生不一致的原因有很多，我们会在下一章详细介绍，并把数据校验加入我们的服务。
+
+在第2章，我们简单介绍过对象存储服务中一个极其重要的概念：去重。但是由于当时设计的限制，我们无法实现去重。现在有了本章的元数据服务，去重的前期准备工作已就绪，我们会在下一章着手实现它。
 
 
 
