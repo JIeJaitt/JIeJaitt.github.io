@@ -5,10 +5,7 @@ toc: true
 abbrlink: goDistributed-Object-storage
 date: 2022-08-01 22:03:43
 categories: 项目实战
-tags: 
-- Go
-- 分布式
-- 对象存储
+tags: [Go,分布式,对象存储]
 sticky: 9999
 ---
 
