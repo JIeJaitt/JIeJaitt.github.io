@@ -13,6 +13,138 @@ sticky:
 
 schedule scheduler是后端的第三大部分，用于调度异步任务和周期性任务，例如延时删除视频。schedule会根据时间period或interval来定时触发任务，实现异步处理。它将任务分发到schedule中，并在指定时间触发任务。延时删除视频任务是一个例子，会在后台先做一个soft delay，然后在schedule中定期执行，最终真正删除。本文介绍了schedule服务的架构概览，包括HTP server、SB server、timer和task runner等模块。其中，SB server用于接收任务，timer用于定时触发任务，task runner采用生产者消费者模型来执行任务。dispatcher和execute通过channel相互通信，dispatcher将任务内容发送给x cuter，x cuter读取内容并进行操作。
 
+## taskrunner
+
+```go
+const (
+	// controlChan 里面的消息
+	READY_TO_DISPATCH = "d" // 任务准备好了，可以分发了
+	READY_TO_EXECUTE  = "e" // 任务准备好了，可以执行了
+	CLOSE             = "c" // 任务关闭
+
+	VIDEO_PATH = "goStreaming-on-demand-services/videos"
+)
+
+// 架构图里面的控制通道 chan string，只能传输字符串
+type controlChan chan string
+
+// 下发的数据通道，可以传输任意类型的数据
+type dataChan chan interface{}
+
+// dispatcher和executor的函数类型
+type fn func(dc dataChan) error
+
+type Runner struct {
+	Controller controlChan // 控制通道
+	Error      controlChan // 错误通道
+	Data       dataChan    // 数据通道
+	dataSize   int         // 数据通道的大小
+	longLived  bool        // 是否长期存活
+	Dispatcher fn
+	Executor   fn
+}
+
+func NewRunner(size int, longlived bool, d fn, e fn) *Runner {
+	return &Runner{
+		Controller: make(chan string, 1),
+		Error:      make(chan string, 1),
+		Data:       make(chan interface{}, size),
+		longLived:  longlived,
+		dataSize:   size,
+		Dispatcher: d,
+		Executor:   e,
+	}
+}
+
+// 常驻任务
+func (r *Runner) startDispatch() {
+	// 非常驻函数杀掉进程
+	defer func() {
+		if !r.longLived {
+			close(r.Controller)
+			close(r.Data)
+			close(r.Error)
+		}
+	}()
+
+	for {
+		select {
+		case c := <-r.Controller:
+			// 处理状态为DISPATCH情况
+			if c == READY_TO_DISPATCH {
+				err := r.Dispatcher(r.Data)
+				log.Printf("startDispatch Controller add data: %v\n", r.Data)
+				if err != nil {
+					r.Error <- CLOSE
+				} else {
+					// 改变Controller状态
+					r.Controller <- READY_TO_EXECUTE
+				}
+			}
+
+			if c == READY_TO_EXECUTE {
+				err := r.Executor(r.Data)
+				log.Printf("startDispatch Controller execute data: %v\n", r.Data)
+				if err != nil {
+					r.Error <- CLOSE
+				} else {
+					r.Controller <- READY_TO_DISPATCH
+				}
+			}
+
+		// 处理出错情况
+		case e := <-r.Error:
+			if e == CLOSE {
+				return
+			}
+			//default:
+
+		}
+	}
+}
+
+// 启动ruuner
+func (r *Runner) StartAll() {
+	// 启动前需要前内置一个READY_TO_DISPATCH来激活程序
+	r.Controller <- READY_TO_DISPATCH
+	r.startDispatch()
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 
 
 ```bash
