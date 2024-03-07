@@ -1,15 +1,19 @@
 ---
-title: 流媒体点播视频网站Go语言实现
+title: 流媒体点播视频网站Go语言实现之scheduler调度器模块实现
 excerpt: 本博客暂不显示摘要，请大家谅解
 toc: true
 categories: 项目实战
-tags: streaming
+tags: [streaming,流媒体]
 abbrlink: 63de6ed3
 date: 2021-09-15 17:04:22
 sticky:
 ---
 
-## scheduler 调度器模块实现
+## 前言
+
+schedule scheduler是后端的第三大部分，用于调度异步任务和周期性任务，例如延时删除视频。schedule会根据时间period或interval来定时触发任务，实现异步处理。它将任务分发到schedule中，并在指定时间触发任务。延时删除视频任务是一个例子，会在后台先做一个soft delay，然后在schedule中定期执行，最终真正删除。本文介绍了schedule服务的架构概览，包括HTP server、SB server、timer和task runner等模块。其中，SB server用于接收任务，timer用于定时触发任务，task runner采用生产者消费者模型来执行任务。dispatcher和execute通过channel相互通信，dispatcher将任务内容发送给x cuter，x cuter读取内容并进行操作。
+
+## 
 
 ```bash
 scheduler             

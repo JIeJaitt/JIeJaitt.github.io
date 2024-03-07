@@ -3,7 +3,7 @@ title: 分布式对象存储原理架构Go实现之数据维护
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 2301d141
 toc: true
-date: 2024-03-07 06:28:54
+date: 2022-03-07 06:28:54
 categories: 项目实战
 tags: [Go,分布式,对象存储]
 sticky:
