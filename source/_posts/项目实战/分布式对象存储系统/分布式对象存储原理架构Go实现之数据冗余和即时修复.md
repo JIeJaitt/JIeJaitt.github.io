@@ -682,7 +682,7 @@ MBMxWHrPMsuOBaVYHkwSeZQRyTRMQyiKp2oelpLZza8=
 > Content-Type:application/x-www-form-urlencoded
 >
 * upload completely sent off:42 out of 42 bytes
-< HTTP/1,12000K
+< HTTP/1,1 200 OK
 < Date:Wed,09 Aug 2017 18:07:28 GMT
 < Content-Length:0
 < Content-Type:text/plain;charset-utf-8
@@ -716,22 +716,40 @@ MBMxWHrPMsuOBaVYHkwSeZQRyTRMQyiKp2oelpLZza8=.1.DigCAigrm32FBMDzVIPdjPp+LZMHY9ktS
 
 我们可以看到原本对象的内容“this object will be separate to4+2 shards”是如何被分成4个数据片的。
 ```bash
-➜  cat /tmp/4/objects/MBMxWHrPMsuOBaVYHkwSeZQRyTRMQyiKp2oelpLZzaB\=.0.XVFHp532F 5kZ89051XQ06UEKWW80GzyXwLWS4Ln9fONcg\-
+➜  cat /tmp/4/objects/MBMxWHrPMsuOBaVYHkwSeZQRyTRMQyiKp2oelpLZzaB\=.0.XVFHp532F 5kZ89051XQ06UEKWW80GzyXwLWS4Ln9fONcg\=
 this object
-➜  cat /tmp/6/objects/MBMxWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZza8\-.1.DjgCAigrm&2FBMDzVlPdjPp+LZMHY9ktSKNX9A9eQShAQ\=
+➜  cat /tmp/6/objects/MBMxWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZza8\=.1.DjgCAigrm% 2FBMDzVlPdjPp+LZMHY9ktSKNX9A9eQShAQ\=
 will be se
 ➜  cat /tmp/5/objects/MBMxWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZzaB\=.2.pV2SP82Fi 3jK9KGs5BtQs++TJEecq82782FYaUnSRPU1IX8\=
 parate to 4
-➜  cat /tmp/3/objeets/MBMxWHrPMsuOBaVYHkwSeZORyTRMOyiKp2oelpL2za8\=.3.9cMmcwZQE+dlbz27iekkG282FL4raiYzUUSvebfE9xUKw\=
+➜  cat /tmp/3/objeets/MBMxWHrPMsuOBaVYHkwSeZORyTRMOyiKp2oelpL2za8\=.3.9cMmcwZQE+ dlbz27iekkG282FL4raiYzUUSvebfE9xUKw\=
 +2 shards
 ```
+
 尝试GET和定位对象。
 ```bash
 ➜  curl 10.29.2.1:12345/objects/test5
 this object will be separate to 4+2 shards
+
+➜  curl 10.29.2.1:12345/locate/MBMxWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZza8=
+("0":"10.29.1.4:12345","1":"10.29.1.6:12345","2":"10.29.1.5:12345","3":"10.29.1.3:12345","4":"10.29.1.1:12345","5":"10.29.1.2:12345"}
 ```
 
+接下来我们删除分片0并修改分片1的内容，看看即时修复能不能将这些数据恢复出来。
+```bash
+➜  rm /tmp/4/objects/MBMxWHrPMsuOBaVYHkwScZORyTRMQyiKp2oelpLZza8\=.0.
+XVFHp582F5kZ 89051XQo6UEkWW80GzyXwLWS4Ln9fONcg\=
+
+➜  echo some_garbage /tmp/6/objects/MBMxWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZza8\ =.1.DjgCAigrm%2FBMDzVIPdjPp+LZMHY9ktSKNX9A9eQShAQ\=
+
+➜  curl 10.29.2.1:12345/objects/test5
+this object will be separate to 4+2 shards
+
+```
+
+
 test5对象的数据可以正确读出。让我们再次检查数据节点上的内容。
+
 ```bash
 ➜  ls/tmp/?/objects
 /tmp/1/objects:
@@ -747,7 +765,7 @@ MBMxWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZza8=.2.pV2SP32Fi3jK9KGs5BtQS++TJEecqB27t
 /tmp/6/objects:
 MBMXWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZza8=.1.DjgCAigrmt2FBMDzV1PdjPp+LZMHY9ktSKNX9A9eQShAQ=
 
-➜  cat /tmp/4/objects/MBMxWHrPMauOBaVYHkwScZQRyTRMQyiKp2oelpLZza8\=.0.XVFHp582F5kZ 89051XQo6UEkWW8OGzyXwLWS4Ln9E0Neg\=
+➜  cat /tmp/4/objects/MBMxWHrPMauOBaVYHkwScZQRyTRMQyiKp2oelpLZza8\=.0.XVFHp582F5kZ89051XQo6UEkWW8OGzyXwLWS4Ln9E0Neg\=
 this object
 ➜  cat /tmp/6/objects/MBMxWHrPMsuOBaVYHkwScZQRyTRMQyiKp2oelpLZza8\=.1.DjgCAigrm32FBMDzVlPdjPp+LZMHY9ktSKNX9A9eQShAQ\=
 will be se
