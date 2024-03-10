@@ -88,6 +88,8 @@ type MultiPartInfo struct {
 	metaCache, err := repo.NewMetaDataInfoRepo().GetByUid(lgDB, uid)
 ```
 
+添加新的数据库操作工具函数，修改路径：app/pkg/repo/multipartinfo.go
+
 ```go
 // UpdateIsMergedByStorageUid 根据storageUid更新IsMerged字段
 func (r *multiPartInfoRepo) UpdateIsMergedByStorageUid(db *gorm.DB, uid int64, b bool) error {
