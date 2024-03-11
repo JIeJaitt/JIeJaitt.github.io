@@ -201,7 +201,7 @@ Go 的函数参数传递都是值传递。所谓值传递：指在调用函数�
 
 （关于刚才问的 slice 为什么传到函数内可能被修改，如果 slice 在函数内没有出现扩容，函数外和函数内 slice 变量指向是同一个数组，则函数内复制的 slice 变量值出现更改，函数外这个 slice 变量值也会被修改。如果 slice 在函数内出现扩容，则函数内变量的值会新生成一个数组（也就是新的 slice，而函数外的 slice 指向的还是原来的 slice，则函数内的修改不会影响函数外的 slice。）
 
-### **10、讲讲 Go 的 select 底层数据结构和一些特性？（难点，没有项目经常可能说不清，面试一般会问你项目中怎么使用 select）**
+### 讲讲 Go 的 select 底层数据结构和一些特性？（难点，没有项目经常可能说不清，面试一般会问你项目中怎么使用 select）
 
 答：go 的 select 为 golang 提供了多路 IO 复用机制，和其他 IO 复用一样，用于检测是否有读写事件是否 ready。linux 的系统 IO 模型有 select，poll，epoll，go 的 select 和 linux 系统 select 非常相似。
 
@@ -219,7 +219,7 @@ select 结构组成主要是由 case 语句和执行的函数组成 select 实�
 
 5）存在 default 语句，select 将不会阻塞，但是存在 default 会影响性能。
 
-### **11、讲讲 Go 的 defer 底层数据结构和一些特性？**
+### 讲讲 Go 的 defer 底层数据结构和一些特性？
 
 答：每个 defer 语句都对应一个_defer 实例，多个实例使用指针连接起来形成一个单连表，保存在 gotoutine 数据结构中，每次插入_defer 实例，均插入到链表的头部，函数结束再一次从头部取出，从而形成后进先出的效果。
 
@@ -233,7 +233,7 @@ select 结构组成主要是由 case 语句和执行的函数组成 select 实�
 
 申请资源后立即使用 defer 关闭资源是个好习惯。
 
-### **12、单引号，双引号，反引号的区别？**
+### 单引号，双引号，反引号的区别？
 
 单引号，表示 byte 类型或 rune 类型，对应 uint8 和 int32 类型，默认是 rune 类型。byte 用来强调数据是 raw data，而不是数字；而 rune 用来表示 Unicode 的 code point。
 
@@ -256,15 +256,15 @@ map 的类型是 map[key]，key 类型的 ke 必须是可比较的，通常情�
 
 无序的, map 因扩张⽽重新哈希时，各键值项存储位置都可能会发生改变，顺序自然也没法保证了，所以官方避免大家依赖顺序，直接打乱处理。就是 for range map 在开始处理循环逻辑的时候，就做了随机播种
 
-### 3、 map 中删除一个 key，它的内存会释放么？（常问）
+### map 中删除一个 key，它的内存会释放么？（常问）
 
 如果删除的元素是值类型，如 int，float，bool，string 以及数组和 struct，map 的内存不会自动释放
 
 如果删除的元素是引用类型，如指针，slice，map，chan 等，map 的内存会自动释放，但释放的内存是子元素应用类型的内存占用
 
-将 map 设置为 nil 后，内存被回收。
+map删除元素并不会释放内存，只是修改标记。如果想要释放内存，可以将map设置为nil后调用gc来实现。
 
-**这个问题还需要大家去搜索下答案，我记得有不一样的说法，谨慎采用本题答案。**
+https://juejin.cn/post/7195528153905184829
 
 ### 4、怎么处理对 map 进行并发访问？有没有其他方案？ 区别是什么？
 
@@ -350,6 +350,28 @@ type hmap struct {
 详细参考：
 
 [golang 哪些类型可以作为 map key](https://blog.csdn.net/lanyang123456/article/details/123765745)
+
+### 说一下map的数据结构和扩容机制
+
+Go 语言中的 `map` 是一种高效的键值对集合，其内部实现是基于散列表（hash table）的。下面是 `map` 的数据结构和扩容机制的概述：
+
+### 数据结构
+
+`map` 的内部实现由以下几个主要部分构成：
+
+- **哈希桶（Buckets）**：`map` 使用多个哈希桶来存储键值对，每个桶可以存储若干键值对（在较新版本的 Go 中，每个桶通常可以存放 8 个键值对）。键值对存储在哪个桶是根据键的哈希值来决定的。
+- **溢出桶（Overflow Buckets）**：当一个桶填满时，额外的键值对将被存储在溢出桶中。每个主桶都有指向溢出桶的指针，以处理哈希冲突。
+- **哈希函数**：用于将键映射到桶的索引。Go 的 `map` 实现中使用的哈希函数旨在分布均匀，以减少冲突并提高存取效率。
+
+### 扩容机制
+
+当 `map` 中的元素不断增加，导致装载因子（即 `map` 中元素的数量与桶数量的比值）超过某个阈值时，`map` 会进行扩容来保持操作的效率。扩容主要包括以下步骤：
+
+1. **创建更大的哈希表**：扩容时，`map` 会创建一个新的、更大的哈希表。新表的桶数量通常是原表的两倍，这有助于分散已有的键值对，从而减少冲突和提高访问速度。
+2. **重新哈希**：扩容过程中，所有现有的键值对都需要被重新哈希到新的哈希表中。这意味着根据每个键的哈希值重新计算其在新表中的桶位置，并将其移动到相应的位置。
+3. **逐步迁移**：为了避免扩容时一次性的大量计算，Go 的 `map` 实现采用了逐步迁移的方式。当发生写操作时，会逐渐将旧表中的键值对迁移到新表中，直到所有键值对都迁移完毕。
+
+这种扩容机制使得 `map` 能够在动态增长时保持较高的性能，但也意味着扩容操作可能会导致短暂的性能下降。由于扩容的成本相对较高，Go 的 `map` 实现尽量通过初始容量的预分配和合理的装载因子阈值来减少扩容次数。
 
 三**、context 相关**
 ----------------
@@ -615,6 +637,120 @@ defer func() {
 4. ants（推荐）
 
 **所以直接研究 ants 底层吧，省的造轮子。**
+
+在 Go 中实现一个优雅的 goroutine 池（goroutine pool）的目的是控制并发执行的 goroutine 的数量，以有效利用资源并防止过多的并发导致资源竭尽。goroutine 池通常由以下几个核心部分组成：工作队列（work queue），工作者（worker），以及调度器（dispatcher）。以下是实现一个简单但优雅的 goroutine 池的步骤和代码示例。
+
+### 步骤
+
+1. **定义任务**：首先定义任务（Task），通常是一个函数或者是包含要执行函数的结构体。
+2. **工作者（Worker）**：工作者负责执行队列中的任务。每个工作者在自己的 goroutine 中运行，并从任务队列中获取任务执行。
+3. **调度器（Dispatcher）**：调度器管理工作者池，负责接收新的任务并将其分配给空闲的工作者。如果所有工作者都忙碌，任务将在队列中等待。
+4. **任务队列**：用来存放等待被执行的任务，通常是一个通道（channel）。
+
+### 代码示例
+
+这是一个简化的 goroutine 池实现示例：
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+// Task 是一个代表单个任务的类型
+type Task func()
+
+// Worker 是执行任务的工作者
+type Worker struct {
+    ID          int
+    TaskChannel chan Task
+    wg          *sync.WaitGroup
+}
+
+// NewWorker 创建并返回一个新的 Worker
+func NewWorker(workerID int, wg *sync.WaitGroup) Worker {
+    return Worker{
+        ID:          workerID,
+        TaskChannel: make(chan Task),
+        wg:          wg,
+    }
+}
+
+// Start 方法启动 Worker 循环，不断从 TaskChannel 接收并执行任务
+func (w *Worker) Start() {
+    go func() {
+        for task := range w.TaskChannel {
+            task()
+            w.wg.Done()
+        }
+    }()
+}
+
+// Pool 是 goroutine 池
+type Pool struct {
+    Workers    []Worker
+    TaskQueue  chan Task
+    wg         sync.WaitGroup
+}
+
+// NewPool 创建一个新的 Pool
+func NewPool(numWorkers int) *Pool {
+    pool := &Pool{
+        TaskQueue: make(chan Task),
+        Workers:   make([]Worker, numWorkers),
+    }
+    pool.wg.Add(numWorkers)
+    for i := 0; i < numWorkers; i++ {
+        worker := NewWorker(i, &pool.wg)
+        pool.Workers[i] = worker
+        worker.Start()
+    }
+    return pool
+}
+
+// AddTask 向 Pool 添加任务
+func (p *Pool) AddTask(task Task) {
+    p.TaskQueue <- task
+}
+
+// Start 启动 Pool 的任务分发
+func (p *Pool) Start() {
+    for _, worker := range p.Workers {
+        go func(w Worker) {
+            for task := range p.TaskQueue {
+                w.TaskChannel <- task
+            }
+        }(worker)
+    }
+}
+
+// Wait 等待所有任务完成
+func (p *Pool) Wait() {
+    p.wg.Wait()
+}
+
+func main() {
+    tasks := []Task{
+        func() { fmt.Println("Task 1"); time.Sleep(1 * time.Second) },
+        func() { fmt.Println("Task 2"); time.Sleep(1 * time.Second) },
+        // 可以添加更多任务
+    }
+
+    pool := NewPool(3) // 创建一个有 3 个工作者的池
+    pool.Start()
+
+    for _, task := range tasks {
+        pool.AddTask(task)
+    }
+
+    pool.Wait() // 等待所有任务完成
+}
+```
+
+这个例子展示了如何创建和使用一个 goroutine 池来并发执行多个任务，同时控制并发数量。工作者池通过任务队列接收任务，每个工作者在自己的 goroutine 中执行任务。通过这种方式，可以有效地利用系统资源，避免因为创建过多的 goroutine 而耗尽资源。
 
 **八、GC 相关**
 -----------
