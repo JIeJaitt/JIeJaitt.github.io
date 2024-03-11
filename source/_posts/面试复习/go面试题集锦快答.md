@@ -15,6 +15,34 @@ sticky:
 
 这个我是看过源码的，
 
+```go
+func growslice(et *_type, old slice, cap int) slice {
+   //  ......
+	newcap := old.cap
+	doublecap := newcap + newcap    //双倍扩容（原容量的两倍）
+	if cap > doublecap {   //如果所需容量大于 两倍扩容，则直接扩容到所需容量
+		newcap = cap
+	} else {
+		const threshold = 256   //这里设置了一个 阈值 -- 256
+		if old.cap < threshold {		//如果旧容量 小于 256，则两倍扩容
+			newcap = doublecap   
+		} else {
+	    // 检查 0 < newcap 以检测溢出并防止无限循环。
+			for 0 < newcap && newcap < cap {   //如果新容量 > 0  并且 原容量 小于 所需容量
+		
+               // 从小片的增长2x过渡到大片的增长1.25x。这个公式给出了两者之间的平滑过渡。(这里的系数会随着容量的大小发生变化，从2.0到无线接近1.25)
+				newcap += (newcap + 3*threshold) / 4
+              
+                
+              //当newcap计算溢出时，将newcap设置为请求的上限。
+			if newcap <= 0 {   // 如果发生了溢出，将新容量设置为请求的容量大小
+				newcap = cap
+			}
+		}
+	}
+}
+```
+
 GO1.17版本及之前
 当新切片需要的容量cap大于两倍扩容的容量，则直接按照新切片需要的容量扩容；
 当原 slice 容量 < 1024 的时候，新 slice 容量变成原来的 2 倍；
@@ -28,9 +56,7 @@ GO1.18之后
 
 ## slice 为什么不是线程安全的
 
-```
 slice底层结构并没有使用加锁的方式,不支持并发读写
-```
 
 ## map 底层原理
 
@@ -88,10 +114,10 @@ type bmap struct {
 
 ## map 遍历为什么无序
 
-```
 map每次遍历,都会从一个随机值序号的桶,再从其中随机的cell开始遍历,并且扩容后,原来桶中的key会落到其他桶中,本身就会造成失序
 如果想顺序遍历map,先把key放到切片排序,再按照key的顺序遍历map
 
+```go
 var sl []int
 for k := range m {
     sl = append(sl, k)
