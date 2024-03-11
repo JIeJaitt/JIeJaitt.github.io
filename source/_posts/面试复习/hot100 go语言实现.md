@@ -171,6 +171,23 @@ func mergeTrees(root1, root2 *TreeNode) *TreeNode {
 }
 ```
 
+## 链表
+
+## 反转链表
+
+```go
+func reverseList(head *ListNode) *ListNode {
+    var pre, cur *ListNode = nil, head
+    for cur != nil {
+        nxt := cur.Next
+        cur.Next = pre
+        pre = cur
+        cur = nxt
+    }
+    return pre
+}
+```
+
 ## 合并两个有序链表
 
 ```go
@@ -230,20 +247,7 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 }
 ```
 
-## 反转链表
 
-```go
-func reverseList(head *ListNode) *ListNode {
-    var pre, cur *ListNode = nil, head
-    for cur != nil {
-        nxt := cur.Next
-        cur.Next = pre
-        pre = cur
-        cur = nxt
-    }
-    return pre
-}
-```
 
 ## 回文链表
 

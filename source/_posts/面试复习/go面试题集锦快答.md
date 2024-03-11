@@ -5,7 +5,7 @@ toc: true
 abbrlink: 7ac5aff
 date: 2023-07-24 23:49:09
 categories: 编程语言
-tags: golang
+tags: [golang,期末考试]
 sticky:
 ---
 
@@ -13,6 +13,7 @@ sticky:
 
 ## slice 扩容机制
 
+这个我是看过源码的，
 
 GO1.17版本及之前
 当新切片需要的容量cap大于两倍扩容的容量，则直接按照新切片需要的容量扩容；
