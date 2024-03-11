@@ -1,7 +1,7 @@
 ---
 title: 高频SQL练习
 categories: 数据存储
-tags: SQL
+tags: [SQL,期末考试]
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: high-frequency-sql-practice
 toc: true
