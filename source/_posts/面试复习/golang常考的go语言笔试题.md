@@ -117,3 +117,29 @@ func main() {
 	wg.Wait()
 } 
 ```
+
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func printString(str string, done chan bool) {
+	for _, letter := range str {
+		fmt.Printf("%c", letter)
+	}
+	done <- true
+}
+
+func main() {
+	done := make(chan bool)
+
+	go printString("Hello", done)
+	<-done // 等待第一个goroutine完成
+
+	go printString("World", done)
+	<-done // 等待第二个goroutine完成
+}
+```
