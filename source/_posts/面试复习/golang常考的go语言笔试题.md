@@ -143,3 +143,40 @@ func main() {
 	<-done // 等待第二个goroutine完成
 }
 ```
+
+## N个协程交替打印1-100
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func printer(wg *sync.WaitGroup, ch chan int) {
+	defer wg.Done()
+	for num := range ch {
+		fmt.Println(num)
+		ch <- num + 1 // 将下一个数字发送到通道
+	}
+}
+
+func main() {
+	numGoroutines := 5 // 设置协程数量
+
+	var wg sync.WaitGroup
+	wg.Add(numGoroutines)
+
+	ch := make(chan int)
+
+	for i := 0; i < numGoroutines; i++ {
+		go printer(&wg, ch)
+	}
+
+	ch <- 1 // 启动第一个协程开始打印
+
+	wg.Wait()
+	close(ch)
+}
+```
