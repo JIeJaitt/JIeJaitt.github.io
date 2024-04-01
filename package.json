@@ -33,7 +33,7 @@
     "hexo-server": "^3.0.0",
     "hexo-tag-embed": "^1.0.0",
     "hexo-theme-landscape": "^1.0.0",
-    "hexo-util": "^3.2.0",
+    "hexo-util": "^3.3.0",
     "inferno": "^8.2.3",
     "inferno-create-element": "^8.2.3",
     "semver": "^7.3.7",
