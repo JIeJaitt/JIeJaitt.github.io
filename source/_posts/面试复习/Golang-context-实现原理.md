@@ -22,7 +22,7 @@ context 是 golang 中的经典工具，主要在异步场景中用于实现并�
 
 ![](https://pic2.zhimg.com/v2-a9d8a59f572b84a07d2d610f26819cbd_r.jpg)
 
-```
+```go
 type Context interface {
     Deadline() (deadline time.Time, ok bool)
     Done() <-chan struct{}
@@ -34,16 +34,13 @@ type Context interface {
 Context 为 interface，定义了四个核心 api：
 
 （1）Deadline：返回 context 的过期时间；
-
 （2）Done：返回 context 中的 channel；
-
 （3）Err：返回错误；
-
 （4）Value：返回 context 中的对应 key 的值.
 
 ### 1.2 标准 error
 
-```
+```go
 var Canceled = errors.New("context canceled")
 
 
@@ -67,7 +64,7 @@ func (deadlineExceededError) Temporary() bool { return true
 
 ### 2.1 类的实现
 
-```
+```go
 type emptyCtx int
 
 
@@ -88,9 +85,8 @@ func (*emptyCtx) Err() error {
 
 func (*emptyCtx) Value(key any) any {
     return
-```
-
 }
+```
 
 （1）emptyCtx 是一个空的 context，本质上类型为一个整型；
 
@@ -104,7 +100,7 @@ func (*emptyCtx) Value(key any) any {
 
 ### 2.2 context.Background() & context.TODO()
 
-```
+```go
 var (
     background = new(emptyCtx)
     todo       = new(emptyCtx)
@@ -129,7 +125,7 @@ func TODO() Context {
 
 ![](https://pic1.zhimg.com/v2-042f807b66b8a7c635f0f567d77ab0a8_r.jpg)
 
-```
+```go
 type cancelCtx struct {
     Context
 
@@ -163,7 +159,7 @@ cancelCtx 未实现该方法，仅是 embed 了一个带有 Deadline 方法的 C
 
 ![](https://pic4.zhimg.com/v2-c1fb394a145fcebbd3c5ab29873a743f_r.jpg)
 
-```
+```go
 func (c *cancelCtx) Done() <-chan struct{} {
 	d := c.done.Load()
 	if d != nil {
@@ -188,7 +184,7 @@ func (c *cancelCtx) Done() <-chan struct{} {
 
 ### 3.4 Err 方法
 
-```
+```go
 func (c *cancelCtx) Err() error {
 	c.mu.Lock()
 	err := c.err
@@ -207,7 +203,7 @@ func (c *cancelCtx) Err() error {
 
 ### 3.5 Value 方法
 
-```
+```go
 func (c *cancelCtx) Value(key any) any {
 	if key == &cancelCtxKey {
 		return c
@@ -224,7 +220,7 @@ func (c *cancelCtx) Value(key any) any {
 
 ### 3.6.1 context.WithCancel()
 
-```
+```go
 func WithCancel(parent Context) (ctx Context, cancel CancelFunc) {
 	if parent == nil {
 		panic("cannot create context from nil parent")
@@ -257,7 +253,7 @@ func newCancelCtx(parent Context) cancelCtx {
 
 ![](https://pic2.zhimg.com/v2-99c722d62d4e47ed9dc1e6e537fce5cd_r.jpg)
 
-```
+```go
 func propagateCancel(parent Context, child canceler) {
 	done := parent.Done()
 	if done == nil {
@@ -309,7 +305,7 @@ propagateCancel 方法顾名思义，用以传递父子 context 之间的 cancel
 
 进一步观察 parentCancelCtx 是如何校验 parent 是否为 cancelCtx 的类型：
 
-```
+```go
 func parentCancelCtx(parent Context) (*cancelCtx, bool) {
 	done := parent.Done()
 	if done == closedchan || done == nil {
@@ -335,7 +331,7 @@ func parentCancelCtx(parent Context) (*cancelCtx, bool) {
 
 ![](https://pic1.zhimg.com/v2-a17586725ae267d88144d32e97f28420_r.jpg)
 
-```
+```go
 func (c *cancelCtx) cancel(removeFromParent bool, err error) {
 	if err == nil {
 		panic("context: internal error: missing cancel error")
@@ -385,7 +381,7 @@ func (c *cancelCtx) cancel(removeFromParent bool, err error) {
 
 走进 removeChild 方法中，观察如何将 cancelCtx 从 parent 的 children set 中移除：
 
-```
+```go
 func removeChild(parent Context, child canceler) {
 	p, ok := parentCancelCtx(parent)
 	if !ok {
@@ -427,7 +423,7 @@ timerCtx 在 cancelCtx 基础上又做了一层封装，除了继承 cancelCtx �
 
 ### 4.2 timerCtx.Deadline()
 
-```
+```go
 func (c *timerCtx) Deadline() (deadline time.Time, ok bool) {
 	return c.deadline, true
 }
@@ -437,7 +433,7 @@ context.Context interface 下的 Deadline api 仅在 timerCtx 中有效，由于
 
 ### 4.3 timerCtx.cancel
 
-```
+```go
 func (c *timerCtx) cancel(removeFromParent bool, err error) {
 	c.cancelCtx.cancel(false, err)
 	if removeFromParent {
@@ -464,7 +460,7 @@ func (c *timerCtx) cancel(removeFromParent bool, err error) {
 
 ### 4.4 context.WithTimeout & context.WithDeadline
 
-```
+```go
 func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 	return WithDeadline(parent, time.Now().Add(timeout))
 }
@@ -472,7 +468,7 @@ func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 
 context.WithTimeout 方法用于构造一个 timerCtx，本质上会调用 context.WithDeadline 方法：
 
-```
+```go
 func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
 	if parent == nil {
 		panic("cannot create context from nil parent")
@@ -527,7 +523,7 @@ func WithDeadline(parent Context, d time.Time) (Context, CancelFunc) {
 
 ![](https://pic4.zhimg.com/v2-d06f3bb57a8cce59dc724c226eb7d4bf_r.jpg)
 
-```
+```go
 type valueCtx struct {
 	Context
 	key, val any
@@ -542,7 +538,7 @@ type valueCtx struct {
 
 ![](https://pic3.zhimg.com/v2-67741ebb56c03b4a2b06ec56ce21b64e_r.jpg)
 
-```
+```go
 func (c *valueCtx) Value(key any) any {
 	if c.key == key {
 		return c.val
@@ -555,7 +551,7 @@ func (c *valueCtx) Value(key any) any {
 
 （2）假如不等，则从 parent context 中依次向上寻找.
 
-```
+```go
 func value(c Context, key any) any {
 	for {
 		switch ctx := c.(type) {
@@ -603,7 +599,7 @@ func value(c Context, key any) any {
 
 ### 5.4 context.WithValue()
 
-```
+```go
 func WithValue(parent Context, key, val any) Context {
 	if parent == nil {
 		panic("cannot create context from nil parent")
@@ -625,9 +621,3 @@ func WithValue(parent Context, key, val any) Context {
 （3）倘若 key 的类型不可比较，panic；
 
 （4）包括 parent context 以及 kv 对，返回一个新的 valueCtx.
-
-文末小广告：
-
-欢迎老板们关注我的个人公众号：小徐先生的编程世界
-
-我会不定期更新个人纯原创的编程技术博客，技术栈以 go 语言为主，让我们一起点亮更多的编程技能树吧！
