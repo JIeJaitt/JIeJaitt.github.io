@@ -21,7 +21,9 @@ date: 2024-02-19 19:47:24
 - 画图：[asciiflow](https://asciiflow.com/)
 - 图床：[Dooong公益图床](https://image.dooo.ng/)；[]()；[]()；[]()；
 - 网速：
-
+- 免费主机：[serv00](https://www.serv00.com/)；[部署Memos教程](https://blog.rappit.site/2024/01/27/serv00_logs#Memos)；
+- DataBase：[MongoDB Atlas](https://cloud.mongodb.com/)；
+- Docker：[koyeb](https://www.koyeb.com/)；[codesandbox](https://codesandbox.io/)；
 
 - 在线运行代码：[Go在线运行](https://www.bejson.com/runcode/golang/)；[]()；[]()
 
