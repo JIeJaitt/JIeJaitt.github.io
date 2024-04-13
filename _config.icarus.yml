@@ -53,8 +53,8 @@ navbar:
             icon: fab fa-github
             url: https://github.com/JIeJaitt
         Discuss on GitHub:
-            icon: fas fa-comments
-            url: 'https://github.com/ppoffice/hexo-theme-icarus/discussions'
+            icon: fa-light fa-user
+            url: https://admin.jiejaitt.tech
 footer:
     links:
         Creative Commons:
