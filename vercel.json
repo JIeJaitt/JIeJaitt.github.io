@@ -34,7 +34,7 @@
   "rewrites": [
     {
       "source": "/admin/(.*)",
-      "destination": "https://admin.jiejaitt.tech/$1"
+      "destination": "https://vlog.jiejaitt.top/$1"
     }
   ],
   "git": {
