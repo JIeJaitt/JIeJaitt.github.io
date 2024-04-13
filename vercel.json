@@ -22,6 +22,18 @@
       ]
     }
   ],
+  "rewrites": [
+    {
+      "source": "/admin/(.*)",
+      "destination": "https://admin.jiejaitt.tech/$1",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache" 
+        }
+      ]
+    }
+  ],
   "git": {
     "deploymentEnabled": {
       "main": false
