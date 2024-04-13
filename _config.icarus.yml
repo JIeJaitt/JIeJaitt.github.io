@@ -52,9 +52,9 @@ navbar:
         Download on GitHub:
             icon: fab fa-github
             url: https://github.com/JIeJaitt
-        Login in:
-            icon: fa-light fa-user
-            url: https://blog.jiejaitt.tech/admin/login
+        Discuss on GitHub:
+            icon: fas fa-comments
+            url: 'https://github.com/ppoffice/hexo-theme-icarus/discussions'
 footer:
     links:
         Creative Commons:
