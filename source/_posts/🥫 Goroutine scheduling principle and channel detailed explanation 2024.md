@@ -1,20 +1,18 @@
----
 title: "\U0001F96B Goroutine scheduling principle and channel detailed explanation 2024"
-tags: golang
+tags:
+  - golang
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: '782e8624'
 toc: true
-date: 2024-04-13 14:41:13
-categories:
+categories: []
+date: 2024-04-13 14:41:00
 sticky:
 ---
-
-
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [learnku.com](https://learnku.com/articles/41668)
 
 > 一、goroutine 简介 goroutine 是 go 语言中最为 NB 的设计，也是其魅力所在，goroutine 的本质是协程，是实现并行计算的核心。
 
-一、goroutine 简介[#](#fbcdc6)
+一、goroutine 简介
 --------------------------
 
 goroutine 是 go 语言中最为 NB 的设计，也是其魅力所在，goroutine 的本质是协程，是实现并行计算的核心。goroutine 使用方式非常的简单，只需使用 go 关键字即可启动一个协程，并且它是处于异步方式运行，你不需要等它运行完成以后在执行以后的代码。
@@ -38,15 +36,15 @@ go func ()// 通过 go 关键字启动一个协程来运行函数
 
 cpu 在切换程序的时候，如果不保存上一个程序的状态（也就是我们常说的 context–上下文），直接切换下一个程序，就会丢失上一个程序的一系列状态，于是引入了进程这个概念，用以划分好程序运行时所需要的资源。因此进程就是一个程序运行时候的所需要的基本资源单位（也可以说是程序运行的一个实体）。
 
-#### 线程[#](#d27612)
+#### 线程
 
 cpu 切换多个进程的时候，会花费不少的时间，因为切换进程需要切换到内核态，而每次调度需要内核态都需要读取用户态的数据，进程一旦多起来，cpu 调度会消耗一大堆资源，因此引入了线程的概念，线程本身几乎不占有资源，他们共享进程里的资源，内核调度起来不会那么像进程切换那么耗费资源。
 
-#### 协程[#](#ebe986)
+#### 协程
 
 协程拥有自己的寄存器上下文和栈。协程调度切换时，将寄存器上下文和栈保存到其他地方，在切回来的时候，恢复先前保存的寄存器上下文和栈。因此，协程能保留上一次调用时的状态（即所有局部状态的一个特定组合），每次过程重入时，就相当于进入上一次调用的状态，换种说法：进入上一次离开时所处逻辑流的位置。线程和进程的操作是由程序触发系统接口，最后的执行者是系统；协程的操作执行者则是用户自身程序，goroutine 也是协程。
 
-### 调度模型简介[#](#19c5b9)
+### 调度模型简介
 
 groutine 能拥有强大的并发实现是通过 GPM 调度模型实现，下面就来解释下 goroutine 的调度模型。
 
@@ -56,7 +54,7 @@ G: 代表一个 goroutine，它有自己的栈，instruction pointer 和其他�
 P:P 全称是 Processor，处理器，它的主要用途就是用来执行 goroutine 的，所以它也维护了一个 goroutine 队列，里面存储了所有需要它来执行的 goroutine  
 Sched：代表调度器，它维护有存储 M 和 G 的队列以及调度器的一些状态信息等。
 
-#### 调度实现[#](#bca232)
+#### 调度实现
 
 ![](https://cdn.learnku.com/uploads/images/202006/03/12604/hJXPS8PNtS.jpeg!large)  
 从上图中看，有 2 个物理线程 M，每一个 M 都拥有一个处理器 P，每一个也都有一个正在运行的 goroutine。  
@@ -299,10 +297,10 @@ product data： 0
 product data： 1
 ```
 
-四、channel[#](#7896a2)
+四、channel
 ---------------------
 
-#### 简介[#](#e05dce)
+#### 简介
 
 channel 俗称管道，用于数据传递或数据共享，其本质是一个先进先出的队列，使用 goroutine+channel 进行数据通讯简单高效，同时也线程安全，多个 goroutine 可同时修改一个 channel，不需要加锁。
 
