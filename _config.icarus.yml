@@ -52,7 +52,7 @@ navbar:
         Download on GitHub:
             icon: fab fa-github
             url: https://github.com/JIeJaitt
-             icon: fa-light fa-user
+            icon: fa-light fa-user
             url: https://blog.jiejaitt.tech/admin/login
 footer:
     links:
