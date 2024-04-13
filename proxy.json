@@ -3,7 +3,7 @@
     "routes": [
         {
             "src": "/admin/(.*)",
-            "dest": "https://admin.jiejaitt.tech/$1",
+            "dest": "https://admin.jiejaitt.tech/$1"
         }
     ]
 }
