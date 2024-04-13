@@ -236,11 +236,6 @@ plugins:
         pixel_id: 
 
 providers:
-    cdn: jsdelivr
-    fontcdn: google
-    iconcdn: fontawesome
-
-# providers:
-#     cdn: 'https://cdn.jsdelivr.net/npm/d3@5.7.0/dist/d3.min.js'
-#     fontcdn: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap'
-#     iconcdn: 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/web/css/all.min.css'
+    cdn: loli
+    fontcdn: ustc
+    iconcdn: loli
