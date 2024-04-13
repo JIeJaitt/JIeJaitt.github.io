@@ -237,6 +237,6 @@ plugins:
 
 providers:
     cdn: loli
-    fontcdn: ustc
+    fontcdn: https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@100..900&display=swap
     iconcdn: https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/6.0.0/css/all.min.css
     
