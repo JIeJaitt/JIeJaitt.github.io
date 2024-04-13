@@ -31,12 +31,6 @@
       ]
     }
   ],
-  "rewrites": [
-    {
-      "source": "/admin/(.*)",
-      "destination": "https://vlog.jiejaitt.top/$1"
-    }
-  ],
   "git": {
     "deploymentEnabled": {
       "main": false

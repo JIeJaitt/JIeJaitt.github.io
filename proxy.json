@@ -1,6 +1,0 @@
-{
-    "version": 2,
-    "routes": [
-        {"src": "/admin/(.*)", "dest": "https://admin.jiejaitt.tech/login/$1"}
-    ]
-}
