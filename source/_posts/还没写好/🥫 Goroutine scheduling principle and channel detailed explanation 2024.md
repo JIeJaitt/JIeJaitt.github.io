@@ -4,7 +4,7 @@ tags:
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: '782e8624'
 toc: true
-categories: []
+categories: [还没写好]
 date: 2024-04-13 14:41:00
 sticky:
 ---
@@ -373,14 +373,14 @@ func main() {
 
 不带缓冲区 channel：只能存一个数据，并且只有当该数据被取出时候才能存下一个数据。
 
-```
+```go
 ch := make(chan int) //不带缓冲区
 ch := make(chan int ,10) //带缓冲区
 ```
 
 不带缓冲区示例：
 
-```
+```go
 package main
 
 import "fmt"
@@ -426,7 +426,7 @@ get  9
 channel 实现作业池  
 我们创建三个 channel，一个 channel 用于接受任务，一个 channel 用于保持结果，还有个 channel 用于决定程序退出的时候。
 
-```
+```go
 package main
 
 import (
