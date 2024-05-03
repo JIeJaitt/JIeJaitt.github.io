@@ -1,5 +1,5 @@
 ---
-title: fab fa-github new article
+title: 🌎 new earth
 date: 2024-05-03T10:27:51+08:00
 categories: 
 tags: 
