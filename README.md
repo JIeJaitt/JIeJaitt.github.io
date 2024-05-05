@@ -7,4 +7,4 @@
 
 A personal blog using [Hexo](https://hexo.io) and [Hexo Theme Icarus](https://github.com/ppoffice/hexo-theme-icarus)
 
-## [博客地址](https://jiejaitt.github.io) | [Blog link](https://jiejaitt.github.io)
+## [博客地址](https://blog.jiejaitt.top) | [Blog link](https://blog.jiejaitt.top)
