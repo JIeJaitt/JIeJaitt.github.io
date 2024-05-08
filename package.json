@@ -37,7 +37,7 @@
     "hexo-util": "^3.2.0",
     "inferno": "^8.2.3",
     "inferno-create-element": "^8.2.3",
-    "semver": "^7.3.7",
+    "semver": "^7.6.1",
     "source-map-resolve": "^0.6.0"
   }
 }
