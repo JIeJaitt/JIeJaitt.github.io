@@ -1,11 +1,11 @@
 ---
-title: GORM The fantastic ORM library for Golang, aims to be developer friendly
-date: 2024-05-05T23:21:13+08:00
-categories: 
-tags: 
+title: 'GORM The fantastic ORM library for Golang, aims to be developer friendly'
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
+abbrlink: ab4da1bf
 toc: true
+date: 2024-05-05 15:21:13
+categories:
+tags:
 sticky:
 ---
 
