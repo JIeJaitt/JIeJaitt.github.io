@@ -12,3 +12,7 @@ sticky:
 ## 操作方法
 
 vscode多行编辑mac快捷键：`option`+`鼠标左键`。
+
+## 快捷键速查
+
+- shift+alt+a：多行注释
