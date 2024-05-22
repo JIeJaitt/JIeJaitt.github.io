@@ -28,3 +28,17 @@ date: 2024-02-19 19:47:24
 - 在线运行代码：[Go在线运行](https://www.bejson.com/runcode/golang/)；[]()；[]()
 
 - 其他：[鱼皮的编程宝典](https://www.codefather.cn/)
+
+## 大模型聊天
+
+- `DeepSeek`：https://chat.deepseek.com ，杭州深度求索人工智能基础技术研究有限公司研发，主要是高效和便宜，个人体验是国内顶流梯队，值得一试
+- 
+
+## 图床
+
+- 聚合图床：https://www.superbed.cn
+- 
+
+## 速查表
+
+- markdown语法速查：https://markdown.com.cn/
