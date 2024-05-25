@@ -86,22 +86,22 @@ article:
 search:
     type: insight
     index_pages: true
-comment:
-    type: gitalk
-    client_id: '232dcb704588214d213c'
-    client_secret: '839c0eaa6aea55a641a678488944a0f8cac45cfe'
-    repo: 'jiejaitt.github.io'
-    owner: 'JIeJaitt'
-    admin:
-        - JIeJaitt
-    per_page: 7                    # 可选填
-    distraction_free_mode: false    # 可选填
-    pager_direction: last           # 可选填
-    create_issue_manually: false    # 可选填
-    proxy:                          # 可选填
-    flip_move_options:              # 可选填
-    enable_hotkey: true             # 可选填
-    language: zh-CN                 # 可选填
+# comment:
+#     type: gitalk
+#     client_id: '232dcb704588214d213c'
+#     client_secret: '839c0eaa6aea55a641a678488944a0f8cac45cfe'
+#     repo: 'jiejaitt.github.io'
+#     owner: 'JIeJaitt'
+#     admin:
+#         - JIeJaitt
+#     per_page: 7                    # 可选填
+#     distraction_free_mode: false    # 可选填
+#     pager_direction: last           # 可选填
+#     create_issue_manually: false    # 可选填
+#     proxy:                          # 可选填
+#     flip_move_options:              # 可选填
+#     enable_hotkey: true             # 可选填
+#     language: zh-CN                 # 可选填
 donates:
     # -
     #     type: afdian
