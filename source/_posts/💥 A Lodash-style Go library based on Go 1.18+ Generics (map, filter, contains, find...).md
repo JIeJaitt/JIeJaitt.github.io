@@ -509,3 +509,8 @@ func main() {
 4. 使用`lo.Map`将此函数应用于`users`切片，结果是一个新的切片`names`，仅包含所有用户的名字。
 
 希望这些示例能够帮助你更好地理解`lo.Filter`和`lo.Map`方法的使用。如果你需要更多信息，可以参考[官方GitHub仓库](https://github.com/samber/lo) 。
+
+
+## 参考资料
+
+- 国内镜像仓库：https://gitcode.com/samber/lo/overview?utm_source=artical_gitcode&isLogin=1#/map
