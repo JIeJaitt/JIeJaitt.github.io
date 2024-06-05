@@ -35,6 +35,7 @@ date: 2024-02-19 19:47:24
 - `腾讯混元助手`：https://hunyuan.tencent.com/bot/chat
 - `跃问`：https://yuewen.cn/chats/new
 - `熊猫AI助手`：https://www.pandaigc.com/chat ，每天签到送20次免费GPT4
+- `通义千问`：https://tongyi.aliyun.com/qianwen/
 
 ## 图床
 
