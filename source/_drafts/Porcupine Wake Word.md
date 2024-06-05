@@ -8,6 +8,8 @@ tags:
 
 ```bash
 python3 -m venv venv
+
+source venv/bin/activate 
 ```
 
 ## 帮我用Porcupine Wake Word写一个m1 mac上的语音唤醒程序
@@ -287,3 +289,172 @@ finally:
 保存修改后的代码并运行。你会看到实时输出唤醒词被检测到的次数，以及程序结束时的总计和每分钟的唤醒率。
 
 确保在安静的环境下测试，以减少噪音干扰，提高唤醒词的准确性。
+
+
+## 论文
+
+```py
+import pvporcupine
+import pyaudio
+import struct
+import os
+import subprocess
+import logging
+import tkinter as tk
+from threading import Thread, Event
+from ttkbootstrap import Style
+from ttkbootstrap.constants import SUCCESS
+from ttkbootstrap.widgets import Button
+
+logging.basicConfig(level=logging.INFO)
+
+# 替换成你的 Porcupine access key
+access_key = "3EBIY7+mtcbduhM2YQelLyBiDXXYvigf2lSnKgi8Le5CA3E5f7KE5A=="
+
+# 关键词模型文件的绝对路径
+keyword_path = "/Users/jiejaitt/Desktop/WakeWord/Hey-Snips_en_mac_v3_0_0.ppn"
+
+def create_audio_stream(pa, porcupine):
+    return pa.open(
+        rate=porcupine.sample_rate,
+        channels=1,
+        format=pyaudio.paInt16,
+        input=True,
+        frames_per_buffer=2 * porcupine.frame_length  # 增加缓冲区大小
+    )
+
+def close_audio_stream(stream):
+    try:
+        if stream.is_active():
+            stream.stop_stream()
+    except OSError as e:
+        logging.error(f"Error stopping stream: {e}")
+    try:
+        stream.close()
+    except OSError as e:
+        logging.error(f"Error closing stream: {e}")
+
+def listen_for_wake_word(trigger_event):
+    try:
+        # 初始化 Porcupine
+        porcupine = pvporcupine.create(
+            access_key=access_key,
+            keyword_paths=[keyword_path]
+        )
+    except pvporcupine.PorcupineActivationError as e:
+        logging.error(f"Porcupine activation error: {e}")
+        exit(1)
+
+    pa = pyaudio.PyAudio()
+    audio_stream = create_audio_stream(pa, porcupine)
+
+    try:
+        logging.info("Listening for wake word...")
+        while True:
+            try:
+                pcm = audio_stream.read(porcupine.frame_length, exception_on_overflow=False)
+                pcm = struct.unpack_from("h" * porcupine.frame_length, pcm)
+
+                keyword_index = porcupine.process(pcm)
+                if keyword_index >= 0:
+                    logging.info("Wake word detected!")
+                    trigger_event.set()  # 设置事件标志，通知主线程
+            except IOError as e:
+                logging.error(f"IOError: {e}")
+                logging.info("Restarting audio stream...")
+                close_audio_stream(audio_stream)
+                audio_stream = create_audio_stream(pa, porcupine)
+
+    except KeyboardInterrupt:
+        logging.info("Stopping...")
+
+    finally:
+        if porcupine is not None:
+            porcupine.delete()
+
+        if audio_stream is not None:
+            close_audio_stream(audio_stream)
+
+        if pa is not None:
+            pa.terminate()
+
+def open_wechat():
+    """打开微信应用程序"""
+    subprocess.call(["open", "-a", "WeChat"])
+
+def open_browser():
+    """打开默认浏览器"""
+    subprocess.call(["open", "-a", "Safari"])
+
+def open_notepad():
+    """打开记事本"""
+    subprocess.call(["open", "-a", "TextEdit"])
+
+def show_assistant(trigger_event):
+    """显示类似Siri助手的窗口"""
+    style = Style(theme='flatly')
+    root = style.master
+    root.title("Assistant")
+    root.geometry("400x400")
+    root.attributes("-topmost", True)
+    root.attributes("-alpha", 0.9)  # 设置窗口透明度
+    root.overrideredirect(True)
+
+    frame = tk.Frame(root, bg='white', bd=2, relief="flat")
+    frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER, width=300, height=300)
+
+    # 添加按钮
+    button_wechat = Button(frame, text="启动微信", command=open_wechat, bootstyle=SUCCESS)
+    button_wechat.place(x=100, y=50, width=100, height=50)
+
+    button_browser = Button(frame, text="启动浏览器", command=open_browser, bootstyle=SUCCESS)
+    button_browser.place(x=100, y=120, width=100, height=50)
+
+    button_notepad = Button(frame, text="启动记事本", command=open_notepad, bootstyle=SUCCESS)
+    button_notepad.place(x=100, y=190, width=100, height=50)
+
+    def check_event():
+        if trigger_event.is_set():
+            root.deiconify()  # 显示窗口
+            trigger_event.clear()  # 重置事件标志
+        root.after(100, check_event)  # 每100毫秒检查一次事件
+
+    root.withdraw()  # 初始隐藏窗口
+    check_event()
+    root.mainloop()
+
+if __name__ == "__main__":
+    trigger_event = Event()
+
+    # 启动监听唤醒词的线程
+    listen_thread = Thread(target=listen_for_wake_word, args=(trigger_event,))
+    listen_thread.daemon = True
+    listen_thread.start()
+
+    # 在主线程中显示助手窗口
+    show_assistant(trigger_event)
+```
+
+
+
+## loss
+
+在机器学习和深度学习中，训练损失和验证损失是评估模型性能的两个关键指标，它们各自有着不同的含义和重要性：
+
+1. **训练损失（Training Loss）**：
+   - **定义**：训练损失是模型在训练数据集上计算得到的损失，它反映了模型对训练数据的拟合程度。
+   - **作用**：训练损失用来指导模型的学习过程，即模型参数的更新是为了最小化训练损失。
+   - **特点**：理想情况下，训练损失应该随着训练的进行逐渐降低，因为模型正在学习如何更好地适应训练数据。如果训练损失持续减少，表明模型学习是有效的。
+
+2. **验证损失（Validation Loss）**：
+   - **定义**：验证损失是模型在一个独立的验证数据集上计算得到的损失，这个验证集不参与模型的训练。验证数据集用于模拟模型面对未知数据时的表现。
+   - **作用**：验证损失用于评估模型的泛化能力，即模型对新、未见过的数据的适应能力。通过观察验证损失，我们可以检测模型是否出现过拟合或欠拟合。
+   - **特点**：如果验证损失随着训练的进行开始增加，同时训练损失还在下降，这通常是过拟合的标志；如果验证损失很高且训练损失也很高，可能是模型欠拟合。
+
+### 为何两者都重要？
+
+- **优化与评估**：训练损失帮助优化模型（即调整模型参数），而验证损失帮助评估模型的泛化能力。
+- **防止过拟合**：通过同时监控训练损失和验证损失，可以有效防止过拟合。例如，当训练损失持续降低而验证损失开始增加时，可以停止训练或采取如增加数据、调整模型复杂度等措施。
+- **模型选择**：在多个模型或多种参数设置之间进行选择时，通常会考虑验证损失作为主要的评判标准，选择验证损失最低的模型。
+
+综上所述，训练损失和验证损失共同帮助我们理解模型在学习过程中的表现，以及模型对新数据的适应能力，是进行有效模型训练和选择的关键指标。
