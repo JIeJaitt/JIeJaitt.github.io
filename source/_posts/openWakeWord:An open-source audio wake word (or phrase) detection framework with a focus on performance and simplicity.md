@@ -1,11 +1,13 @@
 ---
-title: openWakeWord:An open-source audio wake word (or phrase) detection framework with a focus on performance and simplicity
-date: 2022-05-30T17:49:38+08:00
-categories: 
-tags: 
+title: >-
+  openWakeWord:An open-source audio wake word (or phrase) detection framework
+  with a focus on performance and simplicity
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
+abbrlink: 56e1444a
 toc: true
+date: 2022-05-30 09:49:38
+categories:
+tags:
 sticky:
 ---
 
