@@ -51,3 +51,7 @@ date: 2024-02-19 19:47:24
 
 - markdown语法速查：https://markdown.com.cn/
 - 
+
+## 工具箱
+
+- LaTeX公式编辑器：https://www.latexlive.com/home

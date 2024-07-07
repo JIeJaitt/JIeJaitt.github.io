@@ -138,7 +138,7 @@ widgets:
         author: JIeJaitt
         author_title: a student
         location: in your heart
-        avatar: /gallery/avatar/434DFFC0-7867-4316-82F3-ECA558CE3770_1_105_c.jpeg
+        avatar: /gallery/avatar/b_12c265b84dca56e16ba448adb7800656.jpg
         avatar_rounded: true
         gravatar: 
         follow_link: https://github.com/jiejaitt
@@ -236,7 +236,7 @@ plugins:
         pixel_id: 
 
 providers:
-    cdn: loli
-    fontcdn: loli
+    cdn: cdnjs
+    fontcdn: ustc
     iconcdn: https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/6.0.0/css/all.min.css
     
