@@ -9,109 +9,19 @@ tags:
 sticky:
 ---
 
+
+# 测试代码块语言显示
+
+这是一个测试，右上角应该显示代码语言。
+
 <style>
-/* Container for the code block */
-.code-block {
-  background-color: var(--pre);
-  border-radius: 8px;
-  padding: 1em;
+pre[data-language] {
   position: relative;
-  font-family: 'Courier New', Courier, monospace;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 1em 0;
+  padding-top: 2rem; /* 确保有足够的空间显示标签 */
 }
 
-/* Code block itself */
-.code-block pre {
-  margin: 0;
-  overflow: auto;
-  white-space: pre;
-  line-height: 1.5;
-  background: none;
-  padding: 0;
-  border: none;
-}
-
-/* Language label in the top-right corner */
-.code-block::before {
-  content: attr(data-lang);
-  position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 0.75em;
-  color: #888;
-}
-
-/* Syntax highlighting */
-.code-block .token.comment,
-.code-block .token.prolog,
-.code-block .token.doctype,
-.code-block .token.cdata {
-  color: var(--prism-comment);
-  font-style: italic;
-}
-
-.code-block .token.punctuation {
-  color: var(--prism-punctuation);
-}
-
-.code-block .token.property,
-.code-block .token.tag,
-.code-block .token.constant,
-.code-block .token.symbol,
-.code-block .token.deleted {
-  color: var(--prism-deleted);
-}
-
-.code-block .token.boolean,
-.code-block .token.number {
-  color: var(--prism-literal);
-}
-
-.code-block .token.selector,
-.code-block .token.attr-name,
-.code-block .token.string,
-.code-block .token.char,
-.code-block .token.builtin,
-.code-block .token.inserted {
-  color: var(--prism-string);
-}
-
-.code-block .token.operator,
-.code-block .token.entity,
-.code-block .token.url,
-.code-block .language-css .token.string,
-.code-block .style .token.string,
-.code-block .token.variable {
-  color: var(--prism-property);
-}
-
-.code-block .token.atrule,
-.code-block .token.attr-value,
-.code-block .token.function,
-.code-block .token.class-name {
-  color: var(--prism-function);
-}
-
-.code-block .token.keyword {
-  color: var(--prism-keyword);
-}
-
-.code-block .token.regex,
-.code-block .token.important {
-  color: var(--prism-namespace);
-}
-
-/* Prism highlighting */
-.code-block .hljs {
-  position: relative;
-}
-
-.code-block .hljs:after {
-  color: var(--t-l);
+pre[data-language]::after {
+  color: #64778b;
   opacity: 0.2;
   content: attr(data-language);
   font-size: 1.625rem;
@@ -119,37 +29,25 @@ sticky:
   position: absolute;
   right: 0.5rem;
   top: 0.2rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
   user-select: none;
   pointer-events: none;
 }
 </style>
 
-# 示例代码块
+<pre data-language="INI"><code class="hljs go">
+[Proxy]
+# 无线网卡。在 MacBook Pro 上，无线网卡的接口名一定是 en0
+Wi-Fi = direct, interface=en0, test-url=http://connectivitycheck.platform.hicloud.com/generate_204
+# 需要根据 ifconfig 自己判断。而且，Thunderbolt 自带的网卡 和 通过 Thunderbolt 的 PCIE 转接的网卡 的接口名也不一样
+Thunderbolt = direct, interface=en10, test-url=http://connectivitycheck.platform.hicloud.com/generate_204
+# 国内测速地址如前文所说，可以按需选择。这里是因为将 direct 作为一个特殊的 Proxy Policy、所以需要手动指定测速地址、否则 Surge 会使用 `proxt-test-url` 来测活
 
-下面是一个示例代码块：
-
-<div class="code-block" data-lang="TYPESCRIPT">
-<pre class="language-typescript hljs"><code class="language-typescript">
-<span class="token keyword">const</span> <span class="token function-variable function">A</span> <span class="token operator">=</span> <span class="token punctuation">(</span>a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token function">fibonacci</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> c <span class="token operator">=</span> <span class="token constant">B</span><span class="token punctuation">(</span>b<span class="token punctuation">,</span> a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-  <span class="token keyword">return</span> c <span class="token operator">/</span> d <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">function</span> <span class="token constant">B</span><span class="token punctuation">(</span>b<span class="token punctuation">,</span> a<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token constant">C</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span> <span class="token operator">*</span> b<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">function</span> <span class="token constant">C</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">try</span> <span class="token punctuation">{</span>
-    <span class="token function">sideEffect</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-
-<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token constant">A</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+[Proxy Group]
+# 新建一个策略组 Domestic，使用 fallback、每 30 秒测活一次
+# 这个策略组还同时包含了 Surge 内置的 DIRECT 策略、即由 macOS 系统决定的当前活跃的网络接口（也就是 Surge 的 Primary Interface Changed 中的 Primary Interface）
+Domestic = fallback, Thunderbolt, Wi-Fi, DIRECT, interval=30, timeout=3
+# 如果策略组使用 load-balance，还可以实现多网卡负载均衡和叠加、适合下载没有限制 IP 的大文件
+Domestic Dual = load-balance, Thunderbolt, Wi-Fi, interval=30, timeout=3
 </code></pre>
-</div>
