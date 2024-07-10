@@ -51,3 +51,7 @@ Domestic = fallback, Thunderbolt, Wi-Fi, DIRECT, interval=30, timeout=3
 # 如果策略组使用 load-balance，还可以实现多网卡负载均衡和叠加、适合下载没有限制 IP 的大文件
 Domestic Dual = load-balance, Thunderbolt, Wi-Fi, interval=30, timeout=3
 </code></pre>
+
+
+##  2
+
