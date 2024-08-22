@@ -1,12 +1,12 @@
 package main
 
 import (
+	"C"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"time"
-	"C"
 )
 
 func runCommand(command string, args ...string) error {
