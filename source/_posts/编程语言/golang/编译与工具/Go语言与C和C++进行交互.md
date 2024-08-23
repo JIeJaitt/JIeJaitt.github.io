@@ -3,7 +3,7 @@ title: Go语言与C和C++进行交互
 date: 2021-08-31 00:39:17
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 toc: true
 abbrlink: b45f2c03
 sticky:

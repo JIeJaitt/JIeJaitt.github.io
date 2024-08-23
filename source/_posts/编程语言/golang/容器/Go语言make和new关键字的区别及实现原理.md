@@ -3,7 +3,7 @@ title: Go语言make和new关键字的区别及实现原理
 date: 2021-08-31 21:10:07
 categories: 编程语言
 tags: 
-- golang
+- Go
 abbrlink: cb2ddc24
 toc: true
 sticky:

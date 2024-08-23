@@ -1,6 +1,6 @@
 ---
 title: Gorm单元测试源码
-excerpt: 本博客暂不显示摘要，请大家谅解
+excerpt: 
 abbrlink: f6514f61
 toc: true
 date: 2024-08-20 12:22:50
@@ -10,6 +10,8 @@ sticky:
 ---
 
 阅读一下这段代码并向我解释清楚，同时给出三个我可能想继续问的问题：
+
+<!-- more -->
 
 ```go
 package tests_test

@@ -6,7 +6,7 @@ abbrlink: 30ebccd
 date: 2021-08-30 23:35:02
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 sticky:
 ---
 

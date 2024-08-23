@@ -3,7 +3,7 @@ title: Go语言垃圾回收
 date: 2021-08-31 00:17:42
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 abbrlink: aa9b68a9
 toc: true
 sticky:

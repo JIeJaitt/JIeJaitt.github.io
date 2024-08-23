@@ -3,7 +3,7 @@ title: Go语言输出正弦函数（Sin）图像
 date: 2021-08-31 21:15:56
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 abbrlink: e4e80b9d
 toc: true
 sticky:

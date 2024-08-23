@@ -3,7 +3,7 @@ title: Go语言内存管理简述
 date: 2023-08-31 00:32:47
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 toc: true
 abbrlink: 2ec1ce7d
 sticky:

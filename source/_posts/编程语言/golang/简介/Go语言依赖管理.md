@@ -6,7 +6,7 @@ abbrlink: aad7120e
 date: 2021-08-31 00:02:05
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 sticky:
 ---
 

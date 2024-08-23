@@ -3,7 +3,7 @@ abbrlink: 6c5e2860
 categories: [编程语言]
 date: '2021-09-02T20:52:39.668785+08:00'
 tags:
-  - golang
+  - Go
 title: Go语言将秒转换为具体的时间
 toc: true
 updated: '2023-9-2T21:3:42.393+8:0'

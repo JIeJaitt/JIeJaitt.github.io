@@ -5,7 +5,7 @@ abbrlink: golang-context
 date: 2021-08-24 23:13:54
 categories: 编程语言
 tags: 
-    - golang
+    - Go
     - context
 sticky:
 ---

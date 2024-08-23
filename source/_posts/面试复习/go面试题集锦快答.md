@@ -5,7 +5,7 @@ toc: true
 abbrlink: 7ac5aff
 date: 2023-07-24 23:49:09
 categories: 编程语言
-tags: [golang,期末考试]
+tags: [Go]
 sticky:
 ---
 

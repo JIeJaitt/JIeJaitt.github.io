@@ -1,6 +1,7 @@
+---
 title: "\U0001F96B Goroutine scheduling principle and channel detailed explanation 2024"
 tags:
-  - golang
+  - Go
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: '782e8624'
 toc: true

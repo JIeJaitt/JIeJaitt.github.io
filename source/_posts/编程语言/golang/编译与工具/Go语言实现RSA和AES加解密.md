@@ -5,7 +5,7 @@ abbrlink: 83429b98
 date: 2021-08-31 00:17:42
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 sticky:
 ---
 

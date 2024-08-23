@@ -6,7 +6,7 @@ abbrlink: c12d4784
 date: 2021-08-31 21:50:58
 categories: 编程语言
 tags: 
-    - golang
+    - Go
 sticky:
 ---
 
