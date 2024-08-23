@@ -1,7 +1,7 @@
 ---
 title: hugo-v0.7版本源码
 categories: 咕咕咕咕
-tags: 'hugo,go'
+tags: [Hugo,Go]
 excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: hugo-v0.7
 toc: true
@@ -10,3 +10,5 @@ sticky:
 ---
 
 https://github.com/gohugoio/hugo/tree/v0.7
+
+找时间阅读一下
