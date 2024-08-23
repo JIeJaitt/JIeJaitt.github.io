@@ -1,12 +1,13 @@
 ---
 title: 使用testify和mockery库简化单元测试
-date: 2024-08-23T09:39:15+08:00
-categories: 
-tags: [Go,Mockery]
-excerpt: 
-abbrlink: 
-toc: true 
-sticky: 
+tags:
+  - Go
+  - Mockery
+abbrlink: 46d70292
+toc: true
+date: 2024-08-23 01:39:15
+categories:
+sticky:
 ---
 
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [segmentfault.com](https://segmentfault.com/a/1190000016897506)

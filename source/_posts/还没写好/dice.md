@@ -1,12 +1,11 @@
 ---
 title: dice
-date: 2024-08-23T10:52:14+08:00
-categories: 
-tags: 
-excerpt: 
-abbrlink: 
-toc: true 
-sticky: 
+categories: 还没写好
+abbrlink: a10ee254
+toc: true
+date: 2024-08-23 02:52:14
+tags:
+sticky:
 ---
 
 A drop-in replacement of Redis with SQL-based realtime reactivity.

@@ -1,12 +1,11 @@
 ---
 title: Go语言多版本管理
-date: 2024-08-23T09:41:38+08:00
-categories: 
 tags: Go
-excerpt: 
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: c795d569
+toc: true
+date: 2024-08-23 01:41:38
+categories:
+sticky:
 ---
 
 官方的库：https://pkg.go.dev/golang.org/dl

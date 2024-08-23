@@ -1,12 +1,13 @@
 ---
 title: fiber
-date: 2024-08-23T11:15:44+08:00
 categories: 还没写好
-tags: [Go,Fiber]
-excerpt: 
-abbrlink: 
-toc: true 
-sticky: 
+tags:
+  - Go
+  - Fiber
+abbrlink: 7bac5dc5
+toc: true
+date: 2024-08-23 03:15:44
+sticky:
 ---
 
 ⚡️ Express inspired web framework written in Go

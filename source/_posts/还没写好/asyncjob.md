@@ -1,12 +1,13 @@
 ---
 title: asyncjob
-date: 2024-08-23T10:20:41+08:00
-categories: 
-tags: [Go,asyncjob]
-excerpt: 
-abbrlink: 
-toc: true 
-sticky: 
+categories: 还没写好
+tags:
+  - Go
+  - asyncjob
+abbrlink: 83c641d8
+toc: true
+date: 2024-08-23 02:20:41
+sticky:
 ---
 
 分布式异步任务服务，Go+Redis+Lua实现原子调度
