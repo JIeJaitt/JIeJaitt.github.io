@@ -47,7 +47,8 @@ date: 2024-02-19 19:47:24
 
 ## 大模型聊天
 
-直接对话网站
+直接对话网站 
+
 - `DeepSeek`：https://chat.deepseek.com ，杭州深度求索人工智能基础技术研究有限公司研发，主要是高效和便宜，个人体验是国内顶流梯队，值得一试
 - `腾讯混元助手`：https://hunyuan.tencent.com/bot/chat
 - `跃问`：https://yuewen.cn/chats/new
@@ -57,9 +58,11 @@ date: 2024-02-19 19:47:24
 - 
 
 ApiKey类型
+
 - `EAI 公益API`：https://api.bbff.bf/login 。好像是linuxDo至杨大佬的，现在已经挂了，等待重启吧
 
 面板账号站点：
+
 - `Test2API`：https://zhucn.org/ 来自linuxDo大佬的网站，比较好用，且可以使用Claude。
 
 ## 图床
