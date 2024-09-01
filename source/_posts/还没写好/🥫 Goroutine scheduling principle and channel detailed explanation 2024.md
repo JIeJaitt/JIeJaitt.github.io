@@ -9,6 +9,7 @@ categories: [还没写好]
 date: 2024-04-13 14:41:00
 sticky:
 ---
+
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [learnku.com](https://learnku.com/articles/41668)
 
 > 一、goroutine 简介 goroutine 是 go 语言中最为 NB 的设计，也是其魅力所在，goroutine 的本质是协程，是实现并行计算的核心。

@@ -18,3 +18,5 @@ sticky:
 
 https://github.com/qinguoyi/asyncjob
 
+
+订单重试逻辑这快可以吹牛皮
