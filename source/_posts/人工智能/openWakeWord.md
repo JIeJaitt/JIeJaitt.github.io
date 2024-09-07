@@ -6,7 +6,7 @@ excerpt: 本博客暂不显示摘要，请大家谅解
 abbrlink: 56e1444a
 toc: true
 date: 2022-05-30 09:49:38
-categories:
+categories: 人工智能
 tags:
 sticky:
 ---
