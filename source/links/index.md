@@ -3,7 +3,6 @@ title: 个人自用导航
 date: 2024-02-19 19:47:24
 ---
 
-
 - 简历：[木及简厉](https://www.mujicv.com/)
 - 算法：[LeetCode中国](https://leetcode.cn/)；[AcWing](https://www.acwing.com/)；[代码源](http://oj.daimayuan.top/)；[Codeforces](https://codeforces.com/)；[CodeTop](https://codetop.cc/home)；
 - 视频：[bilibili](https://space.bilibili.com/601622742)；[YouTube](https://www.youtube.com/)
@@ -14,7 +13,7 @@ date: 2024-02-19 19:47:24
 - [BlogFinder](https://bf.zzxworld.com/)；
 - [吾爱破解](https://www.52pojie.cn/)；
 - [hostloc](https://hostloc.com/)；
-- [1024社区](https://1024.day/)
+- [1024社区](https://1024.day/)；
 - [川流论坛](https://bbs.chuanliu.org/)：博客如大海一般川流不息，思想如大海一般激情澎湃。由印记博客的大佬 胡先生 的创建，目前刚开始发展内容不多，不过存在一些博客可以到处看看。
 
 ## 社区
@@ -59,11 +58,15 @@ date: 2024-02-19 19:47:24
 
 ApiKey类型
 
-- `EAI 公益API`：https://api.bbff.bf/login 。好像是linuxDo至杨大佬的，现在已经挂了，等待重启吧
+- `EAI 公益API`：https://api.bbff.bf/login 。好像是linuxDo至杨大佬的，现在已经挂了，大佬目前没有重启的想法
+- `Layla 公益 API`：https://api.linuxdo.info/ 。仅仅对LINUXDO论坛佬友开放。
+- `freeapifre`：https://api.jimsblog.eu.org/ 。仅仅对LINUXDO论坛佬友开放。
+- `EthereumAPI`：https://oaiapi.us.kg/ 。仅仅对LINUXDO论坛佬友开放。
 
 面板账号站点：
 
 - `Test2API`：https://zhucn.org/ 来自linuxDo大佬的网站，比较好用，且可以使用Claude。
+- chatbox app，有网页版：https://web.chatboxai.app/ 。用起来感觉还不错，可以替代nextchat、lobechat之类的。
 
 ## 图床
 

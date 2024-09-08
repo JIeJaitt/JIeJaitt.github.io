@@ -368,6 +368,132 @@ func GetSingleton() *singleton {
 以上几种单例模式的常用套路中，使用 `sync.Once` 包是安全地实现此目标的首选方式，`sync.Once` 包帮我们隐藏了部分细节，却可以让代码可读性得到很大提升。
 
 
+## 单例模式是什么意思，请使用go语言写一段简单的单例模式代码
+
+单例模式（Singleton Pattern）是一种设计模式，它确保一个类只有一个实例，并提供一个全局访问点。单例模式在某些情况下非常有用，例如需要全局唯一的配置对象或日志对象。
+
+在Go语言中，实现单例模式通常使用 `sync.Once` 来确保单例对象只被初始化一次。下面是一个简单的单例模式的实现示例：
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+// 定义一个结构体类型，表示单例对象
+type Singleton struct {
+	data string
+}
+
+// 定义一个变量来保存单例实例
+var instance *Singleton
+
+// 使用 sync.Once 确保单例对象只被初始化一次
+var once sync.Once
+
+// 获取单例对象的函数
+func GetInstance() *Singleton {
+	once.Do(func() {
+		instance = &Singleton{data: "这是一个单例对象"}
+	})
+	return instance
+}
+
+func main() {
+	// 获取单例实例
+	s1 := GetInstance()
+	fmt.Println(s1.data)
+
+	// 再次获取单例实例
+	s2 := GetInstance()
+	fmt.Println(s2.data)
+
+	// 验证两个实例是否相同
+	if s1 == s2 {
+		fmt.Println("s1 和 s2 是相同的实例")
+	} else {
+		fmt.Println("s1 和 s2 是不同的实例")
+	}
+}
+```
+
+在这个示例中，我们定义了一个 `Singleton` 结构体，并使用 `sync.Once` 确保 `GetInstance` 函数只会创建一次 `Singleton` 实例。每次调用 `GetInstance` 都会返回同一个实例。通过这种方式，我们实现了单例模式，确保全局只有一个 `Singleton` 实例。
+
+## 今天遇到一个比较有意思的问题，怎么让单例模式实现restart？
+
+要实现单例模式的重启（restart）功能，即允许单例实例在某些条件下被重新创建，我们需要稍微调整单例模式的标准实现。这通常意味着提供一个额外的方法来重置单例实例，同时确保这个过程是线程安全的。
+
+以下是一个使用Go语言实现的带有重启功能的单例模式示例：
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+// Singleton 定义单例结构体
+type Singleton struct {
+	data string
+}
+
+var (
+	// instance 保存单例实例的指针
+	instance *Singleton
+	// once 用于确保单例初始化只执行一次
+	once sync.Once
+	// lock 用于保护重启操作的互斥锁
+	lock sync.Mutex
+)
+
+// GetInstance 返回单例实例，如果不存在则创建
+func GetInstance() *Singleton {
+	once.Do(func() {
+		instance = &Singleton{"初始数据"}
+	})
+	return instance
+}
+
+// Restart 重启单例实例，创建一个新的实例替换旧的实例
+func Restart() {
+	// 确保重启操作是线程安全的
+	lock.Lock()
+	defer lock.Unlock()
+
+	// 重置once，使得可以重新执行其Do方法
+	once = sync.Once{}
+	// 通过once.Do立即初始化新的实例
+	once.Do(func() {
+		instance = &Singleton{"重启后的数据"}
+	})
+}
+
+func main() {
+	// 获取单例实例
+	s1 := GetInstance()
+	fmt.Println(s1.data)
+
+	// 重启单例实例
+	Restart()
+
+	// 再次获取单例实例，这次应该是重启后的实例
+	s2 := GetInstance()
+	fmt.Println(s2.data)
+
+	// 验证s1和s2是否不同
+	if s1 != s2 {
+		fmt.Println("s1 和 s2 是不同的实例")
+	} else {
+		fmt.Println("s1 和 s2 是相同的实例")
+	}
+}
+```
+
+在这个实现中，我们通过添加一个 `Restart` 函数来允许单例的重启。`Restart` 函数首先通过加锁确保线程安全，然后重置 `sync.Once` 变量，这样就可以再次利用 `once.Do` 来初始化新的单例实例。这种方法允许在保持单例模式的基本原则不变的同时，提供了重新初始化单例实例的灵活性。
+
 
 ## 参考资料
 
