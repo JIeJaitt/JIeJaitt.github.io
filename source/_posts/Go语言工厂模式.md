@@ -1,12 +1,12 @@
 ---
 title: Go语言工厂模式
-date: 2024-09-08T22:58:31+08:00
 categories: 设计模式
-tags: 
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: 8c1793e8
+toc: true
+date: 2024-09-08 14:58:31
+tags:
+sticky:
 ---
 
 ## 你知道go语言的工厂模式吗？

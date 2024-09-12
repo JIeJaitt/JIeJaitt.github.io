@@ -1,12 +1,12 @@
 ---
 title: Slice扩容源码
-date: 2024-09-07T15:24:57+08:00
 categories: 源码精读
 tags: Go
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: a2d0ee58
+toc: true
+date: 2024-09-07 07:24:57
+sticky:
 ---
 
 在Go语言中，slice的扩容是在添加元素时自动处理的。当slice容量不足以容纳新的元素时，它会自动扩展。扩容的过程涉及到重新分配内存和数据复制。
