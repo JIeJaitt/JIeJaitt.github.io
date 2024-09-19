@@ -57,7 +57,7 @@ myMap2 := make(map[int]int)
 
 通过 make 关键字进行初始化，不显式声明容量，因此默认容量 为 0.
 
-```
+```go
 myMap3 :=map[int]int{
   1:2,
   3:4,

@@ -18,3 +18,14 @@ win&&mac开发工具使用经验和心得
 
 ## Cursor
 
+
+
+## vscode 
+
+### mac使用速查操作方法
+
+vscode多行编辑mac快捷键：`option`+`鼠标左键`。
+
+### mac使用速查快捷键速查
+
+- shift+alt+a：多行注释
