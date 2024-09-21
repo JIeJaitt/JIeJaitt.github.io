@@ -236,7 +236,7 @@ plugins:
         pixel_id: 
 
 providers:
-    cdn: cdnjs
-    fontcdn: ustc
+    cdn: loli
+    fontcdn: loli
     iconcdn: https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/6.0.0/css/all.min.css
     

@@ -1,12 +1,12 @@
 ---
 title: if err != nil 太烦？Go 创始人教你如何对错误进行编程！
-date: 2024-09-21T17:21:13+08:00
-categories: 
-tags: 
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: a2df3add
+toc: true
+date: 2024-09-21 09:21:13
+categories:
+tags:
+sticky:
 ---
 
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [segmentfault.com](https://segmentfault.com/a/1190000042252269)

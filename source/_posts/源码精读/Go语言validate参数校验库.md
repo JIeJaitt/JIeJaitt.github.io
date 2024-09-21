@@ -1,12 +1,12 @@
 ---
 title: Go语言validate参数校验库
-date: 2024-09-21T16:26:20+08:00
 categories: 开源精选
 tags: validate
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: dd112909
+toc: true
+date: 2024-09-21 08:26:20
+sticky:
 ---
 
 
