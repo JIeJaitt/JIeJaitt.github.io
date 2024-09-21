@@ -29,3 +29,8 @@ vscode多行编辑mac快捷键：`option`+`鼠标左键`。
 ### mac使用速查快捷键速查
 
 - shift+alt+a：多行注释
+
+
+## sublime4
+
+- [Sublime4 开发Go语言程序(快速开发)](https://www.cnblogs.com/aozhejin/p/16335747.html)
