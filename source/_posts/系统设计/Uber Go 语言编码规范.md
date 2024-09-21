@@ -1,11 +1,11 @@
 ---
 title: Uber Go 语言编码规范
-date: 2024-09-14T10:53:48+08:00
 categories: 编程语言
 tags: Go
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: 1d23710b
+toc: true
+date: 2024-09-14 02:53:48
+sticky:
 ---
 
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [cloud.tencent.com](https://cloud.tencent.com/developer/article/2295672)

@@ -1,12 +1,12 @@
 ---
 title: Go语言编码规范
-date: 2024-09-14T10:51:43+08:00
 categories: 编程语言
 tags: Go
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: c2b5b151
+toc: true
+date: 2024-09-14 02:51:43
+sticky:
 ---
 
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [cloud.tencent.com](https://cloud.tencent.com/developer/article/1911268)

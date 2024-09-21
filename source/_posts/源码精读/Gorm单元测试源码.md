@@ -1,11 +1,10 @@
 ---
 title: Gorm单元测试源码
-excerpt: 
 abbrlink: f6514f61
 toc: true
 date: 2024-08-20 12:22:50
-categories:
-tags:
+categories: 源码精读
+tags: Gorm
 sticky:
 ---
 

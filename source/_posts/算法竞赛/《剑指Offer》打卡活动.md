@@ -1,10 +1,9 @@
 ---
 title: 《剑指Offer》打卡活动
-excerpt: 
 abbrlink: 3aaaf1f4
 toc: true
 date: 2024-05-05 15:16:33
-categories:
+categories: 算法竞赛
 tags:
 sticky:
 ---
