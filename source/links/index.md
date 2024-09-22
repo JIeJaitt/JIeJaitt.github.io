@@ -62,11 +62,17 @@ ApiKey类型
 - `Layla 公益 API`：https://api.linuxdo.info/ 。仅仅对LINUXDO论坛佬友开放。
 - `freeapifre`：https://api.jimsblog.eu.org/ 。仅仅对LINUXDO论坛佬友开放。
 - `EthereumAPI`：https://oaiapi.us.kg/ 。仅仅对LINUXDO论坛佬友开放。
+- `Fast API`：https://api.geek-it.asia/ 。一种key网站，余额$2000000.00，好像可以使用claude。建议使用，内置了聊天工具。
 
 面板账号站点：
 
 - `Test2API`：https://zhucn.org/ 来自linuxDo大佬的网站，比较好用，且可以使用Claude。
-- chatbox app，有网页版：https://web.chatboxai.app/ 。用起来感觉还不错，可以替代nextchat、lobechat之类的。
+- `chatbox app`：有网页版：https://web.chatboxai.app/ 。用起来感觉还不错，可以替代nextchat、lobechat之类的。
+- ：https://schat.laigc.cloudns.be/
+
+其他：
+- `OpenAI01.net`：https://openai01.net/zh
+
 
 ## 图床
 
