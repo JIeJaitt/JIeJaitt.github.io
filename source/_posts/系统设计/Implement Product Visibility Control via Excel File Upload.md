@@ -1,12 +1,12 @@
 ---
 title: Implement Product Visibility Control via Excel File Upload
-date: 2024-09-27T16:44:29+08:00
 categories: 系统设计
 tags: Go
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: cd8b1634
+toc: true
+date: 2024-09-27 08:44:29
+sticky:
 ---
 
 ## 我有一个接口现在需要实现以下的需求，我有一个产品列表，需要通过excel文件实现指定客户可以查看还是所有客户可以查看，现在默认是所有客户都可以查看。允许用户上传文件，在用户上传完文件之后就对excel的文件的格式进行校验，文件第一列手机号码，第二列账户id。如果有问题需要报错提示文件格式错误供前端使用，如果没问题就把文件数据拿出来存到数据库里面去，供文件列表接口使用判断某个用户能看到哪些产品列表；还需要把文件存到oss里面去，方便客户下载文件重新上传。项目语言为go语言
