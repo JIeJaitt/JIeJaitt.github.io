@@ -3622,3 +3622,478 @@ EXPLAIN SELECT * FROM table_name WHERE product_id = 1;
 - 某些操作符(如 LIKE '%abc')可能会导致索引失效
 
 所以简单来说,是的,MySQL会自动判断并使用合适的索引,但这个过程是由查询优化器根据具体情况来决定的。
+
+## 我有一个接口现在需要实现以下的需求，我有一个产品列表，需要通过excel文件实现指定客户可以查看还是所有客户可以查看，现在默认是所有客户都可以查看。允许用户上传文件，在用户上传完文件之后就对excel的文件的格式进行校验，文件第一列手机号码，第二列账户id。如果有问题需要报错提示文件格式错误供前端使用，如果没问题就把文件数据拿出来存到数据库里面去，供文件列表接口使用判断某个用户能看到哪些产品列表；还需要把文件存到oss里面去，方便客户下载文件重新上传。项目语言为go语言。我希望使用关联表方案
+
+我来帮你实现这个功能。我们可以分步骤来实现:
+
+1. 首先创建关联表的数据库结构:
+
+```sql
+-- 产品表(假设已存在)
+CREATE TABLE products (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(255),
+    -- 其他产品字段
+);
+
+-- 产品可见性关联表
+CREATE TABLE product_visibility (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    product_id BIGINT,
+    phone VARCHAR(20),
+    account_id VARCHAR(50),
+    file_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+```
+
+2. 实现处理上传文件的接口:
+
+```go
+package handler
+
+import (
+    "github.com/gin-gonic/gin"
+    "github.com/xuri/excelize/v2"
+    "github.com/aliyun/aliyun-oss-go-sdk/oss"
+)
+
+type ProductVisibilityHandler struct {
+    db  *gorm.DB
+    oss *oss.Client
+}
+
+// 文件上传响应结构
+type UploadResponse struct {
+    Code    int    `json:"code"`
+    Message string `json:"message"`
+    Data    any    `json:"data"`
+}
+
+// 处理文件上传
+func (h *ProductVisibilityHandler) UploadVisibilityFile(c *gin.Context) {
+    // 1. 获取上传的文件
+    file, header, err := c.Request.FormFile("file")
+    if err != nil {
+        c.JSON(400, UploadResponse{
+            Code:    400,
+            Message: "文件上传失败",
+        })
+        return
+    }
+    defer file.Close()
+
+    // 2. 验证文件格式是否为excel
+    if !strings.HasSuffix(header.Filename, ".xlsx") {
+        c.JSON(400, UploadResponse{
+            Code:    400,
+            Message: "文件格式错误，请上传xlsx格式文件",
+        })
+        return
+    }
+
+    // 3. 读取并验证Excel内容
+    xlsx, err := excelize.OpenReader(file)
+    if err != nil {
+        c.JSON(400, UploadResponse{
+            Code:    400,
+            Message: "文件读取失败",
+        })
+        return
+    }
+
+    // 4. 验证Excel格式
+    rows, err := xlsx.GetRows("Sheet1")
+    if err != nil {
+        c.JSON(400, UploadResponse{
+            Code:    400,
+            Message: "文件格式错误",
+        })
+        return
+    }
+
+    // 验证表头
+    if len(rows) < 2 { // 至少包含表头和一行数据
+        c.JSON(400, UploadResponse{
+            Code:    400,
+            Message: "文件内容为空",
+        })
+        return
+    }
+
+    // 5. 上传文件到OSS
+    ossPath := "product-visibility/" + time.Now().Format("20060102") + "/" + header.Filename
+    err = h.uploadToOSS(file, ossPath)
+    if err != nil {
+        c.JSON(500, UploadResponse{
+            Code:    500,
+            Message: "文件保存失败",
+        })
+        return
+    }
+
+    // 6. 保存数据到数据库
+    visibilityRecords := make([]ProductVisibility, 0)
+    for i := 1; i < len(rows); i++ { // 跳过表头
+        row := rows[i]
+        if len(row) < 2 {
+            continue
+        }
+        record := ProductVisibility{
+            Phone:     row[0],
+            AccountID: row[1],
+            FileURL:   ossPath,
+        }
+        visibilityRecords = append(visibilityRecords, record)
+    }
+
+    // 批量插入数据
+    if err := h.db.Create(&visibilityRecords).Error; err != nil {
+        c.JSON(500, UploadResponse{
+            Code:    500,
+            Message: "数据保存失败",
+        })
+        return
+    }
+
+    c.JSON(200, UploadResponse{
+        Code:    200,
+        Message: "上传成功",
+        Data: gin.H{
+            "file_url": ossPath,
+        },
+    })
+}
+
+// 上传文件到OSS
+func (h *ProductVisibilityHandler) uploadToOSS(file multipart.File, ossPath string) error {
+    bucket, err := h.oss.Bucket("your-bucket-name")
+    if err != nil {
+        return err
+    }
+    return bucket.PutObject(ossPath, file)
+}
+
+// 检查产品是否可见
+func (h *ProductVisibilityHandler) CheckProductVisibility(productID int64, phone, accountID string) bool {
+    var count int64
+    h.db.Model(&ProductVisibility{}).
+        Where("product_id = ? AND (phone = ? OR account_id = ?)", productID, phone, accountID).
+        Count(&count)
+    return count > 0
+}
+
+// 获取产品列表的接口
+func (h *ProductVisibilityHandler) GetProductList(c *gin.Context) {
+    phone := c.Query("phone")
+    accountID := c.Query("account_id")
+
+    var products []Product
+    query := h.db.Model(&Product{})
+
+    // 如果有指定用户的可见性限制，则进行筛选
+    if phone != "" || accountID != "" {
+        query = query.Joins("LEFT JOIN product_visibility pv ON products.id = pv.product_id").
+            Where("pv.phone = ? OR pv.account_id = ? OR pv.id IS NULL", phone, accountID)
+    }
+
+    if err := query.Find(&products).Error; err != nil {
+        c.JSON(500, gin.H{"error": "获取产品列表失败"})
+        return
+    }
+
+    c.JSON(200, products)
+}
+```
+
+3. 定义相关的模型结构:
+
+```go
+type ProductVisibility struct {
+    ID        int64     `gorm:"primaryKey"`
+    ProductID int64     `gorm:"index"`
+    Phone     string    `gorm:"size:20"`
+    AccountID string    `gorm:"size:50"`
+    FileURL   string    `gorm:"size:255"`
+    CreatedAt time.Time `gorm:"autoCreateTime"`
+}
+
+type Product struct {
+    ID   int64  `gorm:"primaryKey"`
+    Name string `gorm:"size:255"`
+    // 其他产品字段
+}
+```
+
+4. 路由配置:
+
+```go
+func SetupRoutes(r *gin.Engine, h *ProductVisibilityHandler) {
+    r.POST("/api/product/visibility/upload", h.UploadVisibilityFile)
+    r.GET("/api/products", h.GetProductList)
+}
+```
+
+这个实现主要包含以下功能:
+
+1. 文件上传和格式验证
+2. 将文件保存到OSS
+3. 解析Excel文件内容
+4. 将数据保存到关联表
+5. 提供产品列表接口，支持根据用户权限过滤
+
+使用说明:
+
+1. 前端上传Excel文件时，需要确保文件格式正确（第一列为手机号，第二列为账户ID）
+2. 文件会被保存到OSS中，方便后续下载和重新上传
+3. 产品列表接口会根据用户的手机号或账户ID来过滤可见的产品
+
+需要注意的点:
+
+1. 需要proper的错误处理
+2. 可以添加更多的数据验证
+3. 可以添加事务处理
+4. 可以添加并发处理大文件的能力
+5. 可以添加日志记录
+
+你可能需要根据实际情况调整以下内容:
+
+1. 数据库表结构
+2. OSS配置
+3. 错误处理方式
+4. 文件格式验证规则
+5. 接口返回格式
+
+希望这个实现对你有帮助！如果需要更详细的说明或有任何问题，请随时询问。
+
+## 我现在想查询某个用户可以看见的所有的产品怎么查询
+
+
+我来帮你实现查询用户可见产品的功能。这里提供两种查询方案：
+
+1. 直接使用SQL查询的方式：
+
+```go
+func (h *ProductVisibilityHandler) GetVisibleProducts(c *gin.Context) {
+    phone := c.Query("phone")
+    accountID := c.Query("account_id")
+    
+    if phone == "" && accountID == "" {
+        c.JSON(400, gin.H{
+            "code": 400,
+            "message": "请提供手机号或账户ID",
+        })
+        return
+    }
+
+    var products []Product
+    
+    // 查询SQL：
+    // 1. 查询专门针对该用户可见的产品
+    // 2. 查询所有用户都可见的产品（即在product_visibility表中没有记录的产品）
+    query := h.db.Table("products p").
+        Select("DISTINCT p.*").
+        Joins("LEFT JOIN product_visibility pv ON p.id = pv.product_id").
+        Where("pv.phone = ? OR pv.account_id = ? OR pv.id IS NULL", phone, accountID)
+
+    if err := query.Find(&products).Error; err != nil {
+        c.JSON(500, gin.H{
+            "code": 500,
+            "message": "查询失败",
+            "error": err.Error(),
+        })
+        return
+    }
+
+    c.JSON(200, gin.H{
+        "code": 200,
+        "message": "success",
+        "data": products,
+    })
+}
+```
+
+2. 使用GORM的方式更结构化的查询：
+
+```go
+type ProductService struct {
+    db *gorm.DB
+}
+
+type ProductResponse struct {
+    ID          int64      `json:"id"`
+    Name        string     `json:"name"`
+    Description string     `json:"description"`
+    Price       float64    `json:"price"`
+    // 其他产品字段
+    CreatedAt   time.Time  `json:"created_at"`
+    UpdatedAt   time.Time  `json:"updated_at"`
+}
+
+func NewProductService(db *gorm.DB) *ProductService {
+    return &ProductService{db: db}
+}
+
+func (s *ProductService) GetVisibleProducts(phone, accountID string) ([]ProductResponse, error) {
+    var products []ProductResponse
+    
+    query := s.db.Model(&Product{}).
+        Select("DISTINCT products.*").
+        Joins("LEFT JOIN product_visibility pv ON products.id = pv.product_id").
+        Where("pv.phone = ? OR pv.account_id = ? OR pv.id IS NULL", phone, accountID)
+
+    // 可以添加其他查询条件
+    // query = query.Where("products.status = ?", "active")
+    
+    // 可以添加排序
+    query = query.Order("products.created_at DESC")
+
+    err := query.Find(&products).Error
+    if err != nil {
+        return nil, fmt.Errorf("查询产品失败: %w", err)
+    }
+
+    return products, nil
+}
+
+// 在handler中使用
+func (h *ProductVisibilityHandler) GetVisibleProducts(c *gin.Context) {
+    phone := c.Query("phone")
+    accountID := c.Query("account_id")
+    
+    if phone == "" && accountID == "" {
+        c.JSON(400, gin.H{
+            "code": 400,
+            "message": "请提供手机号或账户ID",
+        })
+        return
+    }
+
+    productService := NewProductService(h.db)
+    products, err := productService.GetVisibleProducts(phone, accountID)
+    if err != nil {
+        c.JSON(500, gin.H{
+            "code": 500,
+            "message": "查询失败",
+            "error": err.Error(),
+        })
+        return
+    }
+
+    c.JSON(200, gin.H{
+        "code": 200,
+        "message": "success",
+        "data": gin.H{
+            "total": len(products),
+            "list":  products,
+        },
+    })
+}
+```
+
+3. 如果需要分页查询：
+
+```go
+type PageQuery struct {
+    Page     int    `form:"page" binding:"required,min=1"`
+    PageSize int    `form:"page_size" binding:"required,min=1,max=100"`
+    Phone    string `form:"phone"`
+    AccountID string `form:"account_id"`
+}
+
+func (s *ProductService) GetVisibleProductsWithPagination(query PageQuery) ([]ProductResponse, int64, error) {
+    var products []ProductResponse
+    var total int64
+    
+    db := s.db.Model(&Product{}).
+        Select("DISTINCT products.*").
+        Joins("LEFT JOIN product_visibility pv ON products.id = pv.product_id").
+        Where("pv.phone = ? OR pv.account_id = ? OR pv.id IS NULL", query.Phone, query.AccountID)
+
+    // 先获取总数
+    err := db.Count(&total).Error
+    if err != nil {
+        return nil, 0, fmt.Errorf("计算总数失败: %w", err)
+    }
+
+    // 分页查询
+    offset := (query.Page - 1) * query.PageSize
+    err = db.Offset(offset).
+        Limit(query.PageSize).
+        Order("products.created_at DESC").
+        Find(&products).Error
+    if err != nil {
+        return nil, 0, fmt.Errorf("查询产品失败: %w", err)
+    }
+
+    return products, total, nil
+}
+
+// 在handler中使用分页查询
+func (h *ProductVisibilityHandler) GetVisibleProductsWithPagination(c *gin.Context) {
+    var query PageQuery
+    if err := c.ShouldBindQuery(&query); err != nil {
+        c.JSON(400, gin.H{
+            "code": 400,
+            "message": "参数错误",
+            "error": err.Error(),
+        })
+        return
+    }
+
+    productService := NewProductService(h.db)
+    products, total, err := productService.GetVisibleProductsWithPagination(query)
+    if err != nil {
+        c.JSON(500, gin.H{
+            "code": 500,
+            "message": "查询失败",
+            "error": err.Error(),
+        })
+        return
+    }
+
+    c.JSON(200, gin.H{
+        "code": 200,
+        "message": "success",
+        "data": gin.H{
+            "total": total,
+            "page": query.Page,
+            "page_size": query.PageSize,
+            "list": products,
+        },
+    })
+}
+```
+
+这个实现的主要特点：
+
+1. 通过LEFT JOIN和WHERE条件来查询用户可见的产品
+2. 使用DISTINCT避免重复数据
+3. 提供了分页查询的支持
+4. 支持通过手机号或账户ID查询
+5. 结构化的错误处理
+6. 清晰的代码组织结构
+
+使用说明：
+
+1. 基础查询：
+```go
+GET /api/products/visible?phone=13800138000
+```
+
+2. 分页查询：
+```go
+GET /api/products/visible?phone=13800138000&page=1&page_size=10
+```
+
+你可以根据实际需求进行以下调整：
+
+1. 添加更多的查询条件（如产品状态、类别等）
+2. 添加排序选项
+3. 优化查询性能（添加适当的索引）
+4. 添加缓存机制
+5. 添加更多的数据验证
+
+如果你有任何其他需求或问题，请随时询问！
