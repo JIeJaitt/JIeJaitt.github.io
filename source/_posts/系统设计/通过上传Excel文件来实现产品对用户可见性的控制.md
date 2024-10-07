@@ -3427,3 +3427,198 @@ FROM products;
 4. 出问题时容易处理
 
 如果还需要其他SQL或者有特殊需求，请告诉我。
+
+
+## 产品-客户关联表的这两段代码有用吗？KEY `idx_product_account` (`product_id`, `account_id`), *-- 复合索引，用于权限查询* KEY `idx_account` (`account_id`), *-- 单独的账号索引，用于查询用户可见产品*
+
+这两个索引的作用性需要根据具体的查询场景来分析。让我们看看常见的查询场景：
+
+1. 查询某个用户可见的产品列表：
+```sql
+SELECT DISTINCT products.* 
+FROM products 
+LEFT JOIN product_customers ON products.id = product_customers.product_id 
+WHERE products.view_type = 1 
+   OR (products.view_type = 2 AND product_customers.account_id = 'user001');
+```
+这个查询中：
+- `idx_account` (account_id) 索引会被用到，因为我们需要根据 account_id 来查找记录
+
+2. 查询某个产品的可见用户列表：
+```sql
+SELECT account_id 
+FROM product_customers 
+WHERE product_id = 1;
+```
+这个查询中：
+- `idx_product_account` (product_id, account_id) 索引会被用到，因为是先根据 product_id 查询
+
+所以这两个索引的选择应该是这样的：
+
+```sql
+CREATE TABLE `product_customers` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `product_id` bigint unsigned NOT NULL COMMENT '产品ID',
+    `account_id` varchar(64) NOT NULL COMMENT '客户账号ID',
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `created_by` varchar(64) DEFAULT NULL COMMENT '创建人',
+    `updated_by` varchar(64) DEFAULT NULL COMMENT '更新人',
+    `is_deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除：0未删除 1已删除',
+    PRIMARY KEY (`id`),
+    -- 保留这个复合索引，因为它可以同时支持按product_id查询和按(product_id, account_id)组合查询
+    KEY `idx_product_account` (`product_id`, `account_id`),
+    -- 可以考虑删除这个单独的account_id索引，因为查询时通常还需要用到view_type
+    -- KEY `idx_account` (`account_id`),
+    KEY `idx_created_at` (`created_at`),
+    CONSTRAINT `fk_product_customers_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='产品-客户关联表';
+
+-- 在products表上添加合适的索引
+ALTER TABLE products
+ADD INDEX idx_view_type (view_type);
+```
+
+更好的索引设计：
+
+1. 如果主要查询场景是查询用户可见的产品列表：
+```sql
+-- 在product_customers表上创建联合索引
+CREATE INDEX idx_account_product ON product_customers(account_id, product_id);
+
+-- 在products表上创建view_type索引
+CREATE INDEX idx_view_type ON products(view_type);
+```
+
+2. 如果经常需要同时查询产品信息：
+```sql
+CREATE INDEX idx_product_account_status ON product_customers(product_id, account_id, is_deleted);
+```
+
+要判断索引是否有效，可以：
+
+1. 使用 EXPLAIN 分析查询：
+```sql
+EXPLAIN SELECT DISTINCT products.* 
+FROM products 
+LEFT JOIN product_customers ON products.id = product_customers.product_id 
+WHERE products.view_type = 1 
+   OR (products.view_type = 2 AND product_customers.account_id = 'user001');
+```
+
+2. 查看索引使用情况：
+```sql
+SHOW INDEX FROM product_customers;
+```
+
+3. 查看实际的查询性能：
+```sql
+-- 开启慢查询日志
+SET long_query_time = 1;
+SET slow_query_log = 1;
+```
+
+优化建议：
+
+1. 对于主查询，可以这样优化：
+```sql
+-- 先查询指定用户的产品ID
+WITH user_products AS (
+    SELECT DISTINCT product_id
+    FROM product_customers
+    WHERE account_id = 'user001'
+    AND is_deleted = 0
+)
+-- 然后查询产品信息
+SELECT p.*
+FROM products p
+WHERE p.view_type = 1
+   OR (p.view_type = 2 AND p.id IN (SELECT product_id FROM user_products));
+```
+
+2. 添加合适的索引：
+```sql
+-- 产品表
+ALTER TABLE products
+ADD INDEX idx_view_type_id (view_type, id);
+
+-- 关联表
+CREATE INDEX idx_account_product_status 
+ON product_customers(account_id, product_id, is_deleted);
+```
+
+3. 如果需要分页，可以这样优化：
+```sql
+-- 先获取ID列表
+WITH product_ids AS (
+    SELECT p.id
+    FROM products p
+    LEFT JOIN product_customers pc ON p.id = pc.product_id AND pc.account_id = 'user001'
+    WHERE p.view_type = 1 OR (p.view_type = 2 AND pc.id IS NOT NULL)
+    LIMIT 10 OFFSET 0
+)
+-- 再查询详细信息
+SELECT p.*
+FROM products p
+JOIN product_ids pi ON p.id = pi.id;
+```
+
+所以总结一下：
+1. `idx_product_account` 是有用的，它支持按产品ID查询用户的场景
+2. `idx_account` 单独使用的场景较少，可以考虑删除
+3. 应该根据实际的查询场景来设计索引
+4. 必要时可以通过修改查询语句来更好地利用索引
+
+推荐的最终索引设计：
+```sql
+CREATE TABLE `product_customers` (
+    ... 其他字段 ...,
+    PRIMARY KEY (`id`),
+    KEY `idx_product_account_status` (`product_id`, `account_id`, `is_deleted`),
+    KEY `idx_created_at` (`created_at`),
+    CONSTRAINT `fk_product_customers_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+);
+```
+
+这样的设计可以满足大多数查询场景，并且不会维护过多的索引。
+
+## 在第一个例子中，你说这个查询中：idx_product_account (product_id, account_id) 索引会被用到，因为是先根据 product_id 查询的意思是我们设置了这个为索引之后，mysql在查询的时候会自己去使用这个索引吗？
+
+是的,你理解得对。在MySQL中,当你创建了索引后,MySQL查询优化器会自动判断是否使用索引来优化查询。
+
+让我详细解释一下这个过程:
+
+1. 当你执行一个查询时,MySQL的查询优化器会:
+   - 分析你的WHERE条件
+   - 检查表中可用的索引
+   - 评估使用不同索引的成本(比如扫描的行数)
+   - 选择一个最优的执行计划
+
+2. 以这个索引为例:
+```sql
+CREATE INDEX idx_product_account ON table_name(product_id, account_id);
+```
+
+3. 当你执行类似这样的查询:
+```sql
+SELECT * FROM table_name WHERE product_id = 1 AND account_id = 100;
+-- 或者
+SELECT * FROM table_name WHERE product_id = 1;
+```
+
+MySQL会发现:
+- 这个查询条件匹配索引的列
+- 使用索引可以减少需要扫描的行数
+- 所以会选择使用这个索引
+
+4. 你可以通过 EXPLAIN 命令来查看MySQL是否使用了索引:
+```sql
+EXPLAIN SELECT * FROM table_name WHERE product_id = 1;
+```
+
+不过需要注意的是:
+- MySQL不一定总是使用索引,如果优化器认为全表扫描更快,它会选择不使用索引
+- 索引的使用还要考虑前缀原则,比如在复合索引中,只有遵循最左前缀原则才会使用到索引
+- 某些操作符(如 LIKE '%abc')可能会导致索引失效
+
+所以简单来说,是的,MySQL会自动判断并使用合适的索引,但这个过程是由查询优化器根据具体情况来决定的。
