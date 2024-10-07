@@ -3193,3 +3193,237 @@ OPTIMIZE TABLE product_customers;
 5. 数据完整性保证
 
 你可以根据实际需求调整字段类型、长度和索引设计。如果还需要其他的SQL语句或者有特殊的查询需求，请告诉我。
+
+## 还需要一个SQL将全表的历史产品查出来，将他们的数据viewType设置为全量客户
+
+
+好的，我来写这个SQL语句。为了安全起见，我会提供两种方案：一种是直接更新，另一种是分批更新。
+
+1. 直接更新所有历史产品（适用于数据量较小的情况）：
+
+```sql
+-- 直接更新所有产品的viewType为1（全量客户可见）
+UPDATE products 
+SET view_type = 1, 
+    updated_at = NOW(),
+    updated_by = 'SYSTEM' -- 记录操作人
+WHERE 1=1;  -- 如果需要特定条件可以在这里添加
+
+-- 清理关联表中的数据（可选）
+DELETE FROM product_customers 
+WHERE product_id IN (
+    SELECT id 
+    FROM products 
+    WHERE view_type = 1
+);
+
+-- 记录批量操作日志（建议添加）
+INSERT INTO product_customer_logs 
+(product_id, account_id, operation_type, operation_desc, created_by)
+SELECT 
+    id,
+    'ALL',  -- 表示所有用户
+    2,      -- 操作类型：删除权限
+    '批量更新产品为全量可见',
+    'SYSTEM'
+FROM products;
+```
+
+2. 分批更新方案（推荐，适用于大数据量）：
+
+```sql
+-- 创建临时存储过程进行分批更新
+DELIMITER //
+
+CREATE PROCEDURE batch_update_products_view_type()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE batch_size INT DEFAULT 1000;  -- 每批处理的数量
+    DECLARE last_id BIGINT DEFAULT 0;
+    
+    -- 创建临时表记录处理进度
+    CREATE TEMPORARY TABLE IF NOT EXISTS tmp_process_log (
+        id BIGINT PRIMARY KEY,
+        processed BOOLEAN DEFAULT FALSE
+    );
+    
+    -- 插入所有需要处理的产品ID
+    INSERT INTO tmp_process_log (id)
+    SELECT id FROM products;
+    
+    -- 循环处理
+    REPEAT
+        -- 开启事务
+        START TRANSACTION;
+        
+        -- 更新一批数据
+        UPDATE products 
+        SET view_type = 1,
+            updated_at = NOW(),
+            updated_by = 'SYSTEM'
+        WHERE id IN (
+            SELECT id 
+            FROM tmp_process_log 
+            WHERE processed = FALSE 
+            AND id > last_id 
+            ORDER BY id 
+            LIMIT batch_size
+        );
+        
+        -- 更新处理状态
+        UPDATE tmp_process_log 
+        SET processed = TRUE 
+        WHERE id IN (
+            SELECT id 
+            FROM products 
+            WHERE id > last_id 
+            ORDER BY id 
+            LIMIT batch_size
+        );
+        
+        -- 记录最后处理的ID
+        SELECT MAX(id) INTO last_id 
+        FROM tmp_process_log 
+        WHERE processed = TRUE;
+        
+        -- 记录操作日志
+        INSERT INTO product_customer_logs 
+        (product_id, account_id, operation_type, operation_desc, created_by)
+        SELECT 
+            id,
+            'ALL',
+            2,
+            '批量更新产品为全量可见',
+            'SYSTEM'
+        FROM products 
+        WHERE id > (last_id - batch_size) 
+        AND id <= last_id;
+        
+        -- 提交事务
+        COMMIT;
+        
+        -- 暂停一小段时间，避免对数据库造成过大压力
+        DO SLEEP(0.1);
+        
+    UNTIL last_id IS NULL OR (SELECT COUNT(*) FROM tmp_process_log WHERE processed = FALSE) = 0
+    END REPEAT;
+    
+    -- 清理关联表数据
+    DELETE FROM product_customers 
+    WHERE product_id IN (
+        SELECT id 
+        FROM products 
+        WHERE view_type = 1
+    );
+    
+    -- 删除临时表
+    DROP TEMPORARY TABLE IF EXISTS tmp_process_log;
+END //
+
+DELIMITER ;
+
+-- 执行存储过程
+CALL batch_update_products_view_type();
+
+-- 删除存储过程
+DROP PROCEDURE IF EXISTS batch_update_products_view_type;
+```
+
+3. 更新前后的验证SQL：
+
+```sql
+-- 更新前统计
+SELECT 
+    view_type,
+    COUNT(*) as count
+FROM products
+GROUP BY view_type;
+
+-- 检查是否有关联数据
+SELECT 
+    COUNT(*) as relation_count
+FROM product_customers;
+
+-- 执行更新后的验证
+SELECT 
+    view_type,
+    COUNT(*) as count
+FROM products
+GROUP BY view_type;
+
+-- 检查关联表是否已清理
+SELECT 
+    COUNT(*) as remaining_relations
+FROM product_customers;
+
+-- 检查操作日志
+SELECT 
+    operation_type,
+    COUNT(*) as log_count
+FROM product_customer_logs
+WHERE operation_desc = '批量更新产品为全量可见'
+GROUP BY operation_type;
+```
+
+4. 回滚脚本（以防需要回滚）：
+
+```sql
+-- 注意：使用前需要确保有数据备份
+-- 创建备份表
+CREATE TABLE products_backup AS SELECT * FROM products;
+CREATE TABLE product_customers_backup AS SELECT * FROM product_customers;
+
+-- 如果需要回滚
+-- 恢复产品表
+UPDATE products p
+INNER JOIN products_backup pb ON p.id = pb.id
+SET p.view_type = pb.view_type,
+    p.updated_at = pb.updated_at,
+    p.updated_by = pb.updated_by;
+
+-- 恢复关联表
+INSERT INTO product_customers
+SELECT * FROM product_customers_backup;
+
+-- 记录回滚操作
+INSERT INTO product_customer_logs 
+(product_id, account_id, operation_type, operation_desc, created_by)
+SELECT 
+    id,
+    'ALL',
+    1,
+    '回滚批量更新操作',
+    'SYSTEM'
+FROM products;
+```
+
+使用建议：
+
+1. 在执行更新前：
+   - 备份相关表的数据
+   - 在测试环境验证SQL
+   - 选择业务低峰期执行
+   - 预估执行时间
+
+2. 执行更新时：
+   - 监控数据库负载
+   - 记录详细的操作日志
+   - 准备回滚方案
+
+3. 执行更新后：
+   - 验证数据一致性
+   - 清理相关缓存
+   - 观察系统性能
+
+4. 其他注意事项：
+   - 考虑业务影响
+   - 准备回滚方案
+   - 通知相关团队
+
+建议使用分批更新方案，这样可以：
+1. 避免长事务
+2. 控制系统负载
+3. 便于监控进度
+4. 出问题时容易处理
+
+如果还需要其他SQL或者有特殊需求，请告诉我。
