@@ -1,12 +1,12 @@
 ---
 title: MySQL 中的 JSON_CONTAINS 函数详解_mysql contains 函数
-date: 2024-10-07T10:51:55+08:00
 categories: 数据存储
 tags: MySQL
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: 51abed1e
+toc: true
+date: 2024-10-07 02:51:55
+sticky:
 ---
 
 > 本文由 [简悦 SimpRead](http://ksria.com/simpread/) 转码， 原文地址 [blog.csdn.net](https://blog.csdn.net/mcband/article/details/135328703)

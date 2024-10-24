@@ -1,12 +1,12 @@
 ---
 title: scikit-learn选股
-date: 2024-10-22T20:17:21+08:00
-categories: 
-tags: 
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: ceaf427b
+toc: true
+date: 2024-10-22 12:17:21
+categories:
+tags:
+sticky:
 ---
 
 ```py

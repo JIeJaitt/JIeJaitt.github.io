@@ -1,12 +1,12 @@
 ---
 title: golang常用库：字段参数验证库-validator使用
-date: 2024-10-08T13:42:46+08:00
 categories: 开源精选
 tags: Go
 excerpt: 本博客暂不显示摘要，请大家谅解
-abbrlink: 
-toc: true 
-sticky: 
+abbrlink: 5b289798
+toc: true
+date: 2024-10-08 05:42:46
+sticky:
 ---
 
 
