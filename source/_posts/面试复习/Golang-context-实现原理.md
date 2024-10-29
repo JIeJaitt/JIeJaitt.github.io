@@ -52,7 +52,7 @@ type deadlineExceededError struct{}
 
 func (deadlineExceededError) Error() string   { return "context deadline exceeded" }
 func (deadlineExceededError) Timeout() bool   { return true }
-func (deadlineExceededError) Temporary() bool { return true
+func (deadlineExceededError) Temporary() bool { return true }
 ```
 
 （1）Canceled：context 被 cancel 时会报此错误；
