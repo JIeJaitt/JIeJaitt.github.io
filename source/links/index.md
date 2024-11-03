@@ -17,10 +17,11 @@ date: 2024-02-19 19:47:24
 - [川流论坛](https://bbs.chuanliu.org/)：博客如大海一般川流不息，思想如大海一般激情澎湃。由印记博客的大佬 胡先生 的创建，目前刚开始发展内容不多，不过存在一些博客可以到处看看。
 
 ## 社区
-[v2ex](https://www.v2ex.com/)；
-[掘金](https://juejin.cn/)；
-[思否](https://segmentfault.com/)；
-[InfoQ](https://www.infoq.cn/)；
+- [v2ex](https://www.v2ex.com/)；
+- [掘金](https://juejin.cn/)；
+- [思否](https://segmentfault.com/)；
+- [InfoQ](https://www.infoq.cn/)；
+- [Dev](https://dev.to/); 海外一个开发者社区
 
 - 聊天：[telegram](https://web.telegram.org/a/)；[discord](https://discord.com/)；[]()；[]()；
 - 游戏：[明日方舟](https://prts.wiki/w/%E5%85%AC%E6%8B%9B%E8%AE%A1%E7%AE%97)；
