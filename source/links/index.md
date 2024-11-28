@@ -52,10 +52,10 @@ date: 2024-02-19 19:47:24
 - `DeepSeek`：https://chat.deepseek.com ，杭州深度求索人工智能基础技术研究有限公司研发，主要是高效和便宜，个人体验是国内顶流梯队，值得一试
 - `腾讯混元助手`：https://hunyuan.tencent.com/bot/chat
 - `跃问`：https://yuewen.cn/chats/new
-- `熊猫AI助手`：https://www.pandaigc.com/chat ，每天签到送20次免费GPT4
+- 【已寄】`熊猫AI助手`：https://www.pandaigc.com/chat 
 - `通义千问`：https://tongyi.aliyun.com/qianwen/
 - `Aurorai.ai`：https://aurorai.cn/chat/ ：Linux.do佬友提供的目前只支持论坛用户登录[比较好用]
-- 
+- `零一万物大模型开放平台`: https://platform.lingyiwanwu.com/chat
 
 ApiKey类型
 

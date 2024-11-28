@@ -9,13 +9,6 @@ tags:
 sticky:
 ---
 
-You: 
-- 我想入门tensorflow2
-
-ChatGPT: 
-- 我想入门tensorflow2
-
-You: 
 - 很高兴听到你对学习TensorFlow 2的兴趣！TensorFlow 2是一个强大的开源深度学习框架，用于构建和训练机器学习模型。以下是一些入门TensorFlow 2的步骤：
 ### 步骤 1: 安装 TensorFlow
 
